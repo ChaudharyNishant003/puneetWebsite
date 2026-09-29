@@ -106,19 +106,4 @@ export async function quoteDelivery(pincode: string, now = new Date()): Promise<
   };
 }
 
-export async function createShipment(order: {
-  id: string;
-  number: string;
-  deliveryMode: "LOCAL" | "COURIER";
-}): Promise<{ provider: string; awb: string | null; courier: string | null; trackingUrl: string | null }> {
-  if (order.deliveryMode === "LOCAL") return { provider: "local", awb: null, courier: "Store delivery", trackingUrl: null };
-  if (shippingIsMock()) {
-    const awb = `MOCK${Date.now().toString().slice(-9)}`;
-    return { provider: "mock", awb, courier: "Mock Express", trackingUrl: null };
-  }
-  // Real Shiprocket order creation needs full order payload; implemented in lib/fulfilment.ts via this token.
-  const token = await shiprocketToken();
-  return { provider: "shiprocket", awb: null, courier: null, trackingUrl: `shiprocket-token:${token ? "ok" : "missing"}` };
-}
-
 export { addBusinessDays, shiprocketToken };
