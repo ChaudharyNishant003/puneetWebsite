@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { requirePage } from "@/lib/flags";
 import { fmtDateTime } from "@/lib/format";
 import { setReviewStatusAction } from "@/app/actions/admin-orders";
 import { ActionButton } from "@/components/admin/ActionForm";
@@ -9,6 +10,7 @@ export const metadata = { title: "Reviews" };
 
 export default async function Reviews({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   await requireAdmin();
+  await requirePage("reviews");
   const status = ((await searchParams).status ?? "PENDING") as "PENDING" | "APPROVED" | "REJECTED";
   const list = await db.review.findMany({ where: { status }, orderBy: { createdAt: "desc" }, take: 100, include: { product: { select: { name: true, slug: true } } } });
   return (

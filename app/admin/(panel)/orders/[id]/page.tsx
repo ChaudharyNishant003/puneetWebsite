@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { getFlags, requirePage } from "@/lib/flags";
 import { ALLOWED_TRANSITIONS } from "@/lib/orders";
 import { fmtDateTime, inr, statusLabel } from "@/lib/format";
 import { OrderActions, UnblockCod } from "@/components/admin/OrderActions";
@@ -10,12 +11,14 @@ export const metadata = { title: "Order" };
 
 export default async function AdminOrder({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireAdmin();
+  await requirePage("orders");
   const { id } = await params;
   const o = await db.order.findUnique({
     where: { id },
     include: { items: { include: { exchanges: true } }, events: { orderBy: { createdAt: "desc" } }, shipment: true, payments: true, customer: { include: { _count: { select: { orders: true } } } } },
   });
   if (!o) notFound();
+  const flags = await getFlags();
   // Shipping itself goes through the ship action (courier booking / local dispatch).
   const next = ALLOWED_TRANSITIONS[o.status].filter((s) => s !== "SHIPPED" && (s !== "OUT_FOR_DELIVERY" || o.status === "SHIPPED"));
 
@@ -24,7 +27,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
       <Link href="/admin/orders" className="text-xs text-muted underline">← Orders</Link>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold">{o.number} <span className="ml-2 rounded bg-brand-soft px-2 py-0.5 text-sm text-brand">{statusLabel[o.status]}</span></h1>
-        <a href={`/api/invoice/${o.number}`} target="_blank" className="btn btn-outline py-2">Invoice PDF</a>
+        {flags.admin("invoice") ? <a href={`/api/invoice/${o.number}`} target="_blank" className="btn btn-outline py-2">Invoice PDF</a> : null}
       </div>
       {o.notes ? <p className="mt-3 bg-danger-soft p-3 text-sm text-danger">{o.notes}</p> : null}
 
@@ -53,7 +56,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
             </dl>
           </section>
 
-          <OrderActions orderId={o.id} status={o.status} next={next} deliveryMode={o.deliveryMode} paid={o.paymentStatus === "PAID"} />
+          <OrderActions orderId={o.id} status={o.status} next={next} deliveryMode={o.deliveryMode} paid={o.paymentStatus === "PAID"} can={{ courier: flags.admin("courier"), localDelivery: flags.admin("localDelivery"), manualAwb: flags.admin("manualAwb"), cancel: flags.admin("orderCancel"), notes: flags.admin("orderNotes") }} />
 
           <section className="border border-line bg-white p-4">
             <h2 className="mb-2 text-sm font-semibold">Timeline</h2>
@@ -66,7 +69,7 @@ export default async function AdminOrder({ params }: { params: Promise<{ id: str
             <h2 className="mb-2 font-semibold">Customer</h2>
             <p>{o.shipName}<br /><a href={`tel:${o.shipPhone}`} className="text-brand">{o.shipPhone}</a>{o.email ? <><br />{o.email}</> : null}</p>
             <p className="mt-2 text-xs text-muted">Account +91 {o.customer.phone} · {o.customer._count.orders} orders{o.customer.rtoCount ? ` · ${o.customer.rtoCount} RTO` : ""}{o.customer.codBlocked ? " · COD blocked" : ""}</p>
-            {o.customer.codBlocked && user.role === "OWNER" ? <UnblockCod customerId={o.customerId} /> : null}
+            {o.customer.codBlocked && user.role === "OWNER" && flags.admin("codRto") ? <UnblockCod customerId={o.customerId} /> : null}
           </section>
           <section className="border border-line bg-white p-4 text-sm">
             <h2 className="mb-2 font-semibold">Ship to</h2>

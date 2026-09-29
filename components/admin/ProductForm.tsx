@@ -8,7 +8,7 @@ type P = {
   badges: string; modelInfo: string; status: string; isFeatured: boolean; storeBestseller: boolean; isExchangeable: boolean; isInnerwear: boolean; seoTitle: string; seoDescription: string;
 };
 
-export function ProductForm({ product: p, attrs, categories }: { product: P | null; attrs: Record<string, string>; categories: { id: string; name: string; gender: string }[] }) {
+export function ProductForm({ product: p, attrs, categories, show = { details: true, badges: true, seo: true } }: { product: P | null; attrs: Record<string, string>; categories: { id: string; name: string; gender: string }[]; show?: { details: boolean; badges: boolean; seo: boolean } }) {
   const [state, action, pending] = useActionState(saveProductAction, null);
   return (
     <form action={action} className="space-y-5 border border-line bg-white p-4">
@@ -30,7 +30,7 @@ export function ProductForm({ product: p, attrs, categories }: { product: P | nu
         <div><label className="label" htmlFor="mrp">MRP (₹) — use the real MRP</label><input id="mrp" name="mrp" type="number" min={1} defaultValue={p?.mrp} required className="input" /></div>
         <div className="md:col-span-2"><label className="label" htmlFor="description">Description</label><textarea id="description" name="description" rows={4} defaultValue={p?.description} required className="input" /></div>
         <div><label className="label" htmlFor="modelInfo">Model info (e.g. Model is 5&apos;4&quot; wearing M)</label><input id="modelInfo" name="modelInfo" defaultValue={p?.modelInfo} className="input" /></div>
-        <div><label className="label" htmlFor="badges">Badges (comma separated, max 3: New, Bestseller, Festive)</label><input id="badges" name="badges" defaultValue={p?.badges} className="input" /></div>
+        {show.badges ? <div><label className="label" htmlFor="badges">Badges (comma separated, max 3: New, Bestseller, Festive)</label><input id="badges" name="badges" defaultValue={p?.badges} className="input" /></div> : null}
         <div><label className="label" htmlFor="status">Status</label><select id="status" name="status" defaultValue={p?.status ?? "DRAFT"} className="input"><option value="DRAFT">Draft (hidden)</option><option value="ACTIVE">Active (visible)</option><option value="ARCHIVED">Archived</option></select></div>
         <div className="grid grid-cols-2 gap-3">
           <div><label className="label" htmlFor="hsn">HSN code</label><input id="hsn" name="hsn" defaultValue={p?.hsn ?? "6211"} className="input" /></div>
@@ -43,21 +43,21 @@ export function ProductForm({ product: p, attrs, categories }: { product: P | nu
         <label className="flex items-center gap-2"><input type="checkbox" name="isExchangeable" defaultChecked={p?.isExchangeable ?? true} /> Size exchange allowed</label>
         <label className="flex items-center gap-2"><input type="checkbox" name="isInnerwear" defaultChecked={p?.isInnerwear} /> Innerwear / hygiene item (never exchangeable)</label>
       </div>
-      <fieldset>
+      {show.details ? <fieldset>
         <legend className="mb-2 text-sm font-semibold">Details shown on the product page</legend>
         <p className="mb-2 text-xs text-muted">Fill what applies. Separate multiple values with commas. Occasion and fabric power the filters and search.</p>
         <div className="grid gap-3 md:grid-cols-2">
           {ATTR_KEYS.map((k) => (<div key={k}><label className="label" htmlFor={`attr_${k}`}>{ATTR_LABELS[k]}</label><input id={`attr_${k}`} name={`attr_${k}`} defaultValue={attrs[k]} className="input" /></div>))}
         </div>
-      </fieldset>
-      <details>
+      </fieldset> : null}
+      {show.seo ? <details>
         <summary className="cursor-pointer text-sm font-semibold">SEO (optional)</summary>
         <div className="mt-2 grid gap-3 md:grid-cols-2">
           <div><label className="label" htmlFor="slug">Page link /p/…</label><input id="slug" name="slug" defaultValue={p?.slug} className="input" /></div>
           <div><label className="label" htmlFor="seoTitle">SEO title</label><input id="seoTitle" name="seoTitle" maxLength={70} defaultValue={p?.seoTitle} className="input" /></div>
           <div className="md:col-span-2"><label className="label" htmlFor="seoDescription">SEO description</label><input id="seoDescription" name="seoDescription" maxLength={170} defaultValue={p?.seoDescription} className="input" /></div>
         </div>
-      </details>
+      </details> : null}
       {state?.error ? <p className="text-sm text-danger" role="alert">{state.error}</p> : state?.ok ? <p className="text-sm text-save">Saved ✓</p> : null}
       <div className="flex gap-2">
         <button disabled={pending} className="btn btn-primary">{pending ? "Saving…" : p ? "Save changes" : "Create product"}</button>

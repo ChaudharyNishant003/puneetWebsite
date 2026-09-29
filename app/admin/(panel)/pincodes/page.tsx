@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { requirePage } from "@/lib/flags";
 import { inr } from "@/lib/format";
 import { deletePincodeAction, savePincodesAction } from "@/app/actions/admin-config";
 import { ActionButton, ActionForm } from "@/components/admin/ActionForm";
@@ -8,6 +9,7 @@ export const metadata = { title: "Pincodes" };
 
 export default async function Pincodes() {
   await requireAdmin();
+  await requirePage("pincodes");
   const list = await db.pincode.findMany({ orderBy: [{ isLocal: "desc" }, { code: "asc" }] });
   return (
     <div className="max-w-4xl">

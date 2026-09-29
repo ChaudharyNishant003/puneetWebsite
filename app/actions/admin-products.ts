@@ -10,6 +10,7 @@ import { apparelGstRate } from "@/lib/pricing";
 import { slugify } from "@/lib/format";
 import { ATTR_KEYS } from "@/lib/constants";
 import { refreshSearchText } from "@/lib/products";
+import { getFlags, requireAction } from "@/lib/flags";
 
 
 const productSchema = z.object({
@@ -35,6 +36,7 @@ const productSchema = z.object({
 
 export async function saveProductAction(_: unknown, form: FormData) {
   const u = await requireAdmin();
+  await requireAction("products");
   const id = String(form.get("id") ?? "");
   const raw = Object.fromEntries(form.entries());
   const parsed = productSchema.safeParse({
@@ -51,7 +53,10 @@ export async function saveProductAction(_: unknown, form: FormData) {
   if (!parsed.success) return { error: `${parsed.error.issues[0]?.path.join(".")}: ${parsed.error.issues[0]?.message}` };
   const d = parsed.data;
   if (d.mrp < d.price) return { error: "MRP cannot be lower than the selling price" };
-  const badges = d.badges.split(",").map((b) => b.trim()).filter(Boolean).slice(0, 3);
+  const flags = await getFlags();
+  const existing = id ? await db.product.findUnique({ where: { id }, select: { badges: true, seoTitle: true, seoDescription: true } }) : null;
+  // Hidden sections keep their saved values instead of being wiped by an empty form field.
+  const badges = flags.admin("badges") ? d.badges.split(",").map((b) => b.trim()).filter(Boolean).slice(0, 3) : (existing?.badges ?? []);
   const slug = slugify(d.slug || d.name);
   const clash = await db.product.findFirst({ where: { slug, id: id ? { not: id } : undefined } });
   if (clash) return { error: `Another product already uses the link /p/${slug}. Change the name or link.` };
@@ -59,7 +64,8 @@ export async function saveProductAction(_: unknown, form: FormData) {
     name: d.name, slug, description: d.description, categoryId: d.categoryId, gender: d.gender, price: d.price, mrp: d.mrp, hsn: d.hsn,
     gstRate: d.gstRate ?? apparelGstRate(d.price), badges, modelInfo: d.modelInfo ?? null, status: d.status, isFeatured: d.isFeatured,
     storeBestseller: d.storeBestseller, isExchangeable: d.isInnerwear ? false : d.isExchangeable, isInnerwear: d.isInnerwear,
-    seoTitle: d.seoTitle ?? null, seoDescription: d.seoDescription ?? null,
+    seoTitle: flags.admin("seo") ? (d.seoTitle ?? null) : (existing?.seoTitle ?? null),
+    seoDescription: flags.admin("seo") ? (d.seoDescription ?? null) : (existing?.seoDescription ?? null),
   };
   const attrs = ATTR_KEYS.flatMap((k) =>
     String(form.get(`attr_${k}`) ?? "").split(",").map((v) => v.trim()).filter(Boolean).slice(0, 5).map((value) => ({ key: k, value: value.slice(0, 80) })),
@@ -67,7 +73,8 @@ export async function saveProductAction(_: unknown, form: FormData) {
   const product = id
     ? await db.product.update({ where: { id }, data })
     : await db.product.create({ data: { ...data, sku: `PG-${Date.now().toString(36).toUpperCase()}` } });
-  await db.$transaction([db.productAttribute.deleteMany({ where: { productId: product.id } }), db.productAttribute.createMany({ data: attrs.map((a) => ({ ...a, productId: product.id })) })]);
+  if (flags.admin("productDetails"))
+    await db.$transaction([db.productAttribute.deleteMany({ where: { productId: product.id } }), db.productAttribute.createMany({ data: attrs.map((a) => ({ ...a, productId: product.id })) })]);
   await refreshSearchText(product.id);
   await audit(u.email, id ? "product.update" : "product.create", "Product", product.id, { name: d.name, price: d.price, status: d.status });
   revalidatePath("/admin/products");
@@ -80,6 +87,7 @@ const variantRow = z.object({ id: z.string().optional(), size: z.string().trim()
 
 export async function saveVariantsAction(productId: string, rows: z.input<typeof variantRow>[]) {
   const u = await requireAdmin();
+  await requireAction("stockGrid");
   const parsed = z.array(variantRow).max(200).safeParse(rows);
   if (!parsed.success) return { ok: false, error: "Check sizes, colours and stock numbers" };
   const p = await db.product.findUniqueOrThrow({ where: { id: productId } });
@@ -108,6 +116,8 @@ export async function saveVariantsAction(productId: string, rows: z.input<typeof
 
 export async function uploadImagesAction(form: FormData) {
   await requireAdmin();
+  const fl = await getFlags();
+  if (!fl.admin("photos") && !fl.admin("video")) await requireAction("photos");
   const productId = String(form.get("productId"));
   const colour = String(form.get("colour") ?? "") || null;
   const p = await db.product.findUniqueOrThrow({ where: { id: productId }, include: { _count: { select: { images: true } } } });
@@ -120,7 +130,14 @@ export async function uploadImagesAction(form: FormData) {
       errors.push(`${f.name}: ${up.error}`);
       continue;
     }
-    if (up.url.endsWith(".mp4") || up.url.includes("/video/")) await db.product.update({ where: { id: productId }, data: { videoUrl: up.url } });
+    if (up.url.endsWith(".mp4") || up.url.includes("/video/")) {
+      if (!fl.admin("video")) {
+        errors.push(`${f.name}: only photos can be uploaded`);
+        continue;
+      }
+      await db.product.update({ where: { id: productId }, data: { videoUrl: up.url } });
+    }
+    else if (!fl.admin("photos")) errors.push(`${f.name}: only video can be uploaded`);
     else await db.productImage.create({ data: { productId, colour, url: up.url, alt: `${p.name}${colour ? ` in ${colour}` : ""}`, sortOrder: order++ } });
   }
   revalidatePath(`/admin/products/${productId}`);
@@ -130,6 +147,7 @@ export async function uploadImagesAction(form: FormData) {
 
 export async function deleteImageAction(imageId: string) {
   await requireAdmin();
+  await requireAction("photos");
   const img = await db.productImage.delete({ where: { id: imageId } });
   revalidatePath(`/admin/products/${img.productId}`);
   return { ok: true };
@@ -137,6 +155,7 @@ export async function deleteImageAction(imageId: string) {
 
 export async function moveImageAction(imageId: string, dir: -1 | 1) {
   await requireAdmin();
+  await requireAction("photos");
   const img = await db.productImage.findUniqueOrThrow({ where: { id: imageId } });
   const all = await db.productImage.findMany({ where: { productId: img.productId }, orderBy: { sortOrder: "asc" } });
   const i = all.findIndex((x) => x.id === imageId);
@@ -150,6 +169,7 @@ export async function moveImageAction(imageId: string, dir: -1 | 1) {
 
 export async function removeVideoAction(productId: string) {
   await requireAdmin();
+  await requireAction("video");
   await db.product.update({ where: { id: productId }, data: { videoUrl: null } });
   revalidatePath(`/admin/products/${productId}`);
   return { ok: true };
@@ -160,6 +180,7 @@ const CSV_HEADERS = ["handle", "name", "category_slug", "gender", "price", "mrp"
 
 export async function csvTemplate() {
   await requireAdmin();
+  await requireAction("csvImport");
   return CSV_HEADERS.join(",") + "\n" + [
     "cotton-kurta-set-1", "Cotton Printed Kurta Set", "kurta-sets", "WOMEN", "1299", "1599", "Soft cotton set for daily wear", "New", "Model is 5'4\" wearing M", "ACTIVE", "no",
     ...ATTR_KEYS.map((k) => (k === "fabric" ? "Cotton" : k === "occasion" ? "Daily" : "")), "Maroon", "#7A1F2B", "M", "10", "",
@@ -168,6 +189,7 @@ export async function csvTemplate() {
 
 export async function importCsvAction(_: unknown, form: FormData) {
   const u = await requireAdmin();
+  await requireAction("csvImport");
   const file = form.get("file");
   if (!(file instanceof File) || !file.size) return { error: "Choose a CSV file", summary: null };
   if (file.size > 5 * 1024 * 1024) return { error: "CSV must be under 5 MB", summary: null };
@@ -230,6 +252,7 @@ export async function importCsvAction(_: unknown, form: FormData) {
 
 export async function archiveProductAction(productId: string) {
   const u = await requireAdmin();
+  await requireAction("products");
   await db.product.update({ where: { id: productId }, data: { status: "ARCHIVED" } });
   await audit(u.email, "product.archive", "Product", productId);
   revalidatePath("/admin/products");

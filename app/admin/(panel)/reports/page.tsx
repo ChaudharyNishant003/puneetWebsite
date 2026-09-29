@@ -1,11 +1,13 @@
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { requirePage } from "@/lib/flags";
 import { inr } from "@/lib/format";
 
 export const metadata = { title: "Reports" };
 
 export default async function Reports({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
   await requireAdmin("OWNER");
+  await requirePage("reports");
   const days = Math.min(365, Math.max(1, Number((await searchParams).days) || 30));
   const since = new Date(Date.now() - days * 86400_000);
   const live = { placedAt: { gte: since }, status: { notIn: ["PENDING_PAYMENT", "CANCELLED"] as ("PENDING_PAYMENT" | "CANCELLED")[] } };

@@ -7,11 +7,22 @@ import { smsIsMock } from "@/lib/integrations/sms";
 import { paymentsAreMock } from "@/lib/integrations/payments";
 import { shippingIsMock } from "@/lib/integrations/shipping";
 import { imagesAreMock } from "@/lib/integrations/images";
+import { getFlags } from "@/lib/flags";
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ denied?: string }> }) {
-  await requireAdmin();
+  const me = await requireAdmin();
   await expireStalePendingOrders();
   const { denied } = await searchParams;
+  const flags = await getFlags();
+  if (!flags.admin("dashboard")) {
+    return (
+      <div className="max-w-xl">
+        {denied ? <p className="mb-4 bg-danger-soft p-3 text-sm text-danger">That page is for the owner only.</p> : null}
+        <h1 className="text-xl font-semibold">Welcome{me.name ? `, ${me.name.split(" ")[0]}` : ""}</h1>
+        <p className="mt-1 text-sm text-muted">Choose a section from the menu to get started.</p>
+      </div>
+    );
+  }
   const startOfDay = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }) + "T00:00:00+05:30");
   const live = { status: { notIn: ["PENDING_PAYMENT", "CANCELLED"] as ("PENDING_PAYMENT" | "CANCELLED")[] } };
   const [today, toConfirm, toShip, exchanges, reviews, lowStock, recent] = await Promise.all([

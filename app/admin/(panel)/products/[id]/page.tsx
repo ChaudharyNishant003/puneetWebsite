@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { getFlags, requirePage } from "@/lib/flags";
 import { ProductForm } from "@/components/admin/ProductForm";
 import { VariantEditor } from "@/components/admin/VariantEditor";
 import { ImageManager } from "@/components/admin/ImageManager";
@@ -10,6 +11,7 @@ export const metadata = { title: "Product" };
 
 export default async function EditProduct({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string }> }) {
   await requireAdmin();
+  await requirePage("products");
   const { id } = await params;
   const { created } = await searchParams;
   const isNew = id === "new";
@@ -18,6 +20,7 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
     db.category.findMany({ orderBy: { sortOrder: "asc" }, include: { parent: { select: { name: true } } } }),
   ]);
   if (!isNew && !p) notFound();
+  const flags = await getFlags();
   const attrs: Record<string, string> = {};
   for (const a of p?.attributes ?? []) attrs[a.key] = attrs[a.key] ? `${attrs[a.key]}, ${a.value}` : a.value;
 
@@ -34,12 +37,13 @@ export default async function EditProduct({ params, searchParams }: { params: Pr
       <ProductForm
         product={p ? { id: p.id, name: p.name, slug: p.slug, description: p.description, categoryId: p.categoryId, gender: p.gender, price: p.price, mrp: p.mrp, hsn: p.hsn, gstRate: p.gstRate, badges: p.badges.join(", "), modelInfo: p.modelInfo ?? "", status: p.status, isFeatured: p.isFeatured, storeBestseller: p.storeBestseller, isExchangeable: p.isExchangeable, isInnerwear: p.isInnerwear, seoTitle: p.seoTitle ?? "", seoDescription: p.seoDescription ?? "" } : null}
         attrs={attrs}
+        show={{ details: flags.admin("productDetails"), badges: flags.admin("badges"), seo: flags.admin("seo") }}
         categories={cats.map((c) => ({ id: c.id, name: c.parent ? `${c.parent.name} › ${c.name}` : c.name, gender: c.gender }))}
       />
       {p ? (
         <>
-          <VariantEditor productId={p.id} initial={p.variants.map((v) => ({ id: v.id, size: v.size, colour: v.colour, colourHex: v.colourHex, stock: v.stock }))} sizeHint={p.category.sizeChart ? (p.category.sizeChart.rows as { size: string }[]).map((r) => r.size) : []} />
-          <ImageManager productId={p.id} images={p.images.map((i) => ({ id: i.id, url: i.url, colour: i.colour }))} colours={[...new Set(p.variants.map((v) => v.colour))]} videoUrl={p.videoUrl} />
+          {flags.admin("stockGrid") ? <VariantEditor productId={p.id} initial={p.variants.map((v) => ({ id: v.id, size: v.size, colour: v.colour, colourHex: v.colourHex, stock: v.stock }))} sizeHint={p.category.sizeChart ? (p.category.sizeChart.rows as { size: string }[]).map((r) => r.size) : []} /> : null}
+          {flags.admin("photos") || flags.admin("video") ? <ImageManager allowPhotos={flags.admin("photos")} allowVideo={flags.admin("video")} productId={p.id} images={p.images.map((i) => ({ id: i.id, url: i.url, colour: i.colour }))} colours={[...new Set(p.variants.map((v) => v.colour))]} videoUrl={p.videoUrl} /> : null}
         </>
       ) : null}
     </div>

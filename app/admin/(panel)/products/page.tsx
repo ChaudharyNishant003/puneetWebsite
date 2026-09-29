@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Prisma, ProductStatus } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { getFlags, requirePage } from "@/lib/flags";
 import { inr } from "@/lib/format";
 import { CsvImport } from "@/components/admin/CsvImport";
 
@@ -9,7 +10,9 @@ export const metadata = { title: "Products" };
 
 export default async function AdminProducts({ searchParams }: { searchParams: Promise<{ q?: string; cat?: string; status?: string; stock?: string }> }) {
   await requireAdmin();
+  await requirePage("products");
   const sp = await searchParams;
+  const flags = await getFlags();
   const and: Prisma.ProductWhereInput[] = [];
   if (sp.q) and.push({ OR: [{ name: { contains: sp.q, mode: "insensitive" } }, { sku: { contains: sp.q, mode: "insensitive" } }] });
   if (sp.cat) and.push({ OR: [{ category: { slug: sp.cat } }, { category: { parent: { slug: sp.cat } } }] });
@@ -25,7 +28,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-xl font-semibold">Products <span className="text-sm font-normal text-muted">({products.length})</span></h1>
         <div className="flex gap-2">
-          <a href="/api/admin/products-csv" className="btn btn-outline py-2">Export CSV</a>
+          {flags.admin("csvExport") ? <a href="/api/admin/products-csv" className="btn btn-outline py-2">Export CSV</a> : null}
           <Link href="/admin/products/new" className="btn btn-primary py-2">+ Add product</Link>
         </div>
       </div>
@@ -36,7 +39,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
         <select name="stock" defaultValue={sp.stock ?? ""} className="input w-36 py-2"><option value="">Any stock</option><option value="low">Low / sold out</option></select>
         <button className="btn btn-dark py-2">Filter</button>
       </form>
-      <CsvImport />
+      {flags.admin("csvImport") ? <CsvImport /> : null}
       <div className="overflow-x-auto border border-line bg-white">
         <table className="tbl min-w-[680px]">
           <thead><tr><th></th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th></tr></thead>

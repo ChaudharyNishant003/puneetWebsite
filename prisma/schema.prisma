@@ -471,6 +471,8 @@ model AdminUser {
   passwordHash String
   role         AdminRole @default(STAFF)
   active       Boolean   @default(true)
+  lockedByOps  Boolean   @default(false) // set only from the ops console; never shown in admin
+  tokenVersion Int       @default(0) // bump to invalidate existing sessions
   lastLoginAt  DateTime?
   createdAt    DateTime  @default(now())
 }
@@ -517,4 +519,46 @@ model RateLimit {
   key       String   @id
   count     Int
   resetAt   DateTime
+}
+
+// ---------- Ops console (developer-only; never referenced by admin UI) ----------
+
+model OpsUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+}
+
+model OpsOtp {
+  id        String   @id @default(cuid())
+  email     String
+  codeHash  String
+  attempts  Int      @default(0)
+  consumed  Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+model FeatureFlag {
+  key       String   @id
+  adminOn   Boolean  @default(true)
+  siteOn    Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model SiteControl {
+  key       String   @id // maintenance | userLimit
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model OpsLog {
+  id        String   @id @default(cuid())
+  action    String
+  detail    Json?
+  createdAt DateTime @default(now())
 }

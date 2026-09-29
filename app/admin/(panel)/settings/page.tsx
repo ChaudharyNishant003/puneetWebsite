@@ -1,4 +1,5 @@
 import { requireAdmin } from "@/lib/auth/admin";
+import { getFlags, requirePage } from "@/lib/flags";
 import { getSettings } from "@/lib/settings";
 import { saveSettingsAction } from "@/app/actions/admin-config";
 import { ActionForm } from "@/components/admin/ActionForm";
@@ -19,7 +20,10 @@ const FIELDS: [keyof Awaited<ReturnType<typeof getSettings>>, string, string][] 
 
 export default async function Settings() {
   await requireAdmin("OWNER");
+  await requirePage("settings");
   const s = await getSettings();
+  const flags = await getFlags();
+  const hidden = new Set<string>([...(flags.admin("cod") ? [] : ["codMaxAmount", "codFee", "codRtoBlockThreshold"]), ...(flags.admin("prepaidDiscount") ? [] : ["prepaidDiscountPercent", "prepaidDiscountMax"]), ...(flags.admin("codRto") ? [] : ["codRtoBlockThreshold"])]);
   return (
     <div className="max-w-3xl">
       <h1 className="mb-1 text-xl font-semibold">Settings</h1>
@@ -27,7 +31,7 @@ export default async function Settings() {
       <section className="border border-line bg-white p-4">
         <ActionForm action={saveSettingsAction} submit="Save settings">
           <div className="grid gap-4 md:grid-cols-2">
-            {FIELDS.map(([k, label, help]) => (
+            {FIELDS.filter(([k]) => !hidden.has(k)).map(([k, label, help]) => (
               <div key={k}><label className="label" htmlFor={k}>{label}</label><input id={k} name={k} type="number" min={0} defaultValue={s[k]} required className="input" /><p className="mt-1 text-[11px] text-muted">{help}</p></div>
             ))}
           </div>

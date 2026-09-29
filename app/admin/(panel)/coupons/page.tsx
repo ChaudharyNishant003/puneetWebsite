@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { requirePage } from "@/lib/flags";
 import { fmtDate, inr } from "@/lib/format";
 import { saveCouponAction, toggleCouponAction } from "@/app/actions/admin-config";
 import { ActionButton, ActionForm } from "@/components/admin/ActionForm";
@@ -8,6 +9,7 @@ export const metadata = { title: "Coupons" };
 
 export default async function Coupons() {
   await requireAdmin();
+  await requirePage("coupons");
   const list = await db.coupon.findMany({ orderBy: { createdAt: "desc" } });
   return (
     <div className="max-w-4xl">

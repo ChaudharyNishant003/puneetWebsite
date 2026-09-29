@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { OrderStatus, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { requirePage } from "@/lib/flags";
 import { fmtDateTime, inr, statusLabel } from "@/lib/format";
 
 export const metadata = { title: "Orders" };
@@ -10,6 +11,7 @@ const TABS: [string, string][] = [["", "All"], ["PLACED", "To confirm"], ["CONFI
 
 export default async function AdminOrders({ searchParams }: { searchParams: Promise<{ status?: string; q?: string; page?: string }> }) {
   await requireAdmin();
+  await requirePage("orders");
   const { status, q, page } = await searchParams;
   const p = Math.max(1, Number(page) || 1);
   const where: Prisma.OrderWhereInput = { status: status ? (status as OrderStatus) : { not: "PENDING_PAYMENT" } };

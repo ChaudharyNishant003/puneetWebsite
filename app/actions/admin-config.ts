@@ -6,6 +6,7 @@ import { audit, hashPassword, requireAdmin } from "@/lib/auth/admin";
 import { saveSettings } from "@/lib/settings";
 import { defaultSettings } from "@/lib/config";
 import { uploadMedia } from "@/lib/integrations/images";
+import { getControls, requireAction } from "@/lib/flags";
 
 type R = { ok: boolean; error: string | null };
 const done = (path: string): R => {
@@ -29,6 +30,7 @@ const couponSchema = z.object({
 
 export async function saveCouponAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("coupons");
   const raw = Object.fromEntries(form.entries());
   const p = couponSchema.safeParse({ ...raw, maxDiscount: raw.maxDiscount || undefined, usageLimit: raw.usageLimit || undefined, endsAt: raw.endsAt || undefined, prepaidOnly: form.get("prepaidOnly") === "on", firstOrderOnly: form.get("firstOrderOnly") === "on" });
   if (!p.success) return { ok: false, error: p.error.issues[0]?.message ?? "Invalid coupon" };
@@ -41,6 +43,7 @@ export async function saveCouponAction(_: unknown, form: FormData): Promise<R> {
 
 export async function toggleCouponAction(code: string, active: boolean): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("coupons");
   await db.coupon.update({ where: { code }, data: { active } });
   await audit(u.email, "coupon.toggle", "Coupon", code, { active });
   return done("/admin/coupons");
@@ -49,6 +52,7 @@ export async function toggleCouponAction(code: string, active: boolean): Promise
 // ---------- Pincodes ----------
 export async function savePincodesAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("pincodes");
   const codes = String(form.get("codes") ?? "").split(/[\s,]+/).map((c) => c.trim()).filter(Boolean);
   const bad = codes.filter((c) => !/^[1-9]\d{5}$/.test(c));
   if (bad.length) return { ok: false, error: `Invalid pincodes: ${bad.slice(0, 5).join(", ")}` };
@@ -67,6 +71,7 @@ export async function savePincodesAction(_: unknown, form: FormData): Promise<R>
 
 export async function deletePincodeAction(code: string): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("pincodes");
   await db.pincode.delete({ where: { code } });
   await audit(u.email, "pincode.delete", "Pincode", code);
   return done("/admin/pincodes");
@@ -75,6 +80,7 @@ export async function deletePincodeAction(code: string): Promise<R> {
 // ---------- Homepage content & search synonyms ----------
 export async function saveAnnouncementAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("announcement");
   const text = String(form.get("text") ?? "").trim().slice(0, 140);
   const link = String(form.get("link") ?? "").trim();
   if (!text) return { ok: false, error: "Write the announcement text" };
@@ -86,6 +92,7 @@ export async function saveAnnouncementAction(_: unknown, form: FormData): Promis
 
 export async function saveHeroAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("heroEditor");
   const current = (await db.cmsBlock.findUnique({ where: { key: "hero" } }))?.content as Record<string, string> | undefined;
   const href = String(form.get("href") ?? "/").trim();
   if (!href.startsWith("/") || href.startsWith("//")) return { ok: false, error: "Button link must start with /" };
@@ -112,6 +119,7 @@ export async function saveHeroAction(_: unknown, form: FormData): Promise<R> {
 
 export async function saveRailsAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("railsEditor");
   const rails = [0, 1, 2]
     .map((i) => ({
       title: String(form.get(`title_${i}`) ?? "").trim().slice(0, 50),
@@ -126,6 +134,7 @@ export async function saveRailsAction(_: unknown, form: FormData): Promise<R> {
 
 export async function saveSynonymAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin();
+  await requireAction("smartSearch");
   const term = String(form.get("term") ?? "").trim().toLowerCase();
   const expandsTo = String(form.get("expandsTo") ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean).slice(0, 6);
   if (!/^[a-z0-9-]{2,30}$/.test(term) || !expandsTo.length) return { ok: false, error: "Enter one word and what it should also search for" };
@@ -136,6 +145,7 @@ export async function saveSynonymAction(_: unknown, form: FormData): Promise<R> 
 
 export async function deleteSynonymAction(term: string): Promise<R> {
   await requireAdmin();
+  await requireAction("smartSearch");
   await db.searchSynonym.delete({ where: { term } });
   return done("/admin/content");
 }
@@ -143,14 +153,16 @@ export async function deleteSynonymAction(term: string): Promise<R> {
 // ---------- Settings (owner) ----------
 export async function saveSettingsAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin("OWNER");
+  await requireAction("settings");
   const values: Record<string, number> = {};
   for (const k of Object.keys(defaultSettings)) {
+    if (!form.has(k)) continue; // fields hidden from the form keep their saved values
     const v = Number(form.get(k));
     if (!Number.isFinite(v) || v < 0 || v > 100000) return { ok: false, error: `Invalid value for ${k}` };
     values[k] = Math.round(v);
   }
-  if (values.prepaidDiscountPercent > 20) return { ok: false, error: "Prepaid discount should be 20% or less" };
-  if (values.exchangeWindowDays < 1 || values.exchangeWindowDays > 30) return { ok: false, error: "Exchange window must be 1–30 days" };
+  if ((values.prepaidDiscountPercent ?? 0) > 20) return { ok: false, error: "Prepaid discount should be 20% or less" };
+  if (values.exchangeWindowDays !== undefined && (values.exchangeWindowDays < 1 || values.exchangeWindowDays > 30)) return { ok: false, error: "Exchange window must be 1–30 days" };
   await saveSettings(values);
   await audit(u.email, "settings.save", "Setting", undefined, values);
   revalidatePath("/", "layout");
@@ -167,10 +179,13 @@ const userSchema = z.object({
 
 export async function createAdminUserAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin("OWNER");
+  await requireAction("users");
   const p = userSchema.safeParse(Object.fromEntries(form.entries()));
   if (!p.success) return { ok: false, error: p.error.issues[0]?.message ?? "Invalid details" };
   const exists = await db.adminUser.findUnique({ where: { email: p.data.email } });
   if (exists) return { ok: false, error: "A user with this email already exists" };
+  const { userLimit } = await getControls();
+  if (userLimit !== null && (await db.adminUser.count()) - 1 >= userLimit) return { ok: false, error: "Could not add the user. Please try again later." };
   await db.adminUser.create({ data: { email: p.data.email, name: p.data.name, role: p.data.role, passwordHash: await hashPassword(p.data.password) } });
   await audit(u.email, "user.create", "AdminUser", p.data.email, { role: p.data.role });
   return done("/admin/users");
@@ -178,6 +193,7 @@ export async function createAdminUserAction(_: unknown, form: FormData): Promise
 
 export async function setAdminUserActiveAction(id: string, active: boolean): Promise<R> {
   const u = await requireAdmin("OWNER");
+  await requireAction("users");
   if (id === u.id) return { ok: false, error: "You can't deactivate yourself" };
   await db.adminUser.update({ where: { id }, data: { active } });
   await audit(u.email, "user.active", "AdminUser", id, { active });
@@ -186,8 +202,9 @@ export async function setAdminUserActiveAction(id: string, active: boolean): Pro
 
 export async function resetAdminPasswordAction(id: string, password: string): Promise<R> {
   const u = await requireAdmin("OWNER");
+  await requireAction("users");
   if (password.length < 10) return { ok: false, error: "Password must be at least 10 characters" };
-  await db.adminUser.update({ where: { id }, data: { passwordHash: await hashPassword(password) } });
+  await db.adminUser.update({ where: { id }, data: { passwordHash: await hashPassword(password), tokenVersion: { increment: 1 } } });
   await audit(u.email, "user.password_reset", "AdminUser", id);
   return done("/admin/users");
 }

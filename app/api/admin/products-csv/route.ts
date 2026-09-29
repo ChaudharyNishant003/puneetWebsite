@@ -3,11 +3,13 @@ import Papa from "papaparse";
 import { db } from "@/lib/db";
 import { getAdminSession } from "@/lib/auth/session";
 import { ATTR_KEYS } from "@/lib/constants";
+import { isOn } from "@/lib/flags";
 
 // Export the whole catalogue in the same format the importer reads (one row per variant).
 export async function GET() {
   const s = await getAdminSession();
   if (!s) return NextResponse.json({ error: "Unauthorised" }, { status: 401 });
+  if (!(await isOn("csvExport", "admin"))) return NextResponse.json({ error: "Not found" }, { status: 404 });
   const products = await db.product.findMany({ include: { category: true, attributes: true, variants: { orderBy: { sortOrder: "asc" } }, images: { orderBy: { sortOrder: "asc" } } }, orderBy: { createdAt: "asc" } });
   const rows = products.flatMap((p) =>
     (p.variants.length ? p.variants : [null]).map((v) => ({

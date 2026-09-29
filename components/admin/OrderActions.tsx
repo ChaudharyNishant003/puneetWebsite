@@ -5,7 +5,9 @@ import type { OrderStatus } from "@prisma/client";
 import { addOrderNoteAction, markRefundedAction, setOrderStatusAction, shipOrderAction, unblockCodAction } from "@/app/actions/admin-orders";
 import { statusLabel } from "@/lib/format";
 
-export function OrderActions({ orderId, status, next, deliveryMode, paid }: { orderId: string; status: OrderStatus; next: OrderStatus[]; deliveryMode: "LOCAL" | "COURIER"; paid: boolean }) {
+type Can = { courier: boolean; localDelivery: boolean; manualAwb: boolean; cancel: boolean; notes: boolean };
+
+export function OrderActions({ orderId, status, next, deliveryMode, paid, can }: { orderId: string; status: OrderStatus; next: OrderStatus[]; deliveryMode: "LOCAL" | "COURIER"; paid: boolean; can: Can }) {
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState<string | null>(null);
   const [note, setNote] = useState("");
@@ -22,7 +24,8 @@ export function OrderActions({ orderId, status, next, deliveryMode, paid }: { or
     });
   };
 
-  const canShip = status === "CONFIRMED" || status === "PACKED";
+  const shippable = status === "CONFIRMED" || status === "PACKED";
+  const canShip = shippable && (deliveryMode === "LOCAL" ? can.localDelivery : can.courier);
   return (
     <section className="border border-line bg-white p-4">
       <h2 className="mb-3 text-sm font-semibold">Actions</h2>
@@ -35,14 +38,14 @@ export function OrderActions({ orderId, status, next, deliveryMode, paid }: { or
             {deliveryMode === "LOCAL" ? "Send out for local delivery" : "Book courier & ship"}
           </button>
         ) : null}
-        {next.includes("CANCELLED") ? (
+        {next.includes("CANCELLED") && can.cancel ? (
           <button disabled={pending} onClick={() => run(() => setOrderStatusAction(orderId, "CANCELLED", "Cancelled by store"), "Cancel this order? Stock will be returned.")} className="btn btn-outline py-2 text-danger">Cancel order</button>
         ) : null}
-        {paid && (status === "CANCELLED" || status === "RTO") ? (
+        {can.cancel && paid && (status === "CANCELLED" || status === "RTO") ? (
           <button disabled={pending} onClick={() => run(() => markRefundedAction(orderId), "Mark as refunded? Do this after sending the refund from Razorpay.")} className="btn btn-outline py-2">Mark refunded</button>
         ) : null}
       </div>
-      {canShip && deliveryMode === "COURIER" ? (
+      {shippable && deliveryMode === "COURIER" && can.manualAwb ? (
         <details className="mt-3 text-xs">
           <summary className="cursor-pointer text-muted">Shipped outside the system? Enter courier & AWB</summary>
           <div className="mt-2 flex flex-wrap gap-2">
@@ -53,10 +56,10 @@ export function OrderActions({ orderId, status, next, deliveryMode, paid }: { or
         </details>
       ) : null}
       {msg ? <p className="mt-3 text-sm text-danger" role="alert">{msg}</p> : null}
-      <form onSubmit={(e) => { e.preventDefault(); run(() => addOrderNoteAction(orderId, note)); setNote(""); }} className="mt-4 flex gap-2">
+      {can.notes ? <form onSubmit={(e) => { e.preventDefault(); run(() => addOrderNoteAction(orderId, note)); setNote(""); }} className="mt-4 flex gap-2">
         <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add internal note (e.g. customer called)" className="input py-2" />
         <button disabled={pending || !note.trim()} className="btn btn-outline py-2">Add</button>
-      </form>
+      </form> : null}
     </section>
   );
 }

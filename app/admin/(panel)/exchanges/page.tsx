@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { requirePage } from "@/lib/flags";
 import { fmtDateTime } from "@/lib/format";
 import { setExchangeStatusAction } from "@/app/actions/admin-orders";
 import { ActionButton } from "@/components/admin/ActionForm";
@@ -17,6 +18,7 @@ const NEXT: Record<string, ("APPROVED" | "PICKED_UP" | "COMPLETED" | "REJECTED")
 
 export default async function Exchanges({ searchParams }: { searchParams: Promise<{ all?: string }> }) {
   await requireAdmin();
+  await requirePage("exchanges");
   const { all } = await searchParams;
   const list = await db.exchangeRequest.findMany({
     where: all ? {} : { status: { in: ["REQUESTED", "APPROVED", "PICKED_UP"] } },

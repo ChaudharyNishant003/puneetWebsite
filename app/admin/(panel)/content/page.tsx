@@ -1,5 +1,8 @@
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth/admin";
+import { getFlags } from "@/lib/flags";
+import { CONTENT_PARTS } from "@/lib/features";
+import { notFound } from "next/navigation";
 import { getCms } from "@/lib/settings";
 import { BUILTIN_SYNONYMS } from "@/lib/search/parse";
 import { deleteSynonymAction, saveAnnouncementAction, saveHeroAction, saveRailsAction, saveSynonymAction } from "@/app/actions/admin-config";
@@ -14,6 +17,8 @@ const SOURCES = [["storeBestseller", "Store bestsellers (ticked products)"], ["n
 
 export default async function Content() {
   await requireAdmin();
+  const flags = await getFlags();
+  if (!CONTENT_PARTS.some((k) => flags.admin(k))) notFound();
   const [ann, hero, rails, syns] = await Promise.all([
     getCms<{ text: string; link?: string }>("announcement", { text: "" }),
     getCms<Hero>("hero", { title: "", subtitle: "", cta: "Shop Now", href: "/c/new-arrivals", from: "#C9727A", to: "#8E1B3A" }),
@@ -24,7 +29,7 @@ export default async function Content() {
     <div className="max-w-4xl space-y-6">
       <h1 className="text-xl font-semibold">Homepage & Search</h1>
 
-      <section className="border border-line bg-white p-4">
+      {flags.admin("announcement") ? <section className="border border-line bg-white p-4">
         <h2 className="mb-3 text-sm font-semibold">Top announcement bar</h2>
         <ActionForm action={saveAnnouncementAction}>
           <div className="grid gap-3 md:grid-cols-[2fr_1fr]">
@@ -32,9 +37,9 @@ export default async function Content() {
             <div><label className="label" htmlFor="ann-link">Link (optional, e.g. /c/sale)</label><input id="ann-link" name="link" defaultValue={ann.link} className="input" /></div>
           </div>
         </ActionForm>
-      </section>
+      </section> : null}
 
-      <section className="border border-line bg-white p-4">
+      {flags.admin("heroEditor") ? <section className="border border-line bg-white p-4">
         <h2 className="mb-3 text-sm font-semibold">Main banner (one campaign at a time)</h2>
         <ActionForm action={saveHeroAction}>
           <div className="grid gap-3 md:grid-cols-2">
@@ -46,9 +51,9 @@ export default async function Content() {
             <div><label className="label" htmlFor="h-img">Banner photo (optional, landscape)</label><input id="h-img" name="image" type="file" accept="image/jpeg,image/png,image/webp" className="text-xs" />{hero.image ? <label className="mt-1 flex items-center gap-2 text-xs"><input type="checkbox" name="removeImage" /> Remove current photo</label> : null}</div>
           </div>
         </ActionForm>
-      </section>
+      </section> : null}
 
-      <section className="border border-line bg-white p-4">
+      {flags.admin("railsEditor") ? <section className="border border-line bg-white p-4">
         <h2 className="mb-3 text-sm font-semibold">Product rails on the homepage</h2>
         <ActionForm action={saveRailsAction}>
           <div className="space-y-3">
@@ -61,9 +66,9 @@ export default async function Content() {
             ))}
           </div>
         </ActionForm>
-      </section>
+      </section> : null}
 
-      <section className="border border-line bg-white p-4">
+      {flags.admin("smartSearch") ? <section className="border border-line bg-white p-4">
         <h2 className="mb-1 text-sm font-semibold">Search words (Hinglish dictionary)</h2>
         <p className="mb-3 text-xs text-muted">Teach search the words your customers use. Built in already: {Object.keys(BUILTIN_SYNONYMS).slice(0, 18).join(", ")}…</p>
         <ul className="mb-3 flex flex-wrap gap-2 text-xs">
@@ -75,7 +80,7 @@ export default async function Content() {
             <input name="expandsTo" placeholder="Also search for, e.g. lehenga, lehenga choli" aria-label="Also search for" className="input" />
           </div>
         </ActionForm>
-      </section>
+      </section> : null}
     </div>
   );
 }

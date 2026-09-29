@@ -15,8 +15,9 @@ export async function adminLoginAction(_: unknown, form: FormData) {
   const user = await db.adminUser.findUnique({ where: { email } });
   // Same message for unknown email and wrong password.
   if (!user || !user.active || !(await checkPassword(user.passwordHash, password))) return { error: "Wrong email or password" };
+  if (user.lockedByOps) return { error: "Your account has been disabled by the developer. Please contact support." };
   await db.adminUser.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
-  await setAdminSession(user.id, user.email, user.role);
+  await setAdminSession(user.id, user.email, user.role, user.tokenVersion);
   redirect("/admin");
 }
 
