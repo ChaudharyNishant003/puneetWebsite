@@ -1,26 +1,150 @@
 @import "tailwindcss";
 
+/* Design D tokens (Jaipur Kurti structure). Change brand colours here only. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --text: #1a1a1a;
+  --muted: #6e6e73;
+  --line: #eaeaea;
+  --line-strong: #cfcfcf;
+  --brand: #8e1b3a;
+  --brand-hover: #74152f;
+  --brand-soft: #f8edf0;
+  --save: #1e8e3e;
+  --gold: #c8923a;
+  --gold-soft: #fffaf1;
+  --dark: #1a1a1a;
+  --danger: #b3261e;
+  --danger-soft: #fdecea;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-save: var(--save);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-dark: var(--dark);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --font-sans: var(--font-jost), var(--font-mukta), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  -webkit-text-size-adjust: 100%;
 }
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-jost), var(--font-mukta), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1.5px solid var(--dark);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+}
+.btn-dark {
+  background: var(--dark);
+  color: #fff;
+}
+.btn-outline {
+  background: #fff;
+  color: var(--dark);
+}
+.btn-outline:hover:not(:disabled) {
+  background: var(--surface);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  padding: 0.65rem 0.75rem;
+  font-size: 0.9rem;
+  background: #fff;
+  border-radius: 4px;
+}
+.input:focus {
+  outline: 2px solid var(--brand);
+  outline-offset: -1px;
+  border-color: var(--brand);
+}
+.label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* Admin tables */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.tbl th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.tbl td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
 }
