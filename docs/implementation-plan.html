@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Implementation Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Mukta:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#FFFFFF; --page:#F6F6F4; --text:#1A1A1A; --muted:#63636A; --line:#E6E6E3; --brand:#8E1B3A; --soft:#F8EDF0; --ok:#1E7F3E; --okbg:#E9F5EC; --warn:#8A5A00; --warnbg:#FFF4DC; --code:#F2F2EF; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#1B1B1D; --page:#121213; --text:#ECECEC; --muted:#A3A3AA; --line:#2E2E31; --brand:#E07A95; --soft:#2A1C21; --ok:#6CCB8A; --okbg:#18281D; --warn:#E8B75A; --warnbg:#2B2416; --code:#26262A; } }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--page); color:var(--text); font-family:'Jost','Mukta',system-ui,sans-serif; line-height:1.6; padding:32px 16px 80px; }
+  main { max-width:960px; margin:0 auto; }
+  .card { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:24px; margin-bottom:20px; }
+  h1 { font-size:30px; line-height:1.2; }
+  h2 { font-size:21px; margin-bottom:12px; color:var(--brand); }
+  h3 { font-size:16px; margin:16px 0 6px; }
+  p, li { font-size:15px; }
+  .muted { color:var(--muted); }
+  ul, ol { padding-left:20px; }
+  li { margin:3px 0; }
+  code, pre { font-family:'JetBrains Mono',monospace; font-size:12.5px; background:var(--code); border-radius:5px; }
+  code { padding:1px 5px; }
+  pre { padding:14px; overflow-x:auto; line-height:1.5; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin-top:6px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); font-weight:600; }
+  .tblwrap { overflow-x:auto; }
+  .pill { display:inline-block; font-size:12px; font-weight:600; padding:2px 9px; border-radius:99px; background:var(--soft); color:var(--brand); margin:2px 4px 2px 0; }
+  .ok { background:var(--okbg); color:var(--ok); }
+  .warn { background:var(--warnbg); color:var(--warn); }
+  .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+  .box { border:1px solid var(--line); border-radius:8px; padding:14px; }
+  .box h3 { margin-top:0; }
+  .m { border-left:3px solid var(--brand); padding:4px 0 4px 14px; margin:14px 0; }
+  .m h3 { margin:0 0 4px; }
+  .accept { font-size:13.5px; color:var(--ok); margin-top:4px; }
+  .toc a { color:var(--brand); text-decoration:none; }
+  .toc li { font-size:14px; }
+  .approve { background:var(--soft); border-color:var(--brand); }
+</style>
+</head>
+<body>
+<main>
+
+<div class="card">
+  <span class="pill">Draft v1 · 30 Sep 2026</span><span class="pill warn">Approval बाकी</span>
+  <h1>Puneet Garments: MVP Implementation Plan</h1>
+  <p class="muted" style="margin-top:8px">Phase 1 की e-commerce website और admin panel बनाने का plan. Design D (Jaipur Kurti structure + research doc के सुधार) पर based है. Approve होते ही इसी क्रम में build होगा.</p>
+  <ol class="toc" style="margin-top:14px">
+    <li><a href="#scope">Scope एक नज़र में</a></li>
+    <li><a href="#dummy">Dummy data strategy</a></li>
+    <li><a href="#stack">Tech stack</a></li>
+    <li><a href="#arch">Architecture और folder structure</a></li>
+    <li><a href="#db">Database schema</a></li>
+    <li><a href="#routes">Pages और APIs</a></li>
+    <li><a href="#integrations">Integrations (mock mode के साथ)</a></li>
+    <li><a href="#milestones">Milestones और acceptance criteria</a></li>
+    <li><a href="#qa">Testing और QA</a></li>
+    <li><a href="#deploy">Git और deploy workflow</a></li>
+    <li><a href="#risks">Risks और फैसले</a></li>
+    <li><a href="#client">Client से बाद में क्या चाहिए</a></li>
+  </ol>
+</div>
+
+<div class="card" id="scope">
+  <h2>1. Scope एक नज़र में</h2>
+  <div class="grid2">
+    <div class="box"><h3>Phase 1 में है</h3>
+      <ul><li>Storefront: home, collections, search, product page, cart, wishlist</li>
+      <li>OTP login, guest checkout, Razorpay, COD + OTP</li>
+      <li>Local delivery + Shiprocket</li>
+      <li>Orders, exchange, photo reviews + fit rating</li>
+      <li>SMS/email notifications, GST invoice</li>
+      <li>Admin: Owner/Staff, products, stock, orders, CMS, reports</li>
+      <li>SEO, analytics, legal pages</li></ul></div>
+    <div class="box"><h3>Phase 2 में है (अभी नहीं)</h3>
+      <ul><li>WhatsApp (click-to-chat, API, cart recovery)</li>
+      <li>In-store POS/billing</li>
+      <li>Phone-number loyalty</li>
+      <li>Store pickup, दुकान पर exchange/alteration, reserve &amp; try</li>
+      <li>Video-call shopping</li></ul>
+      <p class="muted" style="font-size:13px;margin-top:8px">Schema में इनके लिए जगह पहले से रखी जाएगी (जैसे <code>Customer.phone</code> unique ID, <code>Order.channel</code>), ताकि बाद में migration छोटा रहे.</p></div>
+  </div>
+</div>
+
+<div class="card" id="dummy">
+  <h2>2. Dummy data strategy</h2>
+  <p>आपके कहे मुताबिक, products के नाम और images अभी dummy रहेंगे. असली data बाद में admin panel या CSV import से डाला जाएगा, इसके लिए code में कोई बदलाव नहीं करना पड़ेगा.</p>
+  <h3>Seed script (<code>prisma/seed.ts</code>) क्या बनाएगा</h3>
+  <div class="tblwrap"><table>
+    <tr><th>चीज़</th><th>कितनी</th><th>Detail</th></tr>
+    <tr><td>Categories</td><td>~14</td><td>Women (Kurta Sets, Kurtis, Sarees, Bottoms, Dupattas), Men (Kurtas, Shirts, T-shirts, Jeans), Kids (Girls, Boys), Innerwear (Women, Men), Plus Size</td></tr>
+    <tr><td>Products</td><td>~80</td><td>हर category में 5 से 8. ₹299 से ₹3,499 तक, असली लगने वाले नाम (जैसे "Cotton Printed Kurta Set with Dupatta")</td></tr>
+    <tr><td>Variants</td><td>~400</td><td>Size × colour, stock 0 से 25 (कुछ sold-out ताकि वो state भी test हो)</td></tr>
+    <tr><td>Attributes</td><td>सभी</td><td>Occasion, fabric, sleeve, length, neck, pattern, lining, care, set contents, recipient</td></tr>
+    <tr><td>Images</td><td>हर product पर 3–4</td><td>Local SVG placeholders (<code>public/dummy/</code>): product के colour का gradient और उस पर नाम. कोई बाहरी या copyrighted photo नहीं</td></tr>
+    <tr><td>Reviews</td><td>~150</td><td>Rating, fit rating, कुछ के साथ photo placeholder</td></tr>
+    <tr><td>Pincodes</td><td>~30 local + serviceability mock</td><td>Placeholder शहर के pincodes</td></tr>
+    <tr><td>Coupons</td><td>3</td><td>WELCOME10, PREPAID5, FESTIVE200</td></tr>
+    <tr><td>Admin users</td><td>2</td><td>1 Owner, 1 Staff. Test credentials सिर्फ <code>.env.example</code>/seed file में रहेंगे</td></tr>
+    <tr><td>Orders</td><td>~25</td><td>अलग-अलग status में, ताकि admin और reports में कुछ data दिखे</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px;font-size:13.5px">हर dummy row पर <code>isDemo=true</code> flag लगेगा. Launch से पहले एक command (<code>npm run demo:purge</code>) से सारा dummy data हट जाएगा.</p>
+</div>
+
+<div class="card" id="stack">
+  <h2>3. Tech stack</h2>
+  <div class="tblwrap"><table>
+    <tr><th>Layer</th><th>चुनाव</th><th>क्यों</th></tr>
+    <tr><td>Framework</td><td>Next.js 15 (App Router) + TypeScript</td><td>SSR/SEO, server actions, एक ही repo में storefront + admin + API</td></tr>
+    <tr><td>Styling</td><td>Tailwind CSS + design tokens (CSS variables)</td><td>Design D के colours एक file से बदल सकते हैं</td></tr>
+    <tr><td>Database</td><td>PostgreSQL (Railway) + Prisma ORM</td><td>Typed queries, migrations</td></tr>
+    <tr><td>Validation</td><td>Zod</td><td>Forms और APIs में एक ही schema</td></tr>
+    <tr><td>Customer auth</td><td>Phone OTP (MSG91) → httpOnly signed session cookie</td><td>India में phone-first; Phase 2 loyalty के लिए भी यही ID</td></tr>
+    <tr><td>Admin auth</td><td>Email + password (argon2), role: OWNER / STAFF, rate limit</td><td>SMS के बिना भी admin चल सके</td></tr>
+    <tr><td>Search</td><td>Postgres full-text + <code>pg_trgm</code> (typo tolerance) + synonyms table</td><td>300 products के लिए अलग search service की ज़रूरत नहीं</td></tr>
+    <tr><td>Images</td><td>Cloudinary (upload से auto resize और WebP) · dummy के लिए local SVG</td><td>फोन की भारी photos भी हल्की हो जाएंगी</td></tr>
+    <tr><td>Payments</td><td>Razorpay Orders API + webhook</td><td>UPI-first; payment का status webhook से पक्का होगा</td></tr>
+    <tr><td>Shipping</td><td>Shiprocket API + अपना local delivery module</td><td>Pincode पर ETA, AWB, tracking</td></tr>
+    <tr><td>SMS / Email</td><td>MSG91 (DLT templates) / Resend</td><td>Transactional messages</td></tr>
+    <tr><td>PDF invoice</td><td><code>@react-pdf/renderer</code></td><td>GST invoice</td></tr>
+    <tr><td>Analytics</td><td>GA4 + server-side event log table</td><td>Funnel: view, cart, checkout, order</td></tr>
+    <tr><td>Tests</td><td>Vitest (unit) + Playwright (E2E, mobile viewport)</td><td>Checkout और COD जैसे flows में regression पकड़ने के लिए</td></tr>
+    <tr><td>Hosting</td><td>Railway (web + Postgres), अभी आपके account पर</td><td>Kutumb जैसा ही setup</td></tr>
+  </table></div>
+</div>
+
+<div class="card" id="arch">
+  <h2>4. Architecture और folder structure</h2>
+  <p>एक ही Next.js app होगा, जिसके अंदर तीन हिस्से होंगे: <b>(shop)</b>, <b>admin</b> और <b>api</b>. हर बाहरी service एक <b>adapter</b> के पीछे रहेगी, और key न होने पर उसका <b>mock</b> चलेगा. इसलिए पूरी site dummy data पर end-to-end चल जाएगी.</p>
+<pre>PuneetWebsite/
+├─ app/
+│  ├─ (shop)/            home, c/[slug], p/[slug], search, cart, checkout, account/*, pages/*
+│  ├─ admin/             dashboard, products, orders, exchanges, reviews, coupons, pincodes, cms, reports, users
+│  └─ api/               otp, cart, checkout, webhooks/razorpay, webhooks/shiprocket, pincode, search
+├─ components/           ui/ (tokens), shop/, admin/
+├─ lib/
+│  ├─ db.ts  auth/  cart/  pricing/  search/  config.ts (shop name, city, GST: placeholders)
+│  └─ integrations/
+│     ├─ payments/   razorpay.ts | mock.ts
+│     ├─ sms/        msg91.ts    | mock.ts   (OTP console/log में दिखेगा)
+│     ├─ shipping/   shiprocket.ts | local.ts | mock.ts
+│     ├─ email/      resend.ts   | mock.ts
+│     └─ images/     cloudinary.ts | local.ts
+├─ prisma/               schema.prisma, migrations/, seed.ts, dummy/
+├─ public/dummy/         SVG placeholders
+├─ tests/                unit/, e2e/
+├─ docs/                 plan, build reports
+└─ .env.example          सारी keys, test mode defaults</pre>
+</div>
+
+<div class="card" id="db">
+  <h2>5. Database schema (मुख्य tables)</h2>
+  <div class="tblwrap"><table>
+    <tr><th>Table</th><th>मुख्य fields</th></tr>
+    <tr><td>Category</td><td>slug, name, parentId, gender (W/M/K/U), sortOrder, image</td></tr>
+    <tr><td>Product</td><td>slug, name, description, categoryId, mrp, price, sku, badges[], isExchangeable, isInnerwear, status (DRAFT/ACTIVE), isDemo, seo fields</td></tr>
+    <tr><td>ProductAttribute</td><td>productId, key (occasion/fabric/sleeve/length/neck/pattern/lining/sheer/care/set/recipient), value</td></tr>
+    <tr><td>Variant</td><td>productId, size, colour, colourHex, sku, stock, lowStockAt</td></tr>
+    <tr><td>ProductImage / Video</td><td>productId, colour, url, alt, sortOrder, kind</td></tr>
+    <tr><td>SizeChart</td><td>categoryId, rows (JSON), howToMeasure, fitRule text</td></tr>
+    <tr><td>Customer</td><td>phone (unique), name, email, createdAt · Address (label, pincode, lines, city, state)</td></tr>
+    <tr><td>Cart / CartItem</td><td>customerId या guestToken, variantId, qty</td></tr>
+    <tr><td>Wishlist, RecentlyViewed</td><td>customerId/guestToken, productId</td></tr>
+    <tr><td>Order</td><td>number, customerId, status, paymentMethod (PREPAID/COD), paymentStatus, subtotal, discount, shippingFee, codFee, total, gst breakup, deliveryMode (LOCAL/SHIPROCKET), channel (ONLINE; Phase 2: STORE), isDemo</td></tr>
+    <tr><td>OrderItem</td><td>orderId, variantId, snapshot (name, size, price, hsn, gstRate)</td></tr>
+    <tr><td>Payment</td><td>orderId, razorpayOrderId, paymentId, status, raw webhook</td></tr>
+    <tr><td>Shipment</td><td>orderId, provider, awb, trackingUrl, eta, status history</td></tr>
+    <tr><td>ExchangeRequest</td><td>orderItemId, reason, newVariantId, status, isFree</td></tr>
+    <tr><td>Review</td><td>productId, customerId, orderItemId (verified buyer), rating, fit (SMALL/TRUE/LARGE), sizeBought, text, photos[], status</td></tr>
+    <tr><td>Coupon</td><td>code, type (FLAT/PERCENT), value, minCart, maxDiscount, prepaidOnly, firstOrderOnly, validity, usageLimit</td></tr>
+    <tr><td>Pincode</td><td>code, isLocal, localFee, localEtaDays, codAllowed</td></tr>
+    <tr><td>OtpCode</td><td>phone, hash, purpose (LOGIN/COD), attempts, expiresAt</td></tr>
+    <tr><td>AdminUser</td><td>email, passwordHash, role (OWNER/STAFF), active</td></tr>
+    <tr><td>CmsBlock</td><td>key (hero, rails, announcement), JSON content, active</td></tr>
+    <tr><td>SearchSynonym</td><td>term (shaadi), expandsTo (wedding, festive)</td></tr>
+    <tr><td>Setting</td><td>COD limit, prepaid discount, free shipping threshold, store info</td></tr>
+    <tr><td>EventLog / AuditLog</td><td>analytics events; admin के हर बदलाव का log</td></tr>
+  </table></div>
+</div>
+
+<div class="card" id="routes">
+  <h2>6. Pages और APIs</h2>
+  <div class="grid2">
+    <div class="box"><h3>Storefront</h3><ul>
+      <li><code>/</code> Home (CMS driven)</li>
+      <li><code>/c/[slug]</code> Category, occasion और budget collections</li>
+      <li><code>/p/[slug]</code> Product page</li>
+      <li><code>/search</code> Search results</li>
+      <li><code>/cart</code> + cart drawer</li>
+      <li><code>/checkout</code> Address, delivery, payment</li>
+      <li><code>/order/[no]</code> Confirmation और tracking</li>
+      <li><code>/account</code> Orders, addresses, wishlist, exchanges</li>
+      <li><code>/store</code> Visit Store</li>
+      <li><code>/pages/*</code> About, Size Guide, Exchange, Shipping, Privacy, Terms</li></ul></div>
+    <div class="box"><h3>Admin (<code>/admin</code>)</h3><ul>
+      <li>Dashboard: आज के orders, low stock, pending exchanges</li>
+      <li>Products: list, create/edit, variants, images, CSV import/export</li>
+      <li>Orders: status flow, ship (Shiprocket/local), invoice</li>
+      <li>Exchanges, Reviews moderation</li>
+      <li>Coupons, Pincodes, Settings</li>
+      <li>CMS: announcement, hero, rails, synonyms</li>
+      <li>Reports (Owner only), Users (Owner only)</li></ul></div>
+  </div>
+  <h3>Order status flow</h3>
+  <p><code>PENDING_PAYMENT → PLACED → CONFIRMED → PACKED → SHIPPED / OUT_FOR_DELIVERY → DELIVERED</code> · अलग रास्ते: <code>CANCELLED</code>, <code>RTO</code>, <code>EXCHANGE_REQUESTED → EXCHANGED</code></p>
+</div>
+
+<div class="card" id="integrations">
+  <h2>7. Integrations (mock mode के साथ)</h2>
+  <div class="tblwrap"><table>
+    <tr><th>Service</th><th>Real mode</th><th>Mock mode (key न हो)</th></tr>
+    <tr><td>MSG91 OTP</td><td>DLT template से SMS</td><td>OTP server log और dev banner में दिखेगा</td></tr>
+    <tr><td>Razorpay</td><td>Test keys, UPI/card, webhook signature verify</td><td>"Pay (mock)" button, success/fail दोनों simulate</td></tr>
+    <tr><td>Shiprocket</td><td>Serviceability, create order, AWB, tracking webhook</td><td>Pincode के पहले अंक से ETA, fake AWB</td></tr>
+    <tr><td>Resend</td><td>Transactional email</td><td>Email HTML को <code>tmp/mails/</code> में save करेगा</td></tr>
+    <tr><td>Cloudinary</td><td>Upload, transform</td><td>Local <code>public/uploads</code></td></tr>
+  </table></div>
+  <h3>COD के rules (Settings से बदल सकते हैं)</h3>
+  <ul><li>COD सिर्फ ₹X तक (default ₹3,000). Pincode पर <code>codAllowed</code> भी check होगा</li>
+  <li>Order place करने से पहले phone पर OTP</li>
+  <li>एक phone पर 2 से ज़्यादा RTO हुए तो उस phone पर COD बंद</li>
+  <li>Prepaid पर discount (default 5%, max ₹150)</li></ul>
+</div>
+
+<div class="card" id="milestones">
+  <h2>8. Milestones और acceptance criteria</h2>
+  <p class="muted">Approve होने के बाद सारे milestones बिना रुके लगातार बनेंगे. हर milestone के अंत में E2E tests pass होने चाहिए.</p>
+
+  <div class="m"><h3>M0: Setup</h3>
+  <p>Git init, <code>feature/mvp</code> branch, Next.js + Tailwind + Prisma, design tokens (Design D), lint, Vitest/Playwright, <code>.env.example</code>, Railway project + Postgres.</p>
+  <p class="accept">✓ Local पर app चलता है, DB connect है, CI script (lint + typecheck + test) pass है</p></div>
+
+  <div class="m"><h3>M1: Data model + dummy seed</h3>
+  <p>पूरा Prisma schema, migrations, seed script (section 2), SVG placeholder generator, <code>demo:purge</code>.</p>
+  <p class="accept">✓ <code>npm run seed</code> से ~80 products, variants, reviews, orders बन जाते हैं; purge से सब साफ हो जाता है</p></div>
+
+  <div class="m"><h3>M2: Admin panel</h3>
+  <p>Admin login + roles, products CRUD, variants/stock, image upload, CSV import/export, orders list, coupons, pincodes, settings, CMS blocks, audit log.</p>
+  <p class="accept">✓ Staff login से reports और users नहीं खुलते. Admin से बदला गया product storefront पर दिखता है. CSV से 50 products import हो जाते हैं</p></div>
+
+  <div class="m"><h3>M3: Storefront (browse)</h3>
+  <p>Header/menu/bottom nav, home (CMS), collection page + filters + sort, product page (पूरा spec), size chart, recently viewed, wishlist (guest + login), Visit Store, legal pages, SEO (schema, sitemap, OG).</p>
+  <p class="accept">✓ Mockup D से मेल खाता है. 360px पर horizontal scroll नहीं. Filters सही result देते हैं. Lighthouse mobile ≥ 85 (dummy data पर)</p></div>
+
+  <div class="m"><h3>M4: Search</h3>
+  <p>Full-text + trigram, autocomplete, synonyms (shaadi, maa, office, garmi, sasta…), "under ₹N" parsing, search overlay.</p>
+  <p class="accept">✓ Doc के 6 test queries (जैसे "office ke liye cotton kurti under 1500") सही products लाते हैं</p></div>
+
+  <div class="m"><h3>M5: Cart, OTP, Checkout, Payments</h3>
+  <p>Cart drawer (free-shipping bar), OTP login/guest, addresses, pincode से delivery mode + ETA, coupons, Razorpay (webhook), COD + OTP + limits, order confirmation, stock reserve/decrement.</p>
+  <p class="accept">✓ Mock और Razorpay test mode में prepaid और COD दोनों orders पूरे होते हैं. Payment fail पर stock वापस आता है. Webhook दोबारा आने पर भी duplicate order नहीं बनता</p></div>
+
+  <div class="m"><h3>M6: Fulfilment + notifications</h3>
+  <p>Admin order flow, Shiprocket (AWB, tracking webhook), local delivery status, GST invoice PDF, SMS + email templates (order, shipped, delivered, review request).</p>
+  <p class="accept">✓ Order से Delivered तक का पूरा flow admin से चलता है. हर status पर mock SMS और email निकलता है. Invoice में GST सही है</p></div>
+
+  <div class="m"><h3>M7: Account, exchange, reviews</h3>
+  <p>My orders, tracking, exchange request (7-day window, innerwear block, पहला free), reviews (verified buyer, fit rating, photos) + moderation.</p>
+  <p class="accept">✓ 8वें दिन exchange का button नहीं दिखता. Innerwear पर exchange का option नहीं आता. Approve होने पर review product page पर दिखता है</p></div>
+
+  <div class="m"><h3>M8: QA, deploy, report</h3>
+  <p>Full E2E suite, mobile QA (360/390/414), accessibility basics, content QA (placeholders, टूटे links), security review (auth, rate limits, webhook signatures), Railway deploy नई branch से, HTML build report.</p>
+  <p class="accept">✓ सारे tests pass हैं. Railway URL पर पूरा demo चलता है. Build report आपको मिलती है</p></div>
+</div>
+
+<div class="card" id="qa">
+  <h2>9. Testing और QA</h2>
+  <ul>
+    <li><b>Unit:</b> pricing (coupon, prepaid discount, COD fee, GST), exchange window, search parser, COD eligibility</li>
+    <li><b>E2E (Playwright, mobile viewport):</b> browse → PDP → cart → OTP → prepaid order; COD order; payment fail; exchange; review; admin order flow</li>
+    <li><b>Security:</b> OTP rate limit + attempts, admin routes पर role guard, Razorpay/Shiprocket webhook signature, price हमेशा server पर calculate होगा (client पर भरोसा नहीं)</li>
+    <li><b>Content QA checklist:</b> हर badge policy से मेल खाए, कोई placeholder न दिखे, links ठीक हों, MRP असली हो</li>
+  </ul>
+</div>
+
+<div class="card" id="deploy">
+  <h2>10. Git और deploy workflow</h2>
+  <ol>
+    <li><code>D:\PuneetWebsite</code> में git init, <code>master</code> खाली baseline रहेगा. उसे कोई नहीं छुएगा</li>
+    <li>सारा build <code>feature/mvp</code> पर होगा. हर push message में नाम, वो क्या करता है, और उसमें शामिल सब चीज़ों की list होगी</li>
+    <li>Deploy के लिए नई branch (<code>deploy/mvp-1</code>) बनेगी, Railway पर as-is deploy होगा, test होगा, fix local पर होंगे</li>
+    <li>HTML report के साथ आपके approval के बाद ही merge होगा</li>
+    <li>Railway के लिए Windows वाली सावधानियां: <code>.gitattributes</code> (LF), <code>.railwayignore</code></li>
+  </ol>
+</div>
+
+<div class="card" id="risks">
+  <h2>11. Risks और फैसले</h2>
+  <div class="tblwrap"><table>
+    <tr><th>Risk</th><th>असर</th><th>हल</th></tr>
+    <tr><td>MSG91 DLT registration में 3–7 दिन लगते हैं</td><td>Real OTP देर से चालू होगा</td><td>तब तक mock OTP; client की KYC जल्दी शुरू करवाएं</td></tr>
+    <tr><td>Razorpay/Shiprocket की KYC client के नाम पर होगी</td><td>Live payments देर से शुरू होंगे</td><td>Test mode में पूरा flow तैयार रहेगा; सिर्फ keys बदलनी होंगी</td></tr>
+    <tr><td>फोन से खींची photos एक जैसी नहीं होंगी</td><td>Site की quality पर असर</td><td>Photo guideline PDF (background, light, angles); Cloudinary से crop/resize</td></tr>
+    <tr><td>COD पर RTO</td><td>Margin कम होगा</td><td>OTP, ₹ limit, repeat-refuser block, prepaid discount</td></tr>
+    <tr><td>Railway का account transfer</td><td>Downtime</td><td>DB dump/restore का runbook, domain बाद में जुड़ेगा</td></tr>
+  </table></div>
+  <h3>इस plan में मैंने खुद जो फैसले लिए (बदलने हों तो बताइए)</h3>
+  <p><span class="pill">Email: Resend</span><span class="pill">Search: Postgres (अलग service नहीं)</span><span class="pill">COD limit ₹3,000</span><span class="pill">Prepaid 5% (max ₹150)</span><span class="pill">Free shipping ₹999+</span><span class="pill">Dummy images: local SVG</span><span class="pill">Admin login: email + password</span></p>
+</div>
+
+<div class="card" id="client">
+  <h2>12. Client से बाद में क्या चाहिए (इसके लिए build नहीं रुकेगा)</h2>
+  <ul>
+    <li>दुकान का नाम, logo, पता, timings, फोन और email</li>
+    <li>GST number और HSN codes (invoice के लिए)</li>
+    <li>Domain</li>
+    <li>KYC: Razorpay, MSG91 (DLT), Shiprocket, Cloudinary account</li>
+    <li>असली products: नाम, prices, sizes, stock, photos (CSV template मैं दूंगा)</li>
+    <li>Local delivery वाले pincodes और charges</li>
+    <li>Policies पर sign-off: exchange, shipping, privacy</li>
+  </ul>
+</div>
+
+<div class="card approve">
+  <h2>Approval</h2>
+  <p>यह plan approve हो तो <b>"approved"</b> लिख दीजिए. मैं M0 से M8 तक बिना रुके build करूंगा और अंत में HTML build report दूंगा. Section 11 के किसी फैसले में बदलाव चाहिए हो तो approval के साथ बता दीजिए.</p>
+</div>
+
+</main>
+</body>
+</html>

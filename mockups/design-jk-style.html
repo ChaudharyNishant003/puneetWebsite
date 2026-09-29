@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JK Style Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page:#EEF0F3; --bg:#FFFFFF; --text:#1A1A1A; --muted:#6E6E73; --line:#EAEAEA; --line-strong:#CFCFCF;
+    --brand:#8E1B3A; --brand-soft:#F8EDF0; --save:#1E8E3E; --gold:#C8923A; --dark:#1A1A1A;
+    --r:4px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--page); color:var(--text); font-family:'Jost','Mukta',system-ui,sans-serif; padding:32px 16px 64px; }
+  header.top, .legend { max-width:1200px; margin:0 auto 24px; }
+  header.top h1 { font-size:26px; }
+  header.top p { color:var(--muted); margin-top:6px; line-height:1.55; max-width:860px; }
+  .legend { display:flex; gap:18px; flex-wrap:wrap; font-size:13px; color:var(--muted); }
+  .legend span { display:flex; align-items:center; gap:6px; }
+  .legend i { width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .k { background:#E8E8E8; } .n { background:#FFE7A3; }
+  .phones { max-width:1200px; margin:0 auto; display:flex; gap:28px; flex-wrap:wrap; }
+  .phone-wrap { display:flex; flex-direction:column; gap:8px; }
+  .phone-label { font-size:13px; font-weight:600; color:var(--muted); }
+  .phone { width:360px; max-width:calc(100vw - 32px); height:760px; border-radius:34px; border:10px solid #111; overflow:hidden; position:relative; background:var(--bg); box-shadow:0 20px 50px rgba(0,0,0,.18); }
+  .scroll { height:100%; overflow-y:auto; padding-bottom:84px; scrollbar-width:none; }
+  .scroll::-webkit-scrollbar { display:none; }
+  .new { outline:2px dashed #E0A800; outline-offset:-2px; position:relative; }
+  .new::after { content:'NEW'; position:absolute; right:4px; top:4px; background:#FFE7A3; color:#6b5200; font-size:8.5px; font-weight:700; padding:1px 5px; border-radius:3px; z-index:2; }
+
+  /* header */
+  .ann { background:var(--dark); color:#fff; font-size:11px; text-align:center; padding:7px 8px; letter-spacing:.02em; }
+  .ann u { text-underline-offset:2px; }
+  .hdr { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--line); background:#fff; position:sticky; top:0; z-index:3; }
+  .hdr .l, .hdr .r { display:flex; gap:14px; font-size:18px; width:70px; }
+  .hdr .r { justify-content:flex-end; }
+  .logo { font-weight:700; font-size:19px; letter-spacing:.14em; color:var(--brand); text-transform:uppercase; text-align:center; line-height:1; }
+  .logo small { display:block; font-size:8px; letter-spacing:.3em; color:var(--muted); font-weight:500; margin-top:3px; }
+  .menu { display:flex; gap:16px; overflow-x:auto; scrollbar-width:none; padding:10px 14px; border-bottom:1px solid var(--line); font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.04em; white-space:nowrap; }
+  .menu .hot { color:var(--brand); }
+
+  /* home */
+  .hero { height:240px; background:linear-gradient(160deg,#C9727A 0%,#8E1B3A 70%); color:#fff; display:flex; flex-direction:column; justify-content:flex-end; padding:18px; position:relative; }
+  .hero h3 { font-size:26px; font-weight:600; line-height:1.1; letter-spacing:.01em; }
+  .hero p { font-size:12px; margin:6px 0 12px; opacity:.9; }
+  .hero .cta { align-self:flex-start; background:#fff; color:var(--dark); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; padding:9px 18px; }
+  .sec { padding:20px 14px 4px; }
+  .sec h4 { font-size:15px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; text-align:center; }
+  .sec .sub { text-align:center; font-size:11.5px; color:var(--muted); margin:3px 0 12px; }
+  .tiles { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .tile { text-align:center; font-size:10.5px; font-weight:500; }
+  .tile i { display:block; aspect-ratio:3/4; border-radius:var(--r); margin-bottom:4px; }
+  .occ { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .occ div { aspect-ratio:16/10; border-radius:var(--r); color:#fff; font-weight:600; font-size:13px; display:flex; align-items:flex-end; padding:10px; text-transform:uppercase; letter-spacing:.05em; }
+  .budget { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; }
+  .budget div { flex:0 0 auto; border:1px solid var(--dark); padding:8px 14px; font-size:12px; font-weight:500; }
+  .rail { display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; }
+  .rail .card { flex:0 0 150px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .card .img { aspect-ratio:3/4; position:relative; border-radius:var(--r); overflow:hidden; }
+  .card .img .second { position:absolute; inset:0; opacity:0; }
+  .badge { position:absolute; left:0; top:8px; background:var(--dark); color:#fff; font-size:9px; font-weight:600; letter-spacing:.06em; padding:3px 7px; text-transform:uppercase; }
+  .wl { position:absolute; right:7px; top:7px; width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.92); display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .stars { position:absolute; left:6px; bottom:6px; background:rgba(255,255,255,.95); font-size:10px; font-weight:600; padding:2px 6px; border-radius:3px; }
+  .card .nm { font-size:12px; margin-top:6px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card .clr { font-size:10.5px; color:var(--muted); }
+  .price { font-size:13px; font-weight:600; margin-top:2px; }
+  .price s { color:var(--muted); font-weight:400; font-size:11px; margin-left:4px; }
+  .price em { font-style:normal; color:var(--save); font-size:11px; margin-left:4px; font-weight:500; }
+  .chips { display:flex; gap:3px; margin-top:5px; flex-wrap:wrap; }
+  .chips b { font-size:9.5px; font-weight:500; border:1px solid var(--line-strong); padding:2px 5px; }
+  .qa { margin-top:6px; border:1px solid var(--dark); text-align:center; font-size:10.5px; font-weight:600; padding:6px; text-transform:uppercase; letter-spacing:.06em; }
+  .trust { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; text-align:center; font-size:9.5px; line-height:1.3; padding:16px 10px; background:#FAFAFA; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-top:18px; }
+  .trust i { display:block; font-style:normal; font-size:20px; margin-bottom:4px; }
+  .reviews { display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; }
+  .rv { flex:0 0 230px; border:1px solid var(--line); border-radius:var(--r); padding:10px; display:flex; gap:10px; }
+  .rv i { flex:0 0 56px; height:72px; border-radius:3px; }
+  .rv p { font-size:11px; line-height:1.4; }
+  .rv b { font-size:11px; display:block; margin-top:4px; }
+  .rv small { color:var(--save); font-size:10px; }
+  .store { margin:18px 14px 0; background:var(--brand-soft); border-radius:var(--r); padding:16px; }
+  .store h5 { font-size:15px; text-transform:uppercase; letter-spacing:.06em; color:var(--brand); }
+  .store p { font-size:12px; line-height:1.5; margin-top:6px; }
+  .store .row { display:flex; gap:8px; margin-top:10px; }
+  .store .row span { font-size:11px; font-weight:600; border:1px solid var(--brand); color:var(--brand); padding:6px 10px; background:#fff; }
+  .foot { background:var(--dark); color:#ccc; font-size:11px; padding:18px 14px; margin-top:20px; line-height:1.8; }
+  .foot b { color:#fff; display:block; font-size:12px; margin-bottom:4px; text-transform:uppercase; letter-spacing:.06em; }
+  .bnav { position:absolute; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:8px 0 12px; font-size:10px; color:var(--muted); z-index:4; }
+  .bnav div { text-align:center; } .bnav i { display:block; font-style:normal; font-size:17px; }
+  .bnav .on { color:var(--brand); font-weight:600; }
+
+  /* PDP */
+  .crumb { font-size:10.5px; color:var(--muted); padding:8px 14px; }
+  .gal { aspect-ratio:3/4; position:relative; }
+  .vid { position:absolute; left:10px; bottom:30px; background:rgba(0,0,0,.65); color:#fff; font-size:10.5px; padding:4px 9px; border-radius:99px; }
+  .zoom { position:absolute; right:10px; bottom:30px; background:rgba(255,255,255,.9); font-size:10.5px; padding:4px 9px; border-radius:99px; }
+  .dots { position:absolute; bottom:12px; left:0; right:0; display:flex; justify-content:center; gap:5px; }
+  .dots i { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.6); }
+  .dots i:first-child { background:#fff; width:16px; border-radius:3px; }
+  .pd { padding:14px; }
+  .pd h2 { font-size:16px; font-weight:500; line-height:1.3; }
+  .rating { font-size:11.5px; margin-top:5px; color:var(--muted); }
+  .rating b { background:var(--save); color:#fff; padding:1px 6px; border-radius:3px; margin-right:4px; font-size:11px; }
+  .pd .price { font-size:20px; margin-top:8px; }
+  .meta { font-size:10.5px; color:var(--muted); margin-top:2px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .meta .pill { border:1px solid var(--brand); color:var(--brand); padding:1px 6px; font-size:10px; font-weight:500; }
+  .lbl { font-size:12px; font-weight:600; margin:14px 0 7px; display:flex; justify-content:space-between; text-transform:uppercase; letter-spacing:.05em; }
+  .lbl a { color:var(--brand); font-size:11px; text-decoration:underline; text-transform:none; letter-spacing:0; }
+  .swatch { display:flex; gap:7px; }
+  .swatch i { width:40px; height:52px; border-radius:3px; border:1px solid var(--line); }
+  .swatch i.sel { outline:2px solid var(--dark); outline-offset:1px; }
+  .sizes { display:flex; gap:7px; flex-wrap:wrap; }
+  .sizes span { min-width:44px; text-align:center; border:1px solid var(--line-strong); padding:9px 6px; font-size:12px; font-weight:500; }
+  .sizes span.sel { background:var(--dark); color:#fff; border-color:var(--dark); }
+  .sizes span.oos { color:#bbb; text-decoration:line-through; border-style:dashed; }
+  .fitnote { font-size:11px; color:var(--muted); margin-top:7px; line-height:1.45; }
+  .offers { border:1px dashed var(--gold); background:#FFFaF1; padding:10px; margin-top:14px; font-size:11.5px; line-height:1.55; }
+  .offers b { color:var(--brand); }
+  .pin { display:flex; border:1px solid var(--line-strong); margin-top:4px; }
+  .pin span { flex:1; padding:10px; font-size:12px; color:var(--muted); }
+  .pin b { padding:10px 14px; font-size:12px; background:var(--dark); color:#fff; }
+  .eta { font-size:11.5px; margin-top:6px; } .eta b { color:var(--save); }
+  .icons4 { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:14px; text-align:center; font-size:10px; line-height:1.3; }
+  .icons4 div { border:1px solid var(--line); padding:8px 4px; }
+  .icons4 i { display:block; font-style:normal; font-size:18px; margin-bottom:3px; }
+  table.spec { width:100%; border-collapse:collapse; font-size:11.5px; margin-top:4px; }
+  table.spec td { border:1px solid var(--line); padding:6px 8px; }
+  table.spec td:first-child { background:#FAFAFA; color:var(--muted); width:38%; }
+  .acc div { padding:12px 0; border-bottom:1px solid var(--line); font-size:12.5px; font-weight:600; display:flex; justify-content:space-between; text-transform:uppercase; letter-spacing:.04em; }
+  .fitbar { display:flex; gap:4px; margin:6px 0 10px; }
+  .fitbar span { flex:1; font-size:10px; text-align:center; }
+  .fitbar span i { display:block; height:6px; border-radius:3px; background:#E5E5E5; margin-bottom:3px; }
+  .fitbar span.on i { background:var(--save); }
+  .sticky { position:absolute; bottom:0; left:0; right:0; display:flex; gap:8px; padding:10px 12px 14px; background:#fff; border-top:1px solid var(--line); z-index:4; align-items:center; }
+  .sticky .mini { width:36px; height:46px; border-radius:3px; }
+  .sticky .p { font-size:12px; font-weight:600; line-height:1.2; }
+  .sticky .p s { display:block; color:var(--muted); font-weight:400; font-size:10px; }
+  .sticky .a, .sticky .b { flex:1; text-align:center; padding:12px 6px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .sticky .a { border:1.5px solid var(--dark); }
+  .sticky .b { background:var(--brand); color:#fff; }
+
+  footer.note { max-width:1200px; margin:28px auto 0; color:var(--muted); font-size:13px; line-height:1.65; }
+  footer.note ul { margin:6px 0 0 18px; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>D. Jaipur Kurti style: Puneet Store</h1>
+  <p>Research document के Jaipur Kurti audit पर based. ढांचा JK जैसा है: dark top banner, uppercase menu, category tiles, editorial rails, 2-image cards जिन पर size chips और quick add हैं, "Save X%", offers box, pincode check, fabric table, sticky Add to Cart. <b>पीले dashed box</b> वो सुधार हैं जो document ने JK में कमी बताकर सुझाए थे. Colours मेरा अनुमान हैं: white/black के साथ maroon accent, बाद में आसानी से बदले जा सकते हैं. Photos की जगह अभी colour blocks हैं.</p>
+</header>
+<div class="legend"><span><i class="k"></i>JK से लिया हुआ pattern</span><span><i class="n"></i>NEW = document का सुधार</span></div>
+
+<div class="phones">
+  <!-- HOME -->
+  <div class="phone-wrap"><div class="phone-label">Homepage</div>
+  <div class="phone"><div class="scroll">
+    <div class="ann">Visit our store in Main Bazaar, [City] · <u>Get directions</u></div>
+    <div class="hdr"><div class="l">☰ 🔍</div><div class="logo">Puneet<small>Garments</small></div><div class="r">♡ 🛍</div></div>
+    <div class="menu"><span>New Arrivals</span><span>Women</span><span>Men</span><span>Kids</span><span>Innerwear</span><span>Occasion</span><span class="hot">Sale</span></div>
+    <div class="hero"><h3>The Festive Edit</h3><p>Diwali और शादी के लिए, पूरे परिवार के लिए</p><div class="cta">Shop Now</div></div>
+
+    <div class="sec"><h4>Shop by Category</h4><div class="sub">पूरे परिवार के लिए, एक ही दुकान में</div>
+      <div class="tiles">
+        <div class="tile"><i style="background:linear-gradient(160deg,#E6A5B0,#8E1B3A)"></i>Kurta Sets</div>
+        <div class="tile"><i style="background:linear-gradient(160deg,#F0C987,#B7792F)"></i>Sarees</div>
+        <div class="tile"><i style="background:linear-gradient(160deg,#AFC4D8,#46607E)"></i>Men Kurta</div>
+        <div class="tile"><i style="background:linear-gradient(160deg,#C9D9A8,#6D8A3C)"></i>Shirts &amp; Tees</div>
+        <div class="tile"><i style="background:linear-gradient(160deg,#F7C6D9,#D9668E)"></i>Kids</div>
+        <div class="tile"><i style="background:linear-gradient(160deg,#E4D8F0,#8B74B0)"></i>Innerwear</div>
+        <div class="tile"><i style="background:linear-gradient(160deg,#D6CFC7,#8A7D70)"></i>Bottoms</div>
+        <div class="tile"><i style="background:linear-gradient(160deg,#F1B7A0,#C0563A)"></i>Plus Size</div>
+      </div></div>
+
+    <div class="sec new"><h4>Shop by Occasion</h4><div class="sub">Daily से शादी तक</div>
+      <div class="occ">
+        <div style="background:linear-gradient(160deg,#9DB7A3,#3F5E48)">Daily Wear</div>
+        <div style="background:linear-gradient(160deg,#9AA7BD,#3A4A66)">Office Wear</div>
+        <div style="background:linear-gradient(160deg,#E9B872,#A35F1C)">Festive</div>
+        <div style="background:linear-gradient(160deg,#D98695,#8E1B3A)">Wedding Guest</div>
+      </div></div>
+
+    <div class="sec new"><h4>Shop by Budget</h4><div class="sub">&nbsp;</div>
+      <div class="budget"><div>Under ₹499</div><div>Under ₹999</div><div>Under ₹1,499</div><div>Under ₹2,499</div></div></div>
+
+    <div class="sec"><h4>Bestsellers in Our Store</h4><div class="sub">जो दुकान में सबसे ज़्यादा बिक रहा है</div>
+      <div class="grid" id="grid"></div></div>
+
+    <div class="sec"><h4>New Arrivals</h4><div class="sub">इस हफ्ते दुकान में आया</div>
+      <div class="rail" id="rail"></div></div>
+
+    <div class="sec new"><h4>Customers Love Us</h4><div class="sub">Photo reviews · Verified buyers</div>
+      <div class="reviews">
+        <div class="rv"><i style="background:linear-gradient(160deg,#E6A5B0,#8E1B3A)"></i><div><p>"Fabric बहुत soft है, size एकदम सही आया."</p><b>Neha, M size</b><small>✓ Verified buyer · True to size</small></div></div>
+        <div class="rv"><i style="background:linear-gradient(160deg,#AFC4D8,#46607E)"></i><div><p>"दुकान पर जाकर exchange करवाया, 5 minute लगे."</p><b>Rohit, L size</b><small>✓ Verified buyer</small></div></div>
+      </div></div>
+
+    <div class="trust"><div><i>🏪</i>Real Shop<br>Since 1998</div><div><i>🔁</i>Free Size<br>Exchange</div><div><i>💵</i>Cash on<br>Delivery</div><div><i>🔒</i>Secure<br>Payments</div></div>
+
+    <div class="store new"><h5>Visit Our Store</h5><p>Main Bazaar, [City] · रोज़ 10 AM – 9 PM<br>Try करें, alteration करवाएं, exchange करें</p><div class="row"><span>📍 Directions</span><span>📞 Call Store</span></div></div>
+
+    <div class="foot"><b>Puneet Garments</b>About Us · Store Locator · Size Guide<br>Exchange Policy · Shipping · Privacy · Terms<br>📞 +91 XXXXX XXXXX · ✉ hello@puneet.in</div>
+  </div>
+  <div class="bnav"><div class="on"><i>⌂</i>Home</div><div><i>☰</i>Shop</div><div><i>🔍</i>Search</div><div><i>♡</i>Wishlist</div><div><i>👤</i>Account</div></div>
+  </div></div>
+
+  <!-- PDP -->
+  <div class="phone-wrap"><div class="phone-label">Product page</div>
+  <div class="phone"><div class="scroll">
+    <div class="hdr"><div class="l">←</div><div class="logo" style="font-size:15px">Puneet</div><div class="r">↗ 🛍</div></div>
+    <div class="crumb">Home / Women / Kurta Sets</div>
+    <div class="gal" style="background:linear-gradient(160deg,#E6A5B0,#8E1B3A)"><div class="vid new" style="outline-offset:0">▶ Video 0:15</div><div class="zoom">🔍 Zoom</div><div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="pd">
+      <h2>Cotton Printed Kurta Set with Dupatta</h2>
+      <div class="rating new"><b>4.6 ★</b>38 reviews · 82% say "True to size"</div>
+      <div class="price">₹1,299<s>₹1,599</s><em>Save 19%</em></div>
+      <div class="meta">Inclusive of all taxes · SKU PG-KS-0142 <span class="pill">Free Size Exchange</span></div>
+
+      <div class="lbl">Colour: Maroon</div>
+      <div class="swatch"><i class="sel" style="background:linear-gradient(160deg,#E6A5B0,#8E1B3A)"></i><i style="background:linear-gradient(160deg,#AFC4D8,#46607E)"></i><i style="background:linear-gradient(160deg,#C9D9A8,#6D8A3C)"></i><i style="background:linear-gradient(160deg,#F0C987,#B7792F)"></i></div>
+
+      <div class="lbl">Size <a href="#">Size Chart</a></div>
+      <div class="sizes"><span>S</span><span class="sel">M</span><span>L</span><span class="oos">XL</span><span>XXL</span></div>
+      <div class="fitnote">Bust के हिसाब से size चुनें: 36" = M · 35" हो तो relaxed fit के लिए M, वरना S.</div>
+      <div class="fitnote new" style="padding:4px 0">Model की height 5'4" है और उसने M पहना है.</div>
+
+      <div class="offers"><b>Offers</b><br>🏷 WELCOME10: ₹999+ पर ₹100 off<br>💳 Prepaid (UPI/Card) पर 5% extra off</div>
+
+      <div class="lbl">Check Delivery</div>
+      <div class="pin"><span>📍 Enter pincode</span><b>CHECK</b></div>
+      <div class="eta new">302001: Get it by <b>Sat, 4 Oct</b> · COD available</div>
+
+      <div class="icons4">
+        <div><i>💵</i>COD with OTP</div><div><i>🚚</i>Free shipping ₹999+</div><div class="new"><i>🔁</i>7-day size exchange*</div>
+      </div>
+      <div class="fitnote new" style="padding:4px">*पहला size exchange free (online या दुकान पर). Refund सिर्फ defect या गलत item मिलने पर. Innerwear exchange नहीं होगा. Badge वही कहता है जो policy कहती है.</div>
+
+      <div class="acc">
+        <div>Product Details <span>−</span></div>
+        <table class="spec">
+          <tr><td>Top Fabric</td><td>100% Cotton</td></tr>
+          <tr><td>Bottom Fabric</td><td>Cotton, elastic waist</td></tr>
+          <tr><td>Dupatta</td><td>Chiffon</td></tr>
+          <tr><td>Sleeve</td><td>3/4 Sleeves</td></tr>
+          <tr><td>Neck</td><td>Round Neck</td></tr>
+          <tr><td>Length</td><td>Calf length (46")</td></tr>
+          <tr class="new"><td>Lining / Sheer</td><td>No lining · Light colour में थोड़ा see-through</td></tr>
+          <tr class="new"><td>Care</td><td>Cold hand wash</td></tr>
+          <tr><td>In the Set</td><td>Kurta, Pant, Dupatta</td></tr>
+        </table>
+        <div class="new">Reviews (38) <span>−</span></div>
+        <div class="new" style="display:block;text-transform:none;letter-spacing:0;font-weight:400;font-size:11px">Fit:
+          <div class="fitbar"><span><i></i>Small</span><span class="on"><i></i>True to size</span><span><i></i>Large</span></div></div>
+        <div>Exchange &amp; Returns <span>+</span></div>
+      </div>
+
+      <div class="sec" style="padding-left:0;padding-right:0"><h4>Recently Viewed</h4><div class="sub">&nbsp;</div><div class="rail" id="rail2"></div></div>
+    </div>
+  </div>
+  <div class="sticky"><i class="mini" style="background:linear-gradient(160deg,#E6A5B0,#8E1B3A)"></i><div class="p">₹1,299<s>₹1,599</s></div><div class="a">Add to Cart</div><div class="b">Buy Now</div></div>
+  </div></div>
+</div>
+
+<footer class="note">
+  <b>Jaipur Kurti से जानबूझकर ये नहीं लिया (document की सलाह पर):</b>
+  <ul>
+    <li>5-slide hero carousel: उसकी जगह एक ही hero रखा है (mobile पर बाकी slides कोई देखता नहीं).</li>
+    <li>"No questions asked" वाला badge जो policy से मेल नहीं खाता: हमारा badge policy के शब्दों से ही बनेगा.</li>
+    <li>55–74% के बढ़ा-चढ़ाकर लिखे discount और MRP: दुकान और online दोनों पर असली MRP और एक ही price.</li>
+    <li>बहुत सारी rails और placeholder products: कम rails रखी हैं, और launch से पहले QA checklist होगी.</li>
+  </ul>
+</footer>
+
+<script>
+const P = [
+  ['Cotton Printed Kurta Set','Maroon',1299,1599,['S','M','L','XL','XXL'],'Exclusive','linear-gradient(160deg,#E6A5B0,#8E1B3A)','4.6'],
+  ['Men Linen Short Kurta','Sky Blue',899,1099,['M','L','XL'],'','linear-gradient(160deg,#AFC4D8,#46607E)','4.4'],
+  ['Kids Festive Lehenga','Mustard',1149,1399,['2-3Y','4-5Y','6-7Y'],'Festive','linear-gradient(160deg,#F0C987,#B7792F)','4.8'],
+  ['Everyday Rayon Kurti','Olive',549,649,['S','M','L','XL','3XL'],'Bestseller','linear-gradient(160deg,#C9D9A8,#6D8A3C)','4.5'],
+];
+const card = p => { const off=Math.round((1-p[2]/p[3])*100); return `<div class="card"><div class="img" style="background:${p[6]}">${p[5]?`<div class="badge">${p[5]}</div>`:''}<div class="wl">♡</div><div class="stars new">★ ${p[7]}</div></div>
+  <div class="nm">${p[0]}</div><div class="clr">${p[1]}</div><div class="price">₹${p[2].toLocaleString('en-IN')}<s>₹${p[3].toLocaleString('en-IN')}</s><em>Save ${off}%</em></div>
+  <div class="chips">${p[4].map(s=>`<b>${s}</b>`).join('')}</div><div class="qa">Quick Add</div></div>`; };
+document.getElementById('grid').innerHTML = P.map(card).join('');
+document.getElementById('rail').innerHTML = [...P].reverse().map(card).join('');
+document.getElementById('rail2').innerHTML = P.slice(1).map(card).join('');
+</script>
+</body>
+</html>

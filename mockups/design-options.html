@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --page:#EEF0F3; --ink:#1d1d1f; --muted:#5b6070; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--page); color:var(--ink); font-family:Inter,system-ui,sans-serif; padding:32px 16px 64px; }
+  header.top { max-width:1200px; margin:0 auto 28px; }
+  header.top h1 { font-size:26px; }
+  header.top p { color:var(--muted); margin-top:6px; line-height:1.5; }
+  .option { max-width:1200px; margin:0 auto 56px; }
+  .option-head { display:flex; gap:16px; align-items:baseline; flex-wrap:wrap; margin-bottom:6px; }
+  .option-head h2 { font-size:22px; }
+  .tag { font-size:12px; font-weight:600; background:#fff; border:1px solid #d6d9e0; padding:3px 10px; border-radius:99px; }
+  .option-desc { color:var(--muted); margin-bottom:10px; line-height:1.5; max-width:820px; }
+  .swatches { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .sw { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); }
+  .sw i { width:22px; height:22px; border-radius:6px; border:1px solid rgba(0,0,0,.1); display:inline-block; }
+  .phones { display:flex; gap:28px; flex-wrap:wrap; }
+  .phone-wrap { display:flex; flex-direction:column; gap:8px; }
+  .phone-label { font-size:13px; font-weight:600; color:var(--muted); }
+  .phone { width:360px; max-width:calc(100vw - 32px); height:740px; border-radius:34px; border:10px solid #111; overflow:hidden; position:relative; background:var(--bg); color:var(--text); font-family:var(--body); box-shadow:0 20px 50px rgba(0,0,0,.18); }
+  .scroll { height:100%; overflow-y:auto; padding-bottom:80px; scrollbar-width:none; }
+  .scroll::-webkit-scrollbar { display:none; }
+
+  /* ---------- shared component styles, themed by vars ---------- */
+  .ann { background:var(--ann-bg); color:var(--ann-fg); font-size:11px; text-align:center; padding:7px 8px; font-weight:500; }
+  .hdr { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; background:var(--hdr-bg); border-bottom:1px solid var(--line); }
+  .logo { font-family:var(--display); font-weight:700; font-size:20px; color:var(--brand); letter-spacing:var(--logo-ls); }
+  .logo small { display:block; font-family:var(--body); font-size:9px; font-weight:500; color:var(--muted-t); letter-spacing:.12em; text-transform:uppercase; }
+  .icons { display:flex; gap:14px; font-size:18px; color:var(--text); }
+  .search { margin:10px 14px; background:var(--search-bg); border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; font-size:13px; color:var(--muted-t); }
+  .hero { margin:4px 14px 0; border-radius:var(--r-lg); height:200px; background:var(--hero); position:relative; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; padding:16px; color:var(--hero-fg); }
+  .hero h3 { font-family:var(--display); font-size:24px; line-height:1.1; font-weight:700; }
+  .hero p { font-size:12px; margin:6px 0 10px; opacity:.9; }
+  .hero .cta { align-self:flex-start; background:var(--cta-bg); color:var(--cta-fg); font-weight:600; font-size:12px; padding:8px 16px; border-radius:var(--r-btn); }
+  .hero .deco { position:absolute; right:-30px; top:-30px; width:170px; height:170px; border-radius:50%; background:var(--hero-deco); }
+  .sec { padding:18px 14px 4px; }
+  .sec h4 { font-family:var(--display); font-size:16px; font-weight:700; margin-bottom:10px; display:flex; justify-content:space-between; align-items:baseline; }
+  .sec h4 span { font-family:var(--body); font-size:11px; font-weight:600; color:var(--brand); }
+  .cats { display:flex; gap:12px; overflow-x:auto; scrollbar-width:none; }
+  .cat { flex:0 0 auto; text-align:center; font-size:11px; font-weight:500; width:60px; }
+  .cat i { display:block; width:60px; height:60px; border-radius:var(--cat-r); background:var(--cat-bg); margin-bottom:5px; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:24px; border:1px solid var(--line); }
+  .occ { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .occ div { border-radius:var(--r); padding:14px 12px; font-weight:600; font-size:13px; background:var(--occ-bg); color:var(--occ-fg); min-height:64px; display:flex; flex-direction:column; justify-content:space-between; }
+  .occ div small { font-weight:400; font-size:10.5px; opacity:.8; }
+  .budget { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; }
+  .budget div { flex:0 0 auto; border:1px solid var(--brand); color:var(--brand); border-radius:var(--r-btn); padding:7px 14px; font-size:12px; font-weight:600; background:var(--bg); }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .card { background:var(--card-bg); border-radius:var(--r); overflow:hidden; border:1px solid var(--line); }
+  .img { aspect-ratio:3/4; position:relative; }
+  .img .wl { position:absolute; right:8px; top:8px; width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; font-size:13px; color:#333; }
+  .img .badge { position:absolute; left:8px; top:8px; font-size:9.5px; font-weight:700; background:var(--badge-bg); color:var(--badge-fg); padding:3px 7px; border-radius:4px; }
+  .card .info { padding:8px 9px 10px; }
+  .card .nm { font-size:12px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .price { font-size:13px; font-weight:700; margin-top:3px; }
+  .price s { font-weight:400; color:var(--muted-t); font-size:11px; margin-left:4px; }
+  .price em { font-style:normal; color:var(--ok); font-size:11px; margin-left:4px; }
+  .chips { display:flex; gap:4px; margin-top:6px; flex-wrap:wrap; }
+  .chips b { font-size:9.5px; font-weight:600; border:1px solid var(--line-strong); border-radius:4px; padding:2px 5px; }
+  .trust { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .trust div { background:var(--trust-bg); border-radius:var(--r); padding:10px; font-size:11px; line-height:1.35; }
+  .trust div b { display:block; font-size:12px; margin-bottom:2px; }
+  .store { background:var(--store-bg); color:var(--store-fg); border-radius:var(--r-lg); padding:16px; }
+  .store h5 { font-family:var(--display); font-size:17px; margin-bottom:6px; }
+  .store p { font-size:12px; opacity:.9; line-height:1.5; }
+  .store .row { display:flex; gap:8px; margin-top:10px; }
+  .store .row span { font-size:11px; font-weight:600; background:rgba(255,255,255,.16); padding:6px 10px; border-radius:var(--r-btn); }
+  .bnav { position:absolute; bottom:0; left:0; right:0; background:var(--hdr-bg); border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:8px 0 12px; font-size:10px; color:var(--muted-t); }
+  .bnav div { text-align:center; }
+  .bnav div i { display:block; font-style:normal; font-size:17px; margin-bottom:1px; }
+  .bnav .on { color:var(--brand); font-weight:600; }
+
+  /* PDP */
+  .gal { aspect-ratio:3/4; position:relative; }
+  .dots { position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:center; gap:5px; }
+  .dots i { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.6); }
+  .dots i:first-child { background:#fff; width:16px; border-radius:3px; }
+  .vid { position:absolute; left:10px; bottom:26px; background:rgba(0,0,0,.6); color:#fff; font-size:10.5px; padding:4px 9px; border-radius:99px; }
+  .pd { padding:14px; }
+  .pd .nm { font-size:15px; font-weight:600; line-height:1.3; }
+  .rating { font-size:11.5px; margin-top:5px; color:var(--muted-t); }
+  .rating b { background:var(--ok); color:#fff; padding:1px 6px; border-radius:4px; margin-right:4px; font-size:11px; }
+  .pd .price { font-size:19px; margin-top:8px; }
+  .tax { font-size:10.5px; color:var(--muted-t); }
+  .lbl { font-size:12px; font-weight:600; margin:14px 0 7px; display:flex; justify-content:space-between; }
+  .lbl a { color:var(--brand); font-weight:600; font-size:11.5px; text-decoration:none; }
+  .sizes { display:flex; gap:7px; flex-wrap:wrap; }
+  .sizes span { min-width:42px; text-align:center; border:1px solid var(--line-strong); border-radius:var(--r-btn); padding:8px 6px; font-size:12px; font-weight:600; }
+  .sizes span.sel { background:var(--brand); color:var(--on-brand); border-color:var(--brand); }
+  .sizes span.oos { color:#bbb; text-decoration:line-through; border-style:dashed; }
+  .model { font-size:11px; color:var(--muted-t); margin-top:7px; }
+  .pin { display:flex; border:1px solid var(--line-strong); border-radius:var(--r); overflow:hidden; margin-top:4px; }
+  .pin span { flex:1; padding:10px; font-size:12px; color:var(--muted-t); }
+  .pin b { padding:10px 14px; font-size:12px; color:var(--brand); }
+  .eta { font-size:11.5px; margin-top:6px; }
+  .eta b { color:var(--ok); }
+  .lines { margin-top:12px; border-top:1px solid var(--line); }
+  .lines div { padding:9px 0; border-bottom:1px solid var(--line); font-size:12px; display:flex; gap:9px; }
+  .lines div i { font-style:normal; }
+  .acc { margin-top:4px; }
+  .acc div { padding:11px 0; border-bottom:1px solid var(--line); font-size:12.5px; font-weight:600; display:flex; justify-content:space-between; }
+  .spec { display:grid; grid-template-columns:auto 1fr; gap:5px 14px; font-size:11.5px; padding:10px 0 4px; }
+  .spec dt { color:var(--muted-t); }
+  .sticky { position:absolute; bottom:0; left:0; right:0; display:flex; gap:8px; padding:10px 12px 14px; background:var(--hdr-bg); border-top:1px solid var(--line); }
+  .sticky div { flex:1; text-align:center; padding:12px; border-radius:var(--r-btn); font-size:13px; font-weight:700; }
+  .sticky .a { border:1.5px solid var(--brand); color:var(--brand); }
+  .sticky .b { background:var(--cta-main); color:var(--on-brand); }
+
+  /* ---------- THEME A: Warm family store ---------- */
+  .tA { --bg:#FBF6EE; --text:#2A1A14; --muted-t:#7b6a60; --brand:#7A1F2B; --on-brand:#fff; --line:#EADFCF; --line-strong:#D8C7B0;
+        --display:'Fraunces',Georgia,serif; --body:'Mukta','Inter',sans-serif; --logo-ls:0;
+        --ann-bg:#7A1F2B; --ann-fg:#FBE9C8; --hdr-bg:#FBF6EE; --search-bg:#fff;
+        --r:10px; --r-lg:16px; --r-btn:8px; --cat-r:50%;
+        --hero:linear-gradient(135deg,#8C2433 0%,#5A1520 100%); --hero-fg:#FFF3DF; --hero-deco:radial-gradient(circle,#E39B2D 0%,rgba(227,155,45,0) 70%);
+        --cta-bg:#E39B2D; --cta-fg:#2A1A14; --cta-main:#7A1F2B;
+        --cat-bg:#F3E6D2; --occ-bg:#F3E6D2; --occ-fg:#5A1520; --card-bg:#fff;
+        --badge-bg:#E39B2D; --badge-fg:#2A1A14; --ok:#2F7D4F; --trust-bg:#F3E6D2; --store-bg:#2F4B3A; --store-fg:#F6EFE2; }
+  /* ---------- THEME B: Clean modern ---------- */
+  .tB { --bg:#FFFFFF; --text:#111318; --muted-t:#6B7080; --brand:#0F766E; --on-brand:#fff; --line:#ECEDF0; --line-strong:#D5D8DE;
+        --display:'Inter',sans-serif; --body:'Inter',sans-serif; --logo-ls:-.02em;
+        --ann-bg:#111318; --ann-fg:#fff; --hdr-bg:#fff; --search-bg:#F4F5F7;
+        --r:6px; --r-lg:8px; --r-btn:6px; --cat-r:12px;
+        --hero:linear-gradient(160deg,#D9EEEA 0%,#BFE2DB 100%); --hero-fg:#111318; --hero-deco:rgba(15,118,110,.12);
+        --cta-bg:#111318; --cta-fg:#fff; --cta-main:#111318;
+        --cat-bg:#F4F5F7; --occ-bg:#F4F5F7; --occ-fg:#111318; --card-bg:#fff;
+        --badge-bg:#111318; --badge-fg:#fff; --ok:#0F766E; --trust-bg:#F4F5F7; --store-bg:#0F766E; --store-fg:#fff; }
+  /* ---------- THEME C: Festive bright ---------- */
+  .tC { --bg:#FFFDF7; --text:#15302C; --muted-t:#5E7470; --brand:#0E5A50; --on-brand:#fff; --line:#E6EFE9; --line-strong:#C9DAD2;
+        --display:'Poppins',sans-serif; --body:'Poppins',sans-serif; --logo-ls:-.01em;
+        --ann-bg:#F4B400; --ann-fg:#15302C; --hdr-bg:#FFFDF7; --search-bg:#fff;
+        --r:14px; --r-lg:22px; --r-btn:99px; --cat-r:18px;
+        --hero:linear-gradient(135deg,#0E5A50 0%,#11796B 60%,#E0457B 140%); --hero-fg:#fff; --hero-deco:radial-gradient(circle,#F4B400 0%,rgba(244,180,0,0) 70%);
+        --cta-bg:#F4B400; --cta-fg:#15302C; --cta-main:#E0457B;
+        --cat-bg:#FFF3D1; --occ-bg:#E7F4EF; --occ-fg:#0E5A50; --card-bg:#fff;
+        --badge-bg:#E0457B; --badge-fg:#fff; --ok:#12805C; --trust-bg:#FFF3D1; --store-bg:#E0457B; --store-fg:#fff; }
+
+  footer.note { max-width:1200px; margin:0 auto; color:var(--muted); font-size:13px; line-height:1.6; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Puneet Store: 3 design directions</h1>
+  <p>हर option में mobile Homepage और Product page दिखाया है (फोन frame के अंदर scroll करके देखें)। Layout तीनों में एक जैसा है, सिर्फ look &amp; feel अलग है। Photos की जगह अभी colour blocks हैं। नाम "Puneet Garments" placeholder है।</p>
+</header>
+
+<div id="root"></div>
+
+<footer class="note">
+  <b>तीनों में common (research doc से):</b> occasion + budget navigation, card पर size chips, product page पर video slot, model size, pincode पर delivery की तारीख, COD, सही-सही exchange policy, fit rating वाले reviews, sticky Add to Cart / Buy Now, और "Visit our store" block. WhatsApp वाले बटन Phase 2 में आएंगे.
+</footer>
+
+<script>
+const options = [
+  { cls:'tA', name:'A. Warm Family Store', tag:'Recommended',
+    desc:'Cream background, maroon + saffron. Serif headings। "आपके मोहल्ले की भरोसेमंद दुकान" वाला feel। Ethnic, festive, kids, innerwear, सब इसमें ठीक बैठते हैं। Local customers को तुरंत अपनापन लगेगा.',
+    sw:[['#FBF6EE','Cream'],['#7A1F2B','Maroon'],['#E39B2D','Saffron'],['#2F4B3A','Bottle green']],
+    imgs:['linear-gradient(160deg,#C9727A,#8C2433)','linear-gradient(160deg,#E7C38A,#B7792F)','linear-gradient(160deg,#8FA98E,#3F5E48)','linear-gradient(160deg,#D8B4A6,#9A5B4C)'] },
+  { cls:'tB', name:'B. Clean Modern', tag:'Product-first',
+    desc:'White, सीधी typography, teal accent। Myntra/AJIO जैसी "brand site" feel। Photos सबसे ज़्यादा उभरते हैं, लेकिन फोन से खींची photos अगर एक जैसी नहीं हुईं तो कमियां साफ दिखेंगी.',
+    sw:[['#FFFFFF','White'],['#111318','Ink'],['#0F766E','Teal'],['#F4F5F7','Grey']],
+    imgs:['linear-gradient(160deg,#E4E7EC,#B9C0CB)','linear-gradient(160deg,#D9EEEA,#8CC7BC)','linear-gradient(160deg,#EDE3D8,#C4AE94)','linear-gradient(160deg,#E6E1EE,#AFA3C6)'] },
+  { cls:'tC', name:'C. Festive Bright', tag:'Young & playful',
+    desc:'Deep green + marigold + pink, rounded shapes। Festival और young/kids audience के लिए energetic। Sale वगैरह के समय अच्छा लगता है, लेकिन रोज़ के basics और innerwear के लिए थोड़ा loud है.',
+    sw:[['#0E5A50','Green'],['#F4B400','Marigold'],['#E0457B','Pink'],['#FFFDF7','Ivory']],
+    imgs:['linear-gradient(160deg,#F7A8C4,#E0457B)','linear-gradient(160deg,#FFD66B,#F4B400)','linear-gradient(160deg,#7CC7B5,#0E5A50)','linear-gradient(160deg,#B8D4F2,#5A8CC9)'] },
+];
+
+const products = [
+  ['Cotton Printed Kurta Set with Dupatta', 1299, 1599, ['S','M','L','XL','XXL'], 'New'],
+  ['Men Linen Blend Short Kurta', 899, 1099, ['M','L','XL'], ''],
+  ['Kids Festive Lehenga Choli', 1149, 1399, ['2-3Y','4-5Y','6-7Y'], 'Festive'],
+  ['Women Everyday Rayon Kurti', 549, 649, ['S','M','L','XL','3XL'], 'Bestseller'],
+];
+
+function home(o){
+  const cats = [['👗','Women'],['👔','Men'],['🧒','Kids'],['🥻','Sarees'],['🩲','Innerwear'],['🧣','Dupattas']];
+  return `
+  <div class="ann">Free first size exchange · COD available · दुकान से pickup जल्द</div>
+  <div class="hdr"><div class="logo">Puneet<small>Garments · Since 1998</small></div><div class="icons">♡ 🛍</div></div>
+  <div class="search">🔍 Search "office kurti under 1000", "shaadi suit"…</div>
+  <div class="hero"><div class="deco"></div><h3>Festive Collection<br>is here</h3><p>Diwali & shaadi season के लिए, पूरे परिवार के लिए</p><div class="cta">Shop Festive →</div></div>
+  <div class="sec"><h4>Shop by Category</h4><div class="cats">${cats.map(c=>`<div class="cat"><i>${c[0]}</i>${c[1]}</div>`).join('')}</div></div>
+  <div class="sec"><h4>Shop by Occasion</h4><div class="occ">
+    <div>Daily Wear<small>Cotton, comfy</small></div><div>Office<small>Kurtis, shirts</small></div>
+    <div>Festive<small>Diwali, Eid, Teej</small></div><div>Wedding Guest<small>Suits, sherwani</small></div></div></div>
+  <div class="sec"><h4>Shop by Budget</h4><div class="budget"><div>Under ₹499</div><div>Under ₹999</div><div>Under ₹1,499</div><div>Under ₹2,499</div></div></div>
+  <div class="sec"><h4>Bestsellers in our store <span>View all</span></h4><div class="grid">${products.map((p,i)=>card(p,o.imgs[i])).join('')}</div></div>
+  <div class="sec"><h4>Why shop with us</h4><div class="trust">
+    <div><b>Real shop, real people</b>25+ साल से आपके शहर में</div><div><b>Easy size exchange</b>7 दिन में, पहला exchange free</div>
+    <div><b>Cash on Delivery</b>OTP verify करके</div><div><b>Honest prices</b>जो दुकान में, वही online</div></div></div>
+  <div class="sec"><div class="store"><h5>Visit our store</h5><p>Main Bazaar, [City] · 10 AM – 9 PM<br>Try करें, alter करवाएं, exchange करें</p><div class="row"><span>📍 Directions</span><span>📞 Call</span></div></div></div>
+  <div style="height:20px"></div>`;
+}
+function card(p,img){
+  const off = Math.round((1-p[1]/p[2])*100);
+  return `<div class="card"><div class="img" style="background:${img}"><div class="wl">♡</div>${p[4]?`<div class="badge">${p[4]}</div>`:''}</div>
+    <div class="info"><div class="nm">${p[0]}</div><div class="price">₹${p[1].toLocaleString('en-IN')}<s>₹${p[2].toLocaleString('en-IN')}</s><em>${off}% off</em></div>
+    <div class="chips">${p[3].map(s=>`<b>${s}</b>`).join('')}</div></div></div>`;
+}
+function pdp(o){
+  return `
+  <div class="hdr"><div class="icons">←</div><div class="logo" style="font-size:16px">Puneet</div><div class="icons">↗ 🛍</div></div>
+  <div class="gal" style="background:${o.imgs[0]}"><div class="vid">▶ Video 0:15</div><div class="dots"><i></i><i></i><i></i><i></i><i></i></div></div>
+  <div class="pd">
+    <div class="nm">Cotton Printed Kurta Set with Dupatta</div>
+    <div class="rating"><b>4.6 ★</b>38 reviews · 82% say "True to size"</div>
+    <div class="price">₹1,299<s>₹1,599</s><em>19% off</em></div>
+    <div class="tax">Inclusive of all taxes · Prepaid पर ₹50 extra off</div>
+    <div class="lbl">Select Size <a href="#">Size Chart 📏</a></div>
+    <div class="sizes"><span>S</span><span class="sel">M</span><span>L</span><span class="oos">XL</span><span>XXL</span></div>
+    <div class="model">Model 5'4" की है और M पहना है · Bust 36" = M</div>
+    <div class="lbl">Delivery</div>
+    <div class="pin"><span>📍 302001</span><b>Change</b></div>
+    <div class="eta">Get it by <b>Sat, 4 Oct</b> · COD available</div>
+    <div class="lines">
+      <div><i>🔁</i>7-day size exchange, पहली बार free · Refund सिर्फ defect होने पर</div>
+      <div><i>🏪</i>Same piece available at our store, Main Bazaar</div>
+    </div>
+    <div class="acc">
+      <div>Fabric &amp; Fit <span>−</span></div>
+      <dl class="spec"><dt>Top</dt><dd>100% Cotton</dd><dt>Bottom</dt><dd>Cotton, elastic waist</dd><dt>Dupatta</dt><dd>Chiffon</dd><dt>Lining</dt><dd>No · Slightly sheer in light colour</dd><dt>Length</dt><dd>Calf length (46")</dd><dt>Care</dt><dd>Cold hand wash</dd><dt>In the set</dt><dd>Kurta, pant, dupatta</dd></dl>
+      <div>Reviews with photos <span>+</span></div>
+      <div>Exchange &amp; Returns <span>+</span></div>
+    </div>
+    <div style="height:30px"></div>
+  </div>`;
+}
+
+document.getElementById('root').innerHTML = options.map(o=>`
+  <section class="option">
+    <div class="option-head"><h2>${o.name}</h2><span class="tag">${o.tag}</span></div>
+    <p class="option-desc">${o.desc}</p>
+    <div class="swatches">${o.sw.map(s=>`<span class="sw"><i style="background:${s[0]}"></i>${s[1]}</span>`).join('')}</div>
+    <div class="phones">
+      <div class="phone-wrap"><div class="phone-label">Homepage</div><div class="phone ${o.cls}"><div class="scroll">${home(o)}</div>
+        <div class="bnav"><div class="on"><i>⌂</i>Home</div><div><i>☰</i>Categories</div><div><i>🔍</i>Search</div><div><i>♡</i>Wishlist</div><div><i>👤</i>Account</div></div></div></div>
+      <div class="phone-wrap"><div class="phone-label">Product page</div><div class="phone ${o.cls}"><div class="scroll">${pdp(o)}</div>
+        <div class="sticky"><div class="a">Add to Cart</div><div class="b">Buy Now</div></div></div></div>
+    </div>
+  </section>`).join('');
+</script>
+</body>
+</html>
