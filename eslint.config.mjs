@@ -18,7 +18,14 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "public/**",
+      "prisma/migrations/**",
     ],
+  },
+  {
+    // Images are pre-sized SVG placeholders or Cloudinary URLs that are already resized and
+    // format-optimised at the CDN, so next/image's server-side optimiser isn't needed.
+    rules: { "@next/next/no-img-element": "off" },
   },
 ];
 

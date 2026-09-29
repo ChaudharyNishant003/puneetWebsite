@@ -201,7 +201,8 @@ export async function importCsvAction(_: unknown, form: FormData) {
     };
     const existing = await db.product.findUnique({ where: { slug: handle } });
     const p = existing ? await db.product.update({ where: { id: existing.id }, data }) : await db.product.create({ data: { ...data, slug: handle, sku: `PG-${handle.slice(0, 6).toUpperCase()}-${Date.now().toString(36).slice(-4).toUpperCase()}` } });
-    existing ? updated++ : created++;
+    if (existing) updated++;
+    else created++;
     const attrs = ATTR_KEYS.flatMap((k) => (r0[`attr_${k}`] ?? "").split("|").map((v) => v.trim()).filter(Boolean).map((value) => ({ productId: p.id, key: k, value })));
     await db.productAttribute.deleteMany({ where: { productId: p.id } });
     if (attrs.length) await db.productAttribute.createMany({ data: attrs });

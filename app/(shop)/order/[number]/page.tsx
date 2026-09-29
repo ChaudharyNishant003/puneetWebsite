@@ -37,7 +37,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
           <p className="text-2xl">🎉</p>
           <h1 className="mt-1 text-lg font-semibold">Thank you! Your order is placed.</h1>
           <p className="mt-1 text-sm">Order <b>{order.number}</b>{order.etaDate ? <> · Delivery by <b>{fmtDate(order.etaDate, { weekday: "long", day: "numeric", month: "short" })}</b></> : null}</p>
-          <p className="mt-1 text-xs text-muted">We've sent the details by SMS{order.email ? " and email" : ""}.</p>
+          <p className="mt-1 text-xs text-muted">We&apos;ve sent the details by SMS{order.email ? " and email" : ""}.</p>
         </div>
       ) : (
         <h1 className="eyebrow mb-4 text-lg">Order {order.number}</h1>

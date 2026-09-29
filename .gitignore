@@ -46,3 +46,5 @@ tmp/
 /test-results/
 /playwright-report/
 .npmrc
+/test-results/
+/playwright-report/

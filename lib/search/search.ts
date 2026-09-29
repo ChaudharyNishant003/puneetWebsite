@@ -4,8 +4,8 @@ import { db } from "../db";
 import { cardInclude } from "../catalog";
 import { parseQuery, type ParsedQuery } from "./parse";
 
-// Small catalogue (< 1–2k products): full-text via Postgres + typo tolerance via an in-memory
-// vocabulary built from product search text. No external search service needed.
+// Small catalogue (hundreds of products): pull candidates from Postgres, then rank in memory.
+// Ranking beats hard AND-filtering for Hinglish queries where customers mix intent words.
 
 let vocab: { words: string[]; at: number } | null = null;
 
@@ -53,45 +53,69 @@ async function synonyms() {
   return Object.fromEntries(rows.map((r) => [r.term, r.expandsTo]));
 }
 
-export async function buildSearch(raw: string): Promise<{ parsed: ParsedQuery; where: Prisma.ProductWhereInput; corrected: string[] }> {
-  const parsed = parseQuery(raw.slice(0, 120), await synonyms());
-  const corrected = await Promise.all(parsed.terms.map(correctTerm));
-  const and: Prisma.ProductWhereInput[] = [{ status: "ACTIVE" }];
-
-  // Each typed word must match somewhere (name/category/attributes/colour); multi-word synonyms are ORed.
-  const single = corrected.filter((t) => !t.includes(" "));
-  const phrases = corrected.filter((t) => t.includes(" "));
-  for (const t of single) {
-    const alt = t.endsWith("i") ? [t, t.slice(0, -1) + "a"] : t.endsWith("a") ? [t, t.slice(0, -1) + "i"] : [t]; // kurti <-> kurta
-    and.push({ OR: alt.map((a) => ({ searchText: { contains: a, mode: "insensitive" as const } })) });
-  }
-  if (phrases.length) and.push({ OR: phrases.map((p) => ({ searchText: { contains: p, mode: "insensitive" as const } })) });
-
-  for (const [key, vals] of Object.entries(parsed.attributes)) {
-    if (key === "colour") and.push({ variants: { some: { colour: { in: vals.map((v) => v[0].toUpperCase() + v.slice(1)) } } } });
-    else and.push({ attributes: { some: { key, value: { in: vals } } } });
-  }
-  if (parsed.maxPrice != null || parsed.minPrice != null) and.push({ price: { lte: parsed.maxPrice, gte: parsed.minPrice } });
-  return { parsed, where: { AND: and }, corrected };
-}
+// kurti <-> kurta, kurtis
+const variantsOf = (t: string) => [...new Set([t, t.endsWith("i") ? t.slice(0, -1) + "a" : t, t.endsWith("a") ? t.slice(0, -1) + "i" : t])];
+const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 export async function searchProducts(raw: string, take = 48) {
-  const { parsed, where, corrected } = await buildSearch(raw);
-  let items = await db.product.findMany({ where, include: cardInclude, orderBy: [{ soldCount: "desc" }], take });
-  let relaxed = false;
-  // Nothing found: relax attribute filters and keep only the words.
-  if (!items.length && (Object.keys(parsed.attributes).length || parsed.maxPrice)) {
-    const words = corrected.filter(Boolean);
-    if (words.length) {
-      items = await db.product.findMany({
-        where: { status: "ACTIVE", OR: words.map((w) => ({ searchText: { contains: w, mode: "insensitive" as const } })) },
-        include: cardInclude,
-        orderBy: { soldCount: "desc" },
-        take,
-      });
-      relaxed = items.length > 0;
+  const parsed: ParsedQuery = parseQuery(raw.slice(0, 120), await synonyms());
+  const corrected = await Promise.all(parsed.terms.map(correctTerm));
+  const genders = parsed.attributes.gender ?? [];
+  const colours = (parsed.attributes.colour ?? []).map(cap);
+  const attrEntries = Object.entries(parsed.attributes).filter(([k]) => k !== "gender" && k !== "colour");
+
+  const any: Prisma.ProductWhereInput[] = [];
+  for (const t of corrected) for (const v of variantsOf(t)) any.push({ searchText: { contains: v, mode: "insensitive" } });
+  for (const [k, vals] of attrEntries) any.push({ attributes: { some: { key: k, value: { in: vals } } } });
+  if (colours.length) any.push({ variants: { some: { colour: { in: colours } } } });
+  if (genders.length) any.push({ gender: { in: genders as ("WOMEN" | "MEN" | "KIDS")[] } });
+
+  const where: Prisma.ProductWhereInput = {
+    status: "ACTIVE",
+    ...(parsed.maxPrice != null || parsed.minPrice != null ? { price: { lte: parsed.maxPrice, gte: parsed.minPrice } } : {}),
+    ...(any.length ? { OR: any } : {}),
+  };
+  const candidates = await db.product.findMany({ where, include: { ...cardInclude, attributes: { select: { key: true, value: true } } }, take: 400 });
+
+  const words = corrected.filter((t) => !t.includes(" "));
+  const phrases = corrected.filter((t) => t.includes(" "));
+  const wanted = words.length + (phrases.length ? 1 : 0) + attrEntries.length + (colours.length ? 1 : 0) + (genders.length ? 1 : 0);
+
+  const scored = candidates.map((p) => {
+    const name = p.name.toLowerCase();
+    const tokens = name.split(/\s+/);
+    let score = 0;
+    let hits = 0;
+    const hit = (n: number) => {
+      score += n;
+      hits++;
+    };
+    for (const t of words) {
+      const vs = variantsOf(t);
+      if (tokens.includes(t) || tokens.includes(`${t}s`)) hit(7);
+      else if (vs.some((v) => tokens.includes(v))) hit(5);
+      else if (vs.some((v) => name.includes(v))) hit(4);
+      else if (vs.some((v) => p.searchText.includes(v))) hit(2);
     }
-  }
+    if (phrases.length && phrases.some((ph) => p.searchText.includes(ph))) hit(3);
+    for (const [k, vals] of attrEntries) if (p.attributes.some((a) => a.key === k && vals.includes(a.value))) hit(3);
+    if (colours.length && p.variants.some((v) => colours.includes(v.colour))) hit(3);
+    if (genders.length) {
+      if (genders.includes(p.gender)) hit(3);
+      else score -= 8; // "suit" should not surface men's kurtas
+    }
+    return { p, score, full: hits === wanted };
+  });
+
+  const ranked = scored
+    .filter((s) => s.score > 0 || (!wanted && s.score === 0))
+    .sort((a, b) => Number(b.full) - Number(a.full) || b.score - a.score || b.p.soldCount - a.p.soldCount);
+  const items = ranked.slice(0, take).map(({ p }) => {
+    const { attributes: _drop, ...card } = p;
+    void _drop;
+    return card;
+  });
+  const relaxed = items.length > 0 && !ranked[0].full && wanted > 1;
   const didYouMean = corrected.join(" ") !== parsed.terms.join(" ") ? corrected.join(" ") : null;
   return { items, parsed, relaxed, didYouMean };
 }

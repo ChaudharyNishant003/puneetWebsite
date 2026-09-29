@@ -38,7 +38,7 @@ export function ExchangeButton({ orderItemId, sizes, daysLeft, free }: { orderIt
           {done ? (
             <div className="py-4 text-center text-sm">
               <p className="font-semibold">Request received ✓</p>
-              <p className="mt-1 text-muted">We'll call you to arrange pickup, or bring the item to our store with your order number.</p>
+              <p className="mt-1 text-muted">We&apos;ll call you to arrange pickup, or bring the item to our store with your order number.</p>
               <button onClick={() => location.reload()} className="btn btn-dark mt-4">Done</button>
             </div>
           ) : (
@@ -54,7 +54,7 @@ export function ExchangeButton({ orderItemId, sizes, daysLeft, free }: { orderIt
                   {sizes.length ? (
                     <div className="flex flex-wrap gap-2">{sizes.map((s) => (<button key={s} onClick={() => setSize(s)} aria-pressed={size === s} className={`min-w-12 border px-3 py-2 ${size === s ? "border-dark bg-dark text-white" : "border-line-strong"}`}>{s}</button>))}</div>
                   ) : (
-                    <p className="text-xs text-muted">Other sizes are out of stock right now. Call us and we'll help.</p>
+                    <p className="text-xs text-muted">Other sizes are out of stock right now. Call us and we&apos;ll help.</p>
                   )}
                 </div>
               ) : null}

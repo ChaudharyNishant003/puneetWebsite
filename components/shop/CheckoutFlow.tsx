@@ -26,7 +26,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
   const [form, setForm] = useState<Addr>({ ...empty, name: props.name, phone: props.phone ?? "" });
   const [email, setEmail] = useState(props.email);
   const [method, setMethod] = useState<"PREPAID" | "COD">("PREPAID");
-  const [quote, setQuote] = useState<Quote | null>(null);
+  const [quote, setQuote] = useState<(Quote & { forKey: string }) | null>(null);
   const [quoteErr, setQuoteErr] = useState<string | null>(null);
   const [codOtp, setCodOtp] = useState("");
   const [codOtpSent, setCodOtpSent] = useState<string | null>(null);
@@ -37,12 +37,16 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
   const addr: Addr = selectedId === "new" ? form : (props.addresses.find((a) => a.id === selectedId) ?? form);
   const pin = addr.pincode;
 
+  // The total shown must be the total for the current pincode + payment method; placing an order
+  // with a stale quote (e.g. right after switching to COD) would be rejected by the server.
+  const quoteKey = `${pin}|${method}`;
   const refreshQuote = useCallback(async () => {
     if (!props.loggedIn || !/^\d{6}$/.test(pin)) return setQuote(null);
+    const key = `${pin}|${method}`;
     const q = await quoteAction(pin, method);
     if (!q.ok) return setQuoteErr(q.error ?? "Could not get delivery details");
     setQuoteErr(null);
-    setQuote(q);
+    setQuote({ ...q, forKey: key });
     if (method === "COD" && !q.cod.allowed) setMethod("PREPAID");
   }, [pin, method, props.loggedIn]);
 
@@ -129,6 +133,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
       }
     });
 
+  const quoteFresh = quote?.forKey === quoteKey;
   const p = quote?.pricing;
   const itemCount = props.items.reduce((s, i) => s + i.qty, 0);
   const eta = quote?.etaDate ? new Date(quote.etaDate).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "short" }) : null;
@@ -148,7 +153,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
         </section>
 
         {/* 2. Address */}
-        <section className={`border border-line p-4 ${props.loggedIn ? "" : "pointer-events-none opacity-50"}`} aria-disabled={!props.loggedIn}>
+        <section className={`border border-line p-4 ${props.loggedIn ? "" : "pointer-events-none opacity-50"}`}>
           <h2 className="eyebrow mb-3 text-sm">2. Delivery address</h2>
           {props.addresses.length ? (
             <div className="mb-3 space-y-2">
@@ -214,7 +219,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
           </label>
           {method === "COD" && needsCodOtp ? (
             <div className="mt-3 bg-surface p-3 text-sm">
-              <p>The delivery phone is different from your login number, so we'll confirm it with an OTP.</p>
+              <p>The delivery phone is different from your login number, so we&apos;ll confirm it with an OTP.</p>
               {codOtpSent ? (
                 <>
                   <input value={codOtp} onChange={(e) => setCodOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder={`OTP sent to ${addr.phone}`} aria-label="COD OTP" className="input mt-2 tracking-[0.3em]" />
@@ -252,8 +257,8 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
             {p ? <p className="text-right text-[11px] text-muted">Includes GST of {inr(p.taxTotal)}</p> : null}
           </dl>
           {error ? <p className="mt-3 text-sm text-danger" role="alert">{error}</p> : null}
-          <button onClick={place} disabled={pending || !props.loggedIn || !quote?.serviceable || (method === "COD" && needsCodOtp && codOtp.length !== 6 && !!codOtpSent)} className="btn btn-primary mt-4 w-full py-3.5">
-            {pending ? "Please wait…" : !p ? (props.loggedIn ? "Enter delivery pincode" : "Log in to continue") : method === "COD" ? `Place order · ${inr(p.total)}` : `Pay ${inr(p.total)}`}
+          <button onClick={place} disabled={pending || !quoteFresh || !props.loggedIn || !quote?.serviceable || (method === "COD" && needsCodOtp && codOtp.length !== 6 && !!codOtpSent)} className="btn btn-primary mt-4 w-full py-3.5">
+            {pending ? "Please wait…" : p && !quoteFresh ? "Updating total…" : !p ? (props.loggedIn ? "Enter delivery pincode" : "Log in to continue") : method === "COD" ? `Place order · ${inr(p.total)}` : `Pay ${inr(p.total)}`}
           </button>
           <p className="mt-2 text-center text-[11px] text-muted">By placing the order you agree to our Terms and Exchange Policy.</p>
           {props.mockPayments ? <p className="mt-2 bg-gold-soft p-2 text-center text-[11px]">Test mode: payments are simulated (Razorpay keys not added yet).</p> : null}

@@ -34,7 +34,7 @@ export function LoginForm({ onDone, compact = false }: { onDone: () => void; com
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); if (sent) verify(); else send(); }} className="space-y-3">
-      {!compact ? <p className="text-sm text-muted">Enter your mobile number. We'll send a one-time password (OTP). No password needed.</p> : null}
+      {!compact ? <p className="text-sm text-muted">Enter your mobile number. We&apos;ll send a one-time password (OTP). No password needed.</p> : null}
       <div>
         <label htmlFor="login-phone" className="label">Mobile number</label>
         <div className="flex items-center border border-line-strong">
