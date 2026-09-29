@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developer Console Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fff; --page:#f6f6f4; --text:#1a1a1a; --muted:#5f5f66; --line:#e4e4e0; --brand:#1f3b5c; --accent:#8e1b3a; --soft:#eaf0f7; --ok:#1e7f3e; --okbg:#e9f5ec; --warn:#8a5a00; --warnbg:#fff4dc; --kbd:#f1f1ee; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#1b1b1d; --page:#121213; --text:#ececec; --muted:#a6a6ad; --line:#2f2f33; --brand:#8fb6ee; --accent:#e07a95; --soft:#18222f; --ok:#6ccb8a; --okbg:#17281c; --warn:#e8b75a; --warnbg:#2b2416; --kbd:#26262a; } }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--page); color:var(--text); font-family:'Mukta','Jost',system-ui,sans-serif; line-height:1.7; padding:28px 16px 80px; font-size:16px; }
+  main { max-width:980px; margin:0 auto; }
+  .card { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:16px; }
+  h1 { font-family:'Jost','Mukta',sans-serif; font-size:27px; line-height:1.25; }
+  h2 { font-family:'Jost','Mukta',sans-serif; font-size:20px; color:var(--brand); margin-bottom:8px; }
+  h3 { font-size:16px; margin:14px 0 6px; }
+  ul, ol { padding-left:22px; } li { margin:3px 0; }
+  .muted { color:var(--muted); }
+  .pill { display:inline-block; font-size:12px; font-weight:700; padding:1px 9px; border-radius:99px; margin-right:4px; }
+  .p-ok { background:var(--okbg); color:var(--ok); } .p-warn { background:var(--warnbg); color:var(--warn); } .p-b { background:var(--soft); color:var(--brand); }
+  table { width:100%; border-collapse:collapse; font-size:14.5px; margin-top:6px; }
+  th, td { text-align:left; padding:7px 9px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12.5px; color:var(--muted); font-weight:600; }
+  .tbl { overflow-x:auto; }
+  .note { border-left:4px solid var(--brand); background:var(--soft); padding:10px 14px; border-radius:4px; margin:10px 0; font-size:15px; }
+  .warn { border-left:4px solid var(--warn); background:var(--warnbg); padding:10px 14px; border-radius:4px; margin:10px 0; font-size:15px; }
+  code { font-family:ui-monospace,Consolas,monospace; font-size:13px; background:var(--kbd); padding:1px 5px; border-radius:4px; }
+  .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; }
+  .box { border:1px solid var(--line); border-radius:8px; padding:14px; }
+  .sw { font-family:'Jost',sans-serif; font-size:12px; font-weight:700; padding:1px 7px; border-radius:4px; background:var(--kbd); border:1px solid var(--line); white-space:nowrap; }
+</style>
+</head>
+<body>
+<main>
+
+<div class="card">
+  <span class="pill p-b">Plan · Draft v1</span><span class="pill p-warn">Approval बाकी</span>
+  <h1>Developer Console: गुप्त control panel</h1>
+  <p class="muted" style="margin-top:6px">मकसद: website और admin panel के हर feature को developer अपनी pricing के हिसाब से ON या OFF कर सके, owner account पर पूरा नियंत्रण रख सके, और owner या staff को developer के होने का कोई पता न चले।</p>
+</div>
+
+<div class="card">
+  <h2>1. आपके फैसले (जिन पर यह plan बना है)</h2>
+  <div class="tbl"><table>
+    <tr><th>विषय</th><th>फैसला</th></tr>
+    <tr><td>Console कहां</td><td>इसी website में, एक गुप्त URL पर। कोई और खोले तो उसे साधारण "Page not found" दिखे।</td></tr>
+    <tr><td>बंद feature कैसे दिखे</td><td><b>पूरी तरह गायब</b>: न menu, न बटन। Page का URL सीधे खोलने पर भी "Page not found"।</td></tr>
+    <tr><td>Pricing</td><td>सिर्फ feature checklist (अलग plans नहीं)। हर feature का अपना ON/OFF।</td></tr>
+    <tr><td>OFF का असर</td><td>हर feature के <b>दो अलग switch</b>: Admin panel में और Website पर।</td></tr>
+    <tr><td>Developer login</td><td>Email, फिर password, फिर email OTP। Email service जुड़ने तक OTP screen पर दिखेगा (demo की तरह)।</td></tr>
+    <tr><td>Owner controls</td><td>Owner/Staff का login बंद या चालू करना, password reset, पूरी website बंद (maintenance), "Owner बनकर देखना", staff की गिनती सीमित करना।</td></tr>
+    <tr><td>Logs</td><td>अभी नहीं चाहिए (बाद में जोड़ सकते हैं)।</td></tr>
+  </table></div>
+</div>
+
+<div class="card">
+  <h2>2. Owner को developer का पता क्यों नहीं चलेगा</h2>
+  <ul>
+    <li><b>गुप्त URL</b>: console का पता server की setting (<code>DEV_CONSOLE_PATH</code>) से आता है, जैसे <code>/k7x-ops-29fd</code>। यह code, menu, sitemap या robots.txt, कहीं नहीं लिखा होगा। गलत पता डालने पर वही 404 दिखेगा जो किसी भी गलत page पर दिखता है।</li>
+    <li><b>अलग login system</b>: developer account एक अलग table में होगा। वह Admin → Users की list में कभी नहीं आएगा, और developer का cookie भी अलग होगा।</li>
+    <li><b>कोई निशान नहीं</b>: developer के बदलाव owner की "Recent admin activity" में नहीं जाएंगे। "Owner बनकर देखना" के समय किया गया काम भी owner के नाम से दर्ज नहीं होगा।</li>
+    <li><b>बंद feature = कभी था ही नहीं</b>: menu से गायब, page 404, बटन गायब, और server पर action भी बंद। अगर कोई पुराने link या किसी trick से कोशिश करे, तो उसे साधारण "Page not found" या "Something went wrong" मिलेगा, "आपका plan नहीं है" जैसा कुछ नहीं।</li>
+    <li><b>Maintenance और login बंद</b>: owner को सिर्फ साधारण संदेश दिखेंगे, जैसे "Site is under maintenance" या "Your account is disabled. Please contact support"। उनमें developer का कोई ज़िक्र नहीं होगा।</li>
+  </ul>
+  <div class="warn">ईमानदार सीमा: जिसके पास server (Railway) या GitHub code का access है, वह देख सकता है कि console मौजूद है। इसलिए Railway और GitHub का access सिर्फ आपके पास रहना चाहिए, owner को नहीं देना। Owner के सिर्फ website और admin panel इस्तेमाल करने तक उसे कुछ पता नहीं चलेगा।</div>
+</div>
+
+<div class="card">
+  <h2>3. Developer Console में क्या होगा</h2>
+  <div class="grid2">
+    <div class="box"><h3>A. Feature Checklist</h3><ul><li>नीचे section 5 के सारे features, groups में</li><li>हर feature के साथ <span class="sw">Admin</span> और <span class="sw">Website</span> के switch</li><li>"सब ON", "सब OFF" और "Default" बटन</li><li>बदलाव तुरंत लागू हों (अगले page load पर)</li><li>हर feature के आगे छोटा विवरण कि OFF करने पर क्या बदलेगा</li></ul></div>
+    <div class="box"><h3>B. Owner / Staff Control</h3><ul><li>हर admin user: login बंद या चालू करना, password reset</li><li>Staff की अधिकतम गिनती (0 रखें तो staff बनाने का option गायब)</li><li><b>Owner बनकर देखना</b>: एक click में admin panel owner की नज़र से खुल जाए, बिना उनका password जाने</li><li>उनका last login कब हुआ</li></ul></div>
+    <div class="box"><h3>C. Website Control</h3><ul><li><b>Maintenance mode</b>: पूरी website पर "We'll be back soon", सिर्फ चुने हुए pages या पूरी site</li><li>Admin panel भी साथ में बंद करना हो तो उसका अलग switch</li><li>Maintenance का संदेश बदल सकें</li></ul></div>
+    <div class="box"><h3>D. Developer Account</h3><ul><li>Email, password और email OTP से login (email service जुड़ने तक OTP screen पर दिखेगा)</li><li>5 गलत कोशिशों के बाद 30 मिनट का lock</li><li>Session 12 घंटे तक</li><li>Developer password बदलना</li></ul></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>4. OFF करने पर असल में क्या होगा (enforcement)</h2>
+  <ol>
+    <li><b>Menu</b>: Admin menu सिर्फ ON वाले modules दिखाएगा।</li>
+    <li><b>Page</b>: बंद module का page खोलने पर वही 404 आएगा जो किसी भी गलत page पर आता है।</li>
+    <li><b>बटन</b>: page के अंदर के बटन (जैसे "Book courier &amp; ship" या "Bulk import") भी गायब होंगे।</li>
+    <li><b>Server पर रोक</b>: हर admin action और हर API call से पहले feature की जांच होगी। सिर्फ UI छिपाना काफी नहीं है, क्योंकि कोई जानकार व्यक्ति सीधे action भेज सकता है।</li>
+    <li><b>Website</b>: website वाले switch से ग्राहक के लिए वो सुविधा हट जाएगी। जैसे Coupons OFF करने पर checkout में coupon का box नहीं दिखेगा, और पहले से bag में लगा coupon अपने-आप हट जाएगा।</li>
+    <li><b>Data सुरक्षित</b>: feature OFF करने पर कुछ delete नहीं होगा। वापस ON करते ही सब पहले जैसा मिलेगा।</li>
+    <li><b>Speed</b>: switches memory में cache होंगे (हर page पर database query नहीं होगी), और बदलने पर तुरंत refresh होंगे।</li>
+  </ol>
+</div>
+
+<div class="card">
+  <h2>5. पूरी Feature Checklist (दो switch वाली)</h2>
+  <p class="muted">"—" का मतलब है उस जगह उस feature का कोई हिस्सा है ही नहीं। Default: अभी सब कुछ ON है (आज की website जैसा)।</p>
+
+  <h3>A. Orders और Delivery</h3>
+  <div class="tbl"><table>
+    <tr><th>Feature</th><th>Admin switch से</th><th>Website switch से</th></tr>
+    <tr><td>Dashboard (आज की बिक्री, pending, low stock)</td><td>Dashboard के डिब्बे</td><td>—</td></tr>
+    <tr><td>Orders management</td><td>Orders menu और page</td><td>— (orders लेना हमेशा चालू)</td></tr>
+    <tr><td>Courier booking (Shiprocket)</td><td>"Book courier &amp; ship" बटन</td><td>Pincode पर courier ETA</td></tr>
+    <tr><td>Manual AWB entry</td><td>"Shipped outside the system" box</td><td>—</td></tr>
+    <tr><td>Local delivery (दुकान की अपनी)</td><td>"Send out for local delivery" बटन</td><td>Local pincodes पर अपनी delivery</td></tr>
+    <tr><td>Order cancel / refund marking</td><td>Cancel और Mark refunded बटन</td><td>—</td></tr>
+    <tr><td>Internal notes</td><td>Order पर note box</td><td>—</td></tr>
+    <tr><td>GST invoice PDF</td><td>"Invoice PDF" बटन</td><td>ग्राहक का "Download GST invoice"</td></tr>
+    <tr><td>COD block after RTO + re-enable</td><td>"Re-enable COD" बटन</td><td>RTO पर COD अपने-आप बंद होना</td></tr>
+  </table></div>
+
+  <h3>B. Products और Catalogue</h3>
+  <div class="tbl"><table>
+    <tr><th>Feature</th><th>Admin</th><th>Website</th></tr>
+    <tr><td>Products add / edit</td><td>Products menu</td><td>—</td></tr>
+    <tr><td>Stock grid (size × रंग)</td><td>Stock section</td><td>—</td></tr>
+    <tr><td>Photo upload</td><td>Photos section</td><td>—</td></tr>
+    <tr><td>Product video</td><td>Video upload</td><td>"Watch video" बटन</td></tr>
+    <tr><td>CSV bulk import</td><td>Bulk import box</td><td>—</td></tr>
+    <tr><td>CSV export</td><td>Export CSV बटन</td><td>—</td></tr>
+    <tr><td>Product details table (fabric, lining, care…)</td><td>Details fields</td><td>PDP पर details table</td></tr>
+    <tr><td>Size chart</td><td>—</td><td>"Size Chart" बटन और fit rule</td></tr>
+    <tr><td>Badges (New/Bestseller/Festive)</td><td>Badges field</td><td>Card पर badge</td></tr>
+    <tr><td>SEO fields</td><td>SEO section</td><td>—</td></tr>
+  </table></div>
+
+  <h3>C. Shopping अनुभव (Website)</h3>
+  <div class="tbl"><table>
+    <tr><th>Feature</th><th>Admin</th><th>Website</th></tr>
+    <tr><td>Smart Hinglish search + typo correction</td><td>"Search words" editor</td><td>OFF करने पर सिर्फ साधारण नाम वाला search</td></tr>
+    <tr><td>Search suggestions (type करते ही)</td><td>—</td><td>Suggestion list</td></tr>
+    <tr><td>Filters (bottom sheet)</td><td>—</td><td>Filter बटन</td></tr>
+    <tr><td>Sort</td><td>—</td><td>Sort बटन</td></tr>
+    <tr><td>Occasion और Budget collections</td><td>—</td><td>Home tiles और menu</td></tr>
+    <tr><td>Quick Add</td><td>—</td><td>Card पर Quick Add</td></tr>
+    <tr><td>Wishlist</td><td>—</td><td>♡ बटन और Wishlist page</td></tr>
+    <tr><td>Recently viewed</td><td>—</td><td>PDP पर रेल</td></tr>
+    <tr><td>Similar products</td><td>—</td><td>"You may also like"</td></tr>
+    <tr><td>Pincode delivery-date check</td><td>—</td><td>PDP पर "Check delivery"</td></tr>
+    <tr><td>Share बटन</td><td>—</td><td>PDP share</td></tr>
+    <tr><td>Visit Store page / block</td><td>—</td><td>Store page, home block, bottom-nav "Store"</td></tr>
+  </table></div>
+
+  <h3>D. Checkout और Payment</h3>
+  <div class="tbl"><table>
+    <tr><th>Feature</th><th>Admin</th><th>Website</th></tr>
+    <tr><td>Coupons</td><td>Coupons menu</td><td>Bag और checkout में coupon, PDP पर Offers box</td></tr>
+    <tr><td>Prepaid discount</td><td>Settings का field</td><td>"Save ₹X" और prepaid छूट</td></tr>
+    <tr><td>Cash on Delivery</td><td>Settings के COD fields</td><td>COD का option</td></tr>
+    <tr><td>COD OTP (अलग delivery phone)</td><td>—</td><td>COD OTP का कदम</td></tr>
+    <tr><td>Online payment (Razorpay)</td><td>—</td><td>UPI/Card option (OFF करने पर सिर्फ COD)</td></tr>
+    <tr><td>Saved addresses</td><td>—</td><td>Address book और Account → Addresses</td></tr>
+    <tr><td>Free-shipping progress bar</td><td>—</td><td>Bag में हरी पट्टी</td></tr>
+  </table></div>
+
+  <h3>E. Post-order</h3>
+  <div class="tbl"><table>
+    <tr><th>Feature</th><th>Admin</th><th>Website</th></tr>
+    <tr><td>Size exchange</td><td>Exchanges menu</td><td>"Exchange size" बटन</td></tr>
+    <tr><td>Reviews</td><td>Reviews menu</td><td>Reviews दिखना और लिखना, rating stars</td></tr>
+    <tr><td>Photo reviews</td><td>—</td><td>Review में photo upload, home का reviews strip</td></tr>
+    <tr><td>SMS notifications</td><td>—</td><td>Order, shipping और delivery के SMS</td></tr>
+    <tr><td>Email notifications</td><td>—</td><td>Order emails</td></tr>
+    <tr><td>Order tracking page</td><td>—</td><td>Progress line, courier/AWB</td></tr>
+  </table></div>
+
+  <h3>F. Store Management (Owner वाले हिस्से)</h3>
+  <div class="tbl"><table>
+    <tr><th>Feature</th><th>Admin</th><th>Website</th></tr>
+    <tr><td>Pincodes management</td><td>Pincodes menu</td><td>—</td></tr>
+    <tr><td>Announcement bar editor</td><td>Homepage → Announcement</td><td>ऊपर की काली पट्टी</td></tr>
+    <tr><td>Hero banner editor</td><td>Homepage → Main banner</td><td>—</td></tr>
+    <tr><td>Homepage rails editor</td><td>Homepage → Rails</td><td>—</td></tr>
+    <tr><td>Settings</td><td>Settings menu</td><td>—</td></tr>
+    <tr><td>Reports</td><td>Reports menu</td><td>—</td></tr>
+    <tr><td>Users (staff बनाना)</td><td>Users menu (staff की सीमा अलग से)</td><td>—</td></tr>
+    <tr><td>Admin activity log</td><td>Users page पर activity list</td><td>—</td></tr>
+  </table></div>
+  <p class="muted" style="margin-top:8px">कुल लगभग 50 features। इन्हें दोनों तरफ के switches में बांटने पर लगभग 60 switches बनते हैं।</p>
+</div>
+
+<div class="card">
+  <h2>6. Owner Controls का व्यवहार</h2>
+  <div class="tbl"><table>
+    <tr><th>Control</th><th>Owner/Staff को क्या दिखेगा</th></tr>
+    <tr><td>Login बंद</td><td>Login पर "Your account is disabled. Please contact support." और अगर पहले से logged in हैं तो तुरंत बाहर।</td></tr>
+    <tr><td>Password reset</td><td>पुराना password काम नहीं करेगा। नया password आप उन्हें देंगे।</td></tr>
+    <tr><td>Maintenance</td><td>Website पर "We'll be back soon"। Admin भी बंद करना हो तो वहां "Admin is under maintenance"।</td></tr>
+    <tr><td>Owner बनकर देखना</td><td>कुछ नहीं दिखेगा। आपके browser में admin panel owner की तरह खुलेगा, और ऊपर सिर्फ आपको एक छोटी पट्टी दिखेगी "Viewing as Owner · Exit"।</td></tr>
+    <tr><td>Staff सीमा</td><td>सीमा पूरी होने पर "Add a user" का box गायब। सीमा 0 हो तो Users page पर staff का option ही नहीं आएगा।</td></tr>
+  </table></div>
+</div>
+
+<div class="card">
+  <h2>7. Technical ढांचा (संक्षेप में)</h2>
+  <ul>
+    <li><b>नई tables</b>: <code>DevUser</code> (developer login), <code>DevOtp</code>, <code>FeatureFlag</code> (key, adminOn, siteOn), <code>SiteControl</code> (maintenance, staff limit)। Owner के admin में इनका कोई ज़िक्र नहीं होगा।</li>
+    <li><b>Feature registry</b>: एक file में हर feature का key, नाम, विवरण और group। यही console की checklist भी बनाएगी और code की हर जांच भी यहीं से होगी, ताकि दोनों कभी अलग न हों।</li>
+    <li><b>Checks</b>: <code>isOn("coupons", "site")</code> जैसे helper। Admin layout का menu, हर admin page, हर server action और हर storefront component इसी helper से जांच करेगा।</li>
+    <li><b>Middleware</b>: maintenance mode और गुप्त path का guard।</li>
+    <li><b>Impersonation</b>: owner के नाम से एक अलग तरह का session, जिसमें audit log में लिखना बंद रहेगा।</li>
+    <li><b>Setup</b>: पहला developer account server setting (<code>DEV_EMAIL</code>, <code>DEV_PASSWORD</code>) से बनेगा, seed में नहीं, ताकि demo data में उसका निशान न रहे।</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>8. Milestones और pass होने की शर्तें</h2>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>काम</th><th>Pass होने की शर्त</th></tr>
+    <tr><td>D1</td><td>Developer login (गुप्त path, password, email OTP screen पर), अलग session</td><td>गलत path पर 404; admin login से console नहीं खुलता; developer Users list में नहीं दिखता</td></tr>
+    <tr><td>D2</td><td>Feature registry, flags table, console की checklist UI</td><td>लगभग 60 switches दिखें, बदलें और save हों</td></tr>
+    <tr><td>D3</td><td>Admin panel पर लागू करना (menu, pages, बटन, server actions)</td><td>हर admin switch OFF करने पर वो गायब हो और सीधा URL या action भी रुके</td></tr>
+    <tr><td>D4</td><td>Website पर लागू करना</td><td>हर website switch OFF करने पर ग्राहक को वो सुविधा न दिखे, और checkout सही चले (जैसे Online payment OFF तो सिर्फ COD)</td></tr>
+    <tr><td>D5</td><td>Owner controls: login बंद, password reset, maintenance, view as owner, staff सीमा</td><td>हर control काम करे और owner की activity में कोई निशान न हो</td></tr>
+    <tr><td>D6</td><td>Tests, deploy, report</td><td>Unit और E2E tests (हर switch ON/OFF), नई <code>deploy/mvp-2</code> branch, Railway पर test, HTML report</td></tr>
+  </table></div>
+  <p style="margin-top:8px">काम का तरीका पहले जैसा रहेगा: नई branch <code>feature/dev-console</code>, master को कोई नहीं छुएगा, और आखिर में HTML report।</p>
+</div>
+
+<div class="card">
+  <h2>9. ध्यान देने लायक बातें</h2>
+  <ul>
+    <li><span class="pill p-warn">सुरक्षा</span> जब तक email service नहीं जुड़ती, developer OTP screen पर दिखेगा। तब तक सुरक्षा असल में गुप्त URL, लंबे password और lock पर टिकी है। Email जुड़ते ही OTP अपने-आप email पर जाने लगेगा।</li>
+    <li><span class="pill p-warn">Logs</span> आपने अभी logs नहीं मांगे। Developer के अपने बदलावों का एक छोटा रिकॉर्ड फिर भी रखना चाहता हूं, ताकि आप देख सकें कि कौनसा switch कब बदला। यह owner को कभी नहीं दिखेगा। आप मना करें तो यह भी नहीं रखूंगा।</li>
+    <li><span class="pill p-b">Core</span> "Orders management" और "Products add/edit" OFF करने पर दुकान चल ही नहीं पाएगी, इसलिए console उन पर एक चेतावनी दिखाएगा। OFF फिर भी किया जा सकेगा।</li>
+  </ul>
+</div>
+
+<div class="card" style="border-color:var(--brand)">
+  <h2>Approval</h2>
+  <p>Plan ठीक लगे तो "approved" लिख दीजिए। Section 9 के "developer के अपने बदलावों का रिकॉर्ड" पर हां या ना भी बता दीजिए। फिर मैं D1 से D6 तक बिना रुके बनाऊंगा और आखिर में HTML report दूंगा।</p>
+</div>
+
+</main>
+</body>
+</html>
