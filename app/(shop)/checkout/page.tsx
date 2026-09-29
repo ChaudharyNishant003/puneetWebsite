@@ -5,6 +5,7 @@ import { getCart, cartSummary } from "@/lib/cart";
 import { getCustomerSession } from "@/lib/auth/session";
 import { CheckoutFlow } from "@/components/shop/CheckoutFlow";
 import { paymentsAreMock } from "@/lib/integrations/payments";
+import { isDemoMode } from "@/lib/config";
 
 export const metadata: Metadata = { title: "Checkout", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -37,7 +38,7 @@ export default async function CheckoutPage() {
         addresses={(customer?.addresses ?? []).map((a) => ({ id: a.id, name: a.name, phone: a.phone, line1: a.line1, line2: a.line2 ?? "", landmark: a.landmark ?? "", city: a.city, state: a.state, pincode: a.pincode }))}
         items={items}
         initialSubtotal={pricing.subtotal}
-        mockPayments={paymentsAreMock()}
+        mockPayments={paymentsAreMock() && isDemoMode()}
       />
     </div>
   );

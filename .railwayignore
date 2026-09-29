@@ -1,0 +1,11 @@
+node_modules
+.next
+.pgdata
+tmp
+test-results
+playwright-report
+mockups
+docs
+.env
+.npmrc
+*.log

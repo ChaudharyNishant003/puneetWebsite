@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { confirmPaymentAction, mockPayAction, paymentFailedAction, placeOrderAction, quoteAction, sendCodOtpAction } from "@/app/actions/checkout";
 import { inr } from "@/lib/format";
-import { INDIAN_STATES } from "@/lib/validation";
+import { INDIAN_STATES } from "@/lib/constants";
 import { IconCash, IconLock } from "../icons";
 import { LoginForm } from "./LoginForm";
 

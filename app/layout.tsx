@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: { default: `${shop.name} | Kurtas, Sarees, Men, Kids & Innerwear`, template: `%s | ${shop.name}` },
   description: `${shop.name}: ${shop.tagline}. Shop kurta sets, sarees, men's wear, kids wear and innerwear online with COD, free size exchange and delivery across India.`,
   openGraph: { siteName: shop.name, type: "website", locale: "en_IN" },
+  ...(process.env.DEMO_MODE === "1" ? { robots: { index: false, follow: false } } : {}),
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#8e1b3a" };

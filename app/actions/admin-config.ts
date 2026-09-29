@@ -78,7 +78,7 @@ export async function saveAnnouncementAction(_: unknown, form: FormData): Promis
   const text = String(form.get("text") ?? "").trim().slice(0, 140);
   const link = String(form.get("link") ?? "").trim();
   if (!text) return { ok: false, error: "Write the announcement text" };
-  if (link && !link.startsWith("/")) return { ok: false, error: "Link must start with / (a page on this site)" };
+  if (link && (!link.startsWith("/") || link.startsWith("//"))) return { ok: false, error: "Link must start with / (a page on this site)" };
   await db.cmsBlock.upsert({ where: { key: "announcement" }, create: { key: "announcement", content: { text, link } }, update: { content: { text, link } } });
   await audit(u.email, "cms.announcement", "CmsBlock", "announcement", { text, link });
   return done("/");
@@ -88,7 +88,7 @@ export async function saveHeroAction(_: unknown, form: FormData): Promise<R> {
   const u = await requireAdmin();
   const current = (await db.cmsBlock.findUnique({ where: { key: "hero" } }))?.content as Record<string, string> | undefined;
   const href = String(form.get("href") ?? "/").trim();
-  if (!href.startsWith("/")) return { ok: false, error: "Button link must start with /" };
+  if (!href.startsWith("/") || href.startsWith("//")) return { ok: false, error: "Button link must start with /" };
   let image = form.get("removeImage") === "on" ? undefined : current?.image;
   const file = form.get("image");
   if (file instanceof File && file.size) {

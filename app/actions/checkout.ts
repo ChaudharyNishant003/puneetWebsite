@@ -13,7 +13,7 @@ import { addEvent, afterPlaced, expireStalePendingOrders, markOrderPaid, newOrde
 import { addressSchema } from "@/lib/validation";
 import { track } from "@/lib/events";
 import { rateLimit } from "@/lib/rate-limit";
-import { shop } from "@/lib/config";
+import { isDemoMode, shop } from "@/lib/config";
 
 const placeSchema = z.object({
   address: addressSchema,
@@ -85,6 +85,9 @@ export async function placeOrderAction(raw: z.input<typeof placeSchema>): Promis
   const parsed = placeSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Please check your details" };
   const input = parsed.data;
+  // Live store without payment keys: refuse prepaid up front instead of creating an unpayable order.
+  if (input.paymentMethod === "PREPAID" && paymentsAreMock() && !isDemoMode())
+    return { ok: false, error: "Online payment is not available right now. Please choose Cash on Delivery." };
   await expireStalePendingOrders();
 
   const q = await buildQuote({ pincode: input.address.pincode, paymentMethod: input.paymentMethod }, s.sub);
@@ -191,7 +194,7 @@ export async function confirmPaymentAction(input: { providerOrderId: string; pay
 
 // Mock payments only (no Razorpay keys): simulate success/failure from the checkout page.
 export async function mockPayAction(providerOrderId: string, succeed: boolean) {
-  if (!paymentsAreMock() || process.env.NODE_ENV === "production" && !process.env.ALLOW_MOCK_PAYMENTS) return { ok: false as const, error: "Mock payments are disabled" };
+  if (!paymentsAreMock() || !isDemoMode()) return { ok: false as const, error: "Mock payments are disabled" };
   if (!succeed) return paymentFailedAction(providerOrderId);
   return confirmPaymentAction({ providerOrderId, paymentId: `mock_pay_${Date.now()}`, signature: "mock_signature" });
 }

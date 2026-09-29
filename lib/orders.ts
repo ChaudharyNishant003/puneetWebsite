@@ -9,6 +9,8 @@ import { sendEmail } from "./integrations/email";
 
 export class StockError extends Error {}
 
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+
 export function newOrderNumber(now = new Date()) {
   const d = now.toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }).slice(2).replace(/-/g, "");
   return `PG${d}${crypto.randomInt(1000, 10000)}`;
@@ -100,7 +102,7 @@ export async function notify(order: Order, status: OrderStatus, extra: { trackin
   const items = await db.orderItem.findMany({ where: { orderId: order.id } });
   const html = `<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#1a1a1a">
     <h2 style="color:#8e1b3a;letter-spacing:.1em">${shop.name.toUpperCase()}</h2>
-    <p>Hi ${order.shipName.split(" ")[0]},</p>
+    <p>Hi ${esc(order.shipName.split(" ")[0])},</p>
     <p>${
       status === "PLACED"
         ? `Thank you! Your order <b>${order.number}</b> is confirmed.${order.etaDate ? ` Expected delivery by <b>${fmtDate(order.etaDate)}</b>.` : ""}`
@@ -111,7 +113,7 @@ export async function notify(order: Order, status: OrderStatus, extra: { trackin
             : `Your order <b>${order.number}</b> is now: ${statusLabel[status]}.`
     }</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px">${items
-      .map((i) => `<tr><td style="padding:6px 0;border-bottom:1px solid #eee">${i.productName} (${i.colour}, ${i.size}) × ${i.qty}</td><td style="text-align:right;border-bottom:1px solid #eee">${inr(i.unitPrice * i.qty)}</td></tr>`)
+      .map((i) => `<tr><td style="padding:6px 0;border-bottom:1px solid #eee">${esc(i.productName)} (${esc(i.colour)}, ${esc(i.size)}) × ${i.qty}</td><td style="text-align:right;border-bottom:1px solid #eee">${inr(i.unitPrice * i.qty)}</td></tr>`)
       .join("")}
       <tr><td style="padding:8px 0"><b>Total ${order.paymentMethod === "COD" ? "(pay on delivery)" : "(paid)"}</b></td><td style="text-align:right"><b>${inr(order.total)}</b></td></tr></table>
     <p><a href="${link}" style="display:inline-block;background:#8e1b3a;color:#fff;padding:10px 16px;text-decoration:none">View order</a></p>

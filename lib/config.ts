@@ -1,5 +1,9 @@
 // Shop identity. Placeholders until the client confirms name, city, GST and domain.
 // Everything user-facing reads from here, so replacing these values rebrands the site.
+// Demo deployments (no SMS/payment keys) show OTPs on screen and allow simulated payments.
+// Never set DEMO_MODE on the real store.
+export const isDemoMode = () => process.env.NODE_ENV !== "production" || process.env.DEMO_MODE === "1";
+
 export const shop = {
   name: process.env.NEXT_PUBLIC_SHOP_NAME ?? "Puneet Garments",
   shortName: process.env.NEXT_PUBLIC_SHOP_SHORT ?? "Puneet",

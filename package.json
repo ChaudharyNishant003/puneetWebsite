@@ -28,6 +28,7 @@
     "jose": "^6.2.12",
     "next": "15.5.26",
     "papaparse": "^5.7.0",
+    "prisma": "^6.19.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "server-only": "^0.0.1",
@@ -44,7 +45,6 @@
     "embedded-postgres": "^17.10.0-beta.17",
     "eslint": "^9",
     "eslint-config-next": "15.5.26",
-    "prisma": "^6.19.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",
@@ -57,5 +57,8 @@
     "@prisma/client@6.19.3": true,
     "@prisma/engines@6.19.3": true,
     "@embedded-postgres/windows-x64@17.10.0-beta.17": true
+  },
+  "engines": {
+    "node": ">=20.18"
   }
 }

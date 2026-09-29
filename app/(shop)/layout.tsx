@@ -18,6 +18,9 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-white focus:p-2">Skip to content</a>
+      {process.env.DEMO_MODE === "1" ? (
+        <div className="bg-gold px-3 py-1.5 text-center text-[11px] font-semibold text-dark">Demo store: products, prices and orders are samples, not real.</div>
+      ) : null}
       <div className="bg-dark px-3 py-2 text-center text-[11px] tracking-wide text-white">
         {ann.link ? <Link href={ann.link} className="underline-offset-2 hover:underline">{ann.text}</Link> : ann.text}
       </div>

@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { db } from "../db";
 import { rateLimit } from "../rate-limit";
 import { sendOtpSms, smsIsMock } from "../integrations/sms";
+import { isDemoMode } from "../config";
 
 const OTP_TTL_MIN = 5;
 const MAX_ATTEMPTS = 5;
@@ -25,8 +26,8 @@ export async function requestOtp(phone: string, purpose: "LOGIN" | "COD", ip = "
     data: { phone, purpose, codeHash: hash(phone, code), expiresAt: new Date(Date.now() + OTP_TTL_MIN * 60_000) },
   });
   await sendOtpSms(phone, code);
-  // In mock mode (no SMS keys, non-production) we surface the code so the flow is testable.
-  const devCode = smsIsMock() && process.env.NODE_ENV !== "production" ? code : undefined;
+  // With no SMS provider (local dev or a demo deploy) we surface the code so the flow is testable.
+  const devCode = smsIsMock() && isDemoMode() ? code : undefined;
   return { ok: true as const, devCode };
 }
 
