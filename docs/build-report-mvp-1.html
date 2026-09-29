@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MVP Build Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Mukta:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fff; --page:#f6f6f4; --text:#1a1a1a; --muted:#63636a; --line:#e6e6e3; --brand:#8e1b3a; --soft:#f8edf0; --ok:#1e7f3e; --okbg:#e9f5ec; --warn:#8a5a00; --warnbg:#fff4dc; --bad:#b3261e; --badbg:#fdecea; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#1b1b1d; --page:#121213; --text:#ececec; --muted:#a3a3aa; --line:#2e2e31; --brand:#e07a95; --soft:#2a1c21; --ok:#6ccb8a; --okbg:#18281d; --warn:#e8b75a; --warnbg:#2b2416; --bad:#f08b83; --badbg:#2d1a18; } }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--page); color:var(--text); font-family:'Jost','Mukta',system-ui,sans-serif; line-height:1.6; padding:32px 16px 80px; }
+  main { max-width:960px; margin:0 auto; }
+  .card { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:22px; margin-bottom:18px; }
+  h1 { font-size:28px; line-height:1.2; } h2 { font-size:20px; color:var(--brand); margin-bottom:10px; } h3 { font-size:15px; margin:14px 0 4px; }
+  p, li { font-size:15px; } ul { padding-left:20px; } li { margin:3px 0; }
+  .muted { color:var(--muted); }
+  .pill { display:inline-block; font-size:12px; font-weight:600; padding:2px 9px; border-radius:99px; margin:2px 4px 2px 0; }
+  .ok { background:var(--okbg); color:var(--ok); } .warn { background:var(--warnbg); color:var(--warn); } .bad { background:var(--badbg); color:var(--bad); } .brand { background:var(--soft); color:var(--brand); }
+  table { width:100%; border-collapse:collapse; font-size:14px; } th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .wrap { overflow-x:auto; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .stat { border:1px solid var(--line); border-radius:8px; padding:14px; } .stat b { display:block; font-size:24px; }
+  a { color:var(--brand); word-break:break-all; }
+  code { font-family:ui-monospace,Consolas,monospace; font-size:13px; background:var(--page); padding:1px 5px; border-radius:4px; }
+</style>
+</head>
+<body>
+<main>
+
+<div class="card">
+  <span class="pill brand">Build report · deploy/mvp-1</span><span class="pill warn">Demo mode</span>
+  <h1>Puneet Garments: MVP Build Report</h1>
+  <p class="muted" style="margin-top:6px">30 Sep 2026 · Approved plan के milestones M0 से M8 तक पूरे हुए। सारा data dummy है और बाहरी services test mode में चल रही हैं।</p>
+</div>
+
+<div class="card">
+  <h2>Live links</h2>
+  <table>
+    <tr><th>क्या</th><th>Link</th></tr>
+    <tr><td>Website</td><td><a href="https://web-production-7536a.up.railway.app">https://web-production-7536a.up.railway.app</a></td></tr>
+    <tr><td>Admin panel</td><td><a href="https://web-production-7536a.up.railway.app/admin">https://web-production-7536a.up.railway.app/admin</a></td></tr>
+    <tr><td>GitHub</td><td><a href="https://github.com/ChaudharyNishant003/puneetWebsite">ChaudharyNishant003/puneetWebsite</a> · branches <code>feature/mvp</code>, <code>deploy/mvp-1</code> (master पर कोई बदलाव नहीं)</td></tr>
+  </table>
+  <p class="muted" style="margin-top:8px;font-size:13px">Admin logins (Owner और Staff) इस report में नहीं लिखे हैं। वे local file <code>D:\PuneetWebsite\.env.deploy</code> में हैं, जो git और Railway upload दोनों से बाहर है।</p>
+  <h3>Demo mode में test कैसे करें</h3>
+  <ul>
+    <li>Customer login: कोई भी 10-digit mobile number डालें। SMS नहीं जाएगा, OTP screen पर दिखेगा।</li>
+    <li>Online payment: "Test payment" window आएगी, जिसमें Pay successfully या Fail चुनें। COD सीधे चलता है।</li>
+    <li>Site के ऊपर पीली "Demo store" पट्टी दिखती है, और search engines को site index करने से रोका गया है।</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Milestones</h2>
+  <div class="wrap"><table>
+    <tr><th>#</th><th>Milestone</th><th>Status</th><th>Proof</th></tr>
+    <tr><td>M0</td><td>Setup (Next.js 15, Tailwind, Prisma, tests, env)</td><td><span class="pill ok">Done</span></td><td>Lint, typecheck और build pass</td></tr>
+    <tr><td>M1</td><td>Schema और dummy data</td><td><span class="pill ok">Done</span></td><td>78 products, लगभग 500 variants, 143 reviews, 25 orders, SVG images; <code>demo:purge</code> तैयार</td></tr>
+    <tr><td>M2</td><td>Admin panel</td><td><span class="pill ok">Done</span></td><td>Owner/Staff roles, products, stock grid, photos, CSV import/export, orders, coupons, pincodes, CMS, settings, reports, users, audit log</td></tr>
+    <tr><td>M3</td><td>Storefront (Design D)</td><td><span class="pill ok">Done</span></td><td>Home, collections और filters, product page का पूरा spec, wishlist, recently viewed, store और policy pages</td></tr>
+    <tr><td>M4</td><td>Search</td><td><span class="pill ok">Done</span></td><td>Research document की 6 Hinglish queries सही results लाती हैं; typo correction और synonyms</td></tr>
+    <tr><td>M5</td><td>Cart, OTP, checkout, payments</td><td><span class="pill ok">Done</span></td><td>COD OTP, COD limit, prepaid discount, Razorpay और webhook, stock reserve होना और वापस आना</td></tr>
+    <tr><td>M6</td><td>Fulfilment और notifications</td><td><span class="pill ok">Done</span></td><td>Shiprocket (mock), local delivery, GST invoice PDF, SMS/email (mock)</td></tr>
+    <tr><td>M7</td><td>Account, exchange, reviews</td><td><span class="pill ok">Done</span></td><td>7-day window, पहला exchange free, innerwear blocked, stock की अदला-बदली जांची</td></tr>
+    <tr><td>M8</td><td>QA, security, deploy</td><td><span class="pill ok">Done</span></td><td>E2E tests, security fixes, Railway पर demo deploy</td></tr>
+  </table></div>
+</div>
+
+<div class="card">
+  <h2>Testing</h2>
+  <div class="grid">
+    <div class="stat"><b>24 / 24</b>Unit tests (pricing, COD, coupons, GST, search, exchange)</div>
+    <div class="stat"><b>10 / 10</b>E2E tests, Playwright, mobile Pixel 5</div>
+    <div class="stat"><b>0</b>Lint और type errors</div>
+    <div class="stat"><b>95–96</b>Lighthouse Accessibility · SEO 100 · Best Practices 100</div>
+  </div>
+  <h3>E2E suite में क्या चेक हुआ</h3>
+  <ul>
+    <li>Mobile पर horizontal scroll नहीं; filters से live "Apply (N items)" count; Hinglish search में price की सीमा का पालन</li>
+    <li>COD order शुरू से अंत तक, invoice PDF के साथ; prepaid fail के बाद bag बचा रहता है और retry सफल होता है; COD limit का साफ कारण दिखता है</li>
+    <li>Admin से order Delivered तक, फिर ग्राहक को exchange और review के बटन दिखते हैं; Staff owner वाले pages नहीं खोल सकता; admin public के लिए बंद है</li>
+  </ul>
+  <h3>Testing में पकड़े और ठीक किए गए bugs</h3>
+  <ul>
+    <li>Payment method बदलते ही "Place order" दबाने पर पुरानी कीमत चली जाती थी और order रुक जाता था। अब नई कीमत आने तक बटन बंद रहता है।</li>
+    <li>Search की कमियां: suit वाली query में पुरुषों की sherwani आ रही थी, और "bacche ke kapde" पर कोई result नहीं आता था। Search को score से क्रम देने वाला बनाकर दोनों ठीक किए।</li>
+    <li>Security: emails में ग्राहक का लिखा नाम escape किया; banner links में <code>//</code> से बाहर की site पर redirect रोका; server-action files से बिना login-check वाले helpers हटाए।</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>ईमानदारी से: जो अधूरा है या ध्यान देने लायक है</h2>
+  <ul>
+    <li><span class="pill warn">Performance</span> Mobile Lighthouse performance इस मशीन पर 73–76 आया (plan में लक्ष्य ≥85 था)। वजहें: dummy SVG images का rendering खर्च, और मशीन की धीमी CPU व memory की कमी (C: drive भरी है)। असली photos के साथ Railway URL पर PageSpeed Insights से दोबारा मापना है।</li>
+    <li><span class="pill warn">Mock</span> Razorpay, MSG91, Shiprocket, Resend और Cloudinary अभी test mode में हैं। Keys आने पर सिर्फ env variables डालने होंगे और <code>DEMO_MODE</code> हटाना होगा।</li>
+    <li><span class="pill warn">Placeholders</span> दुकान का नाम, पता, फोन, GSTIN, "Since 1998" और policy का text placeholder हैं। Policy pages पर इन्हें "[Placeholder]" लिखकर चिह्नित किया गया है।</li>
+    <li><span class="pill warn">Uploads</span> Cloudinary न होने पर admin से डाली गई photos server की disk पर जाती हैं, जो Railway पर हर deploy के साथ मिट जाएंगी। असली photos डालने से पहले Cloudinary जोड़ना ज़रूरी है।</li>
+    <li><span class="pill bad">Local मशीन</span> C: drive लगभग पूरी भरी है। इसी वजह से Docker अटका और Next.js memory की कमी से crash हुआ। Docker/WSL को आपकी मंज़ूरी से बंद किया गया है (Kutumb के local containers भी बंद हैं)।</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Live होने से पहले client से चाहिए</h2>
+  <ul>
+    <li>दुकान का नाम, logo, पता, timings, फोन, email, GSTIN और domain</li>
+    <li>KYC: Razorpay, MSG91 (DLT templates), Shiprocket, Cloudinary, Resend</li>
+    <li>असली products (CSV template admin में है) और photos</li>
+    <li>Local delivery के pincodes और charges; exchange, shipping और privacy policy पर sign-off</li>
+  </ul>
+  <p style="margin-top:8px">इसके बाद: <code>npm run demo:purge -- --yes</code> चलाना, admin passwords बदलना, <code>DEMO_MODE</code> हटाना, और custom domain जोड़ना।</p>
+</div>
+
+<div class="card">
+  <h2>Commits</h2>
+  <ul style="font-size:14px">
+    <li><code>be4db45</code> M0+M1: Project setup, database schema and dummy data</li>
+    <li><code>9e52902</code> M3-M5 + M7: Storefront, search, cart, OTP checkout, payments, account, exchanges, reviews</li>
+    <li><code>b6ba5d5</code> M2 + M6: Admin panel, fulfilment and shipping</li>
+    <li><code>c6f31ad</code> M4 + M8: Ranked Hinglish search, SEO, lint, E2E tests and a checkout race fix</li>
+    <li><code>95d1aaf</code> M8: Security hardening, demo mode, deploy config and docs</li>
+    <li><code>f353d5e</code> Deploy: keep all .env* files out of Railway uploads</li>
+  </ul>
+  <p class="muted" style="margin-top:8px">आगे का कदम: आपकी जांच और approval के बाद <code>feature/mvp</code> को master में merge करना।</p>
+</div>
+
+</main>
+</body>
+</html>
