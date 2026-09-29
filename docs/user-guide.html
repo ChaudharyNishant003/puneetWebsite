@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puneet Garments User Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fff; --page:#f6f6f4; --text:#1a1a1a; --muted:#5f5f66; --line:#e4e4e0; --brand:#8e1b3a; --soft:#f8edf0; --ok:#1e7f3e; --okbg:#e9f5ec; --warn:#8a5a00; --warnbg:#fff4dc; --info:#1f4e8c; --infobg:#eaf1fb; --kbd:#f1f1ee; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#1b1b1d; --page:#121213; --text:#ececec; --muted:#a6a6ad; --line:#2f2f33; --brand:#e07a95; --soft:#2a1c21; --ok:#6ccb8a; --okbg:#17281c; --warn:#e8b75a; --warnbg:#2b2416; --info:#8fb6ee; --infobg:#18222f; --kbd:#26262a; } }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--page); color:var(--text); font-family:'Mukta','Jost',system-ui,sans-serif; line-height:1.7; font-size:16px; }
+  header.top { background:var(--bg); border-bottom:1px solid var(--line); padding:22px 16px 0; }
+  .wrap { max-width:980px; margin:0 auto; }
+  h1 { font-family:'Jost','Mukta',sans-serif; font-size:28px; line-height:1.25; }
+  .sub { color:var(--muted); margin-top:4px; }
+  .tabs { display:flex; gap:6px; margin-top:18px; overflow-x:auto; }
+  .tab { border:1px solid var(--line); border-bottom:none; background:var(--page); color:var(--text); padding:10px 16px; border-radius:8px 8px 0 0; font:600 15px 'Mukta',sans-serif; cursor:pointer; white-space:nowrap; }
+  .tab[aria-selected="true"] { background:var(--brand); color:#fff; border-color:var(--brand); }
+  main { padding:20px 16px 80px; }
+  section.role { display:none; } section.role.active { display:block; }
+  .card { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:20px; margin-bottom:16px; }
+  h2 { font-family:'Jost','Mukta',sans-serif; font-size:21px; color:var(--brand); margin-bottom:8px; }
+  h3 { font-size:17px; margin:16px 0 6px; }
+  p + p { margin-top:8px; }
+  ol, ul { padding-left:22px; } li { margin:4px 0; }
+  b.ui { background:var(--kbd); border:1px solid var(--line); border-radius:4px; padding:0 6px; font-family:'Jost',sans-serif; font-weight:600; font-size:14px; white-space:nowrap; }
+  .note { border-left:4px solid var(--info); background:var(--infobg); padding:10px 14px; border-radius:4px; margin:10px 0; font-size:15px; }
+  .tip { border-left:4px solid var(--ok); background:var(--okbg); padding:10px 14px; border-radius:4px; margin:10px 0; font-size:15px; }
+  .warn { border-left:4px solid var(--warn); background:var(--warnbg); padding:10px 14px; border-radius:4px; margin:10px 0; font-size:15px; }
+  table { width:100%; border-collapse:collapse; font-size:15px; margin-top:6px; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:13px; color:var(--muted); font-weight:600; }
+  .tbl { overflow-x:auto; }
+  .toc { columns:2; column-gap:24px; font-size:15px; } .toc a { color:var(--brand); text-decoration:none; }
+  @media (max-width:640px) { .toc { columns:1; } h1 { font-size:23px; } }
+  .flow { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:8px 0; font-size:14px; }
+  .flow span { background:var(--soft); color:var(--brand); padding:4px 10px; border-radius:99px; font-weight:600; }
+  .flow i { font-style:normal; color:var(--muted); }
+  .badge { display:inline-block; font-size:12px; font-weight:700; padding:1px 8px; border-radius:99px; background:var(--soft); color:var(--brand); vertical-align:middle; }
+  a { color:var(--brand); }
+  @media print { .tabs { display:none; } section.role { display:block !important; page-break-before:always; } body { background:#fff; } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Puneet Garments: पूरी User Guide</h1>
+    <p class="sub">ग्राहक (Customer), मालिक (Owner) और कर्मचारी (Staff/Worker) के लिए, एक-एक कदम में। बटनों के नाम वैसे ही लिखे हैं जैसे screen पर दिखते हैं, जैसे <b class="ui">Add to Bag</b>।</p>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-tab="customer">1. ग्राहक (Customer)</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="owner">2. मालिक (Owner)</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="staff">3. कर्मचारी (Staff)</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="common">शब्दकोश और सवाल</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ===================== CUSTOMER ===================== -->
+<section class="role active" id="customer">
+
+<div class="card">
+  <h2>ग्राहक गाइड: website पर shopping कैसे करें</h2>
+  <p>Website: <a href="https://web-production-7536a.up.railway.app">web-production-7536a.up.railway.app</a> (बाद में दुकान का अपना domain होगा)। Website mobile और computer दोनों पर चलती है। कोई app download करने की ज़रूरत नहीं है।</p>
+  <div class="toc" style="margin-top:10px">
+    <a href="#c1">1. Website पर घूमना</a><br><a href="#c2">2. Product ढूंढना (Search)</a><br><a href="#c3">3. Filter और Sort</a><br><a href="#c4">4. Product page समझना</a><br>
+    <a href="#c5">5. Size कैसे चुनें</a><br><a href="#c6">6. Bag (Cart)</a><br><a href="#c7">7. Checkout और Login (OTP)</a><br><a href="#c8">8. Payment: UPI या COD</a><br>
+    <a href="#c9">9. Order track करना</a><br><a href="#c10">10. Size बदलना (Exchange)</a><br><a href="#c11">11. Review लिखना</a><br><a href="#c12">12. Wishlist, Account, Invoice</a><br>
+    <a href="#c13">13. Policies आसान भाषा में</a><br><a href="#c14">14. दुकान पर आना</a>
+  </div>
+</div>
+
+<div class="card" id="c1">
+  <h2>1. Website पर घूमना</h2>
+  <h3>सबसे ऊपर की पट्टी</h3>
+  <p>काली पट्टी में दुकान का कोई ज़रूरी संदेश होता है, जैसे "Free shipping above ₹999"। इस पर tap करने से उससे जुड़ा page खुलता है।</p>
+  <h3>Header (ऊपर का हिस्सा)</h3>
+  <ul>
+    <li><b class="ui">☰</b> (तीन लाइन): पूरा Menu। इसमें Women, Men, Kids, Innerwear और उनकी categories, Occasion (Daily, Office, Festive, Wedding Guest), Budget (Under ₹499 से ₹2,499 तक), Plus Size, Sale, "Visit our store" और "My account" मिलते हैं।</li>
+    <li><b class="ui">🔍</b>: Search</li>
+    <li>बीच में <b>PUNEET</b> logo: इस पर tap करने से Home page पर लौट आते हैं।</li>
+    <li><b class="ui">♡</b>: Wishlist (पसंद किए कपड़े)</li>
+    <li><b class="ui">👜</b>: आपका Bag। छोटा लाल नंबर बताता है कि Bag में कितने items हैं।</li>
+  </ul>
+  <p>Header के नीचे एक पट्टी में <b>New Arrivals, Women, Men, Kids, Innerwear, Festive, Plus Size, Sale</b> हैं। इसे उंगली से बाएं-दाएं खिसका सकते हैं।</p>
+  <h3>Mobile पर नीचे का bar</h3>
+  <table><tr><th>बटन</th><th>काम</th></tr>
+    <tr><td><b class="ui">Home</b></td><td>मुख्य page</td></tr>
+    <tr><td><b class="ui">Shop</b></td><td>सारी categories, occasions और budget एक जगह</td></tr>
+    <tr><td><b class="ui">Wishlist</b></td><td>सेव किए कपड़े</td></tr>
+    <tr><td><b class="ui">Store</b></td><td>दुकान का पता, समय, रास्ता और फोन</td></tr>
+    <tr><td><b class="ui">Account</b></td><td>Login, आपके orders, पते और profile</td></tr>
+  </table>
+  <h3>Home page पर ऊपर से नीचे क्या-क्या है</h3>
+  <ol>
+    <li>बड़ा banner: चल रहा campaign, जैसे Festive Edit। <b class="ui">SHOP NOW</b> दबाएं।</li>
+    <li><b>Shop by Category</b>: Kurta Sets, Sarees, Men Kurta, Shirts, Kids, Innerwear वगैरह</li>
+    <li><b>Shop by Occasion</b>: Daily Wear, Office Wear, Festive, Wedding Guest</li>
+    <li><b>Shop by Budget</b>: Under ₹499, ₹999, ₹1,499, ₹2,499</li>
+    <li><b>Bestsellers in Our Store</b> और <b>New Arrivals</b>: इन्हें बाएं-दाएं खिसकाएं</li>
+    <li><b>Customers Love Us</b>: असली ग्राहकों के photo reviews</li>
+    <li><b>Visit Our Store</b>: दुकान तक पहुंचने का रास्ता और फोन</li>
+  </ol>
+</div>
+
+<div class="card" id="c2">
+  <h2>2. Product ढूंढना (Search)</h2>
+  <ol>
+    <li><b class="ui">🔍</b> दबाएं। पूरी screen पर search खुल जाएगा।</li>
+    <li>जैसे आप दुकानदार से बोलते हैं, वैसे ही लिखें। हिंदी-अंग्रेज़ी मिलाकर लिखना भी चलता है:
+      <ul>
+        <li>"office ke liye cotton kurti under 1500"</li>
+        <li>"shaadi ke liye red suit"</li>
+        <li>"maa ke liye simple suit"</li>
+        <li>"bacche ke kapde", "laal saree", "mens shirt"</li>
+      </ul>
+    </li>
+    <li>लिखते-लिखते नीचे मिलते-जुलते products दिखने लगते हैं। किसी पर tap करें, या <b class="ui">See all results for "…"</b> दबाएं।</li>
+  </ol>
+  <div class="tip">Spelling गलत हो जाए तो भी चलेगा ("kurthi" लिखने पर "kurti" के results आएंगे)। "under 1000" या "1000 tak" लिखने पर उससे सस्ते कपड़े ही दिखेंगे। Results page पर ऊपर छोटे chips बताते हैं कि search ने क्या समझा, जैसे "Occasion: Office", "Up to ₹1500"।</div>
+  <p>पहले की गई searches <b>Recent searches</b> में दिखती हैं, और बाकी लोग क्या ढूंढ रहे हैं वो <b>Popular</b> में।</p>
+</div>
+
+<div class="card" id="c3">
+  <h2>3. Filter और Sort</h2>
+  <p>किसी category (जैसे Women) में जाने पर products के ऊपर दो बटन चिपके रहते हैं:</p>
+  <h3><b class="ui">FILTER</b></h3>
+  <ol>
+    <li>दबाने पर नीचे से एक पर्दा खुलता है। इसमें <b>Size</b> (सबसे ऊपर), <b>Price</b>, <b>Colour</b>, <b>Occasion</b>, <b>Fabric</b>, <b>Sleeve</b>, <b>Length</b>, <b>Pattern</b> होते हैं।</li>
+    <li>जो चाहिए उस पर tap करें। चुना हुआ विकल्प काला हो जाता है। एक से ज़्यादा भी चुन सकते हैं।</li>
+    <li>नीचे का बटन <b class="ui">Apply (24 items)</b> पहले से बताता है कि कितने कपड़े मिलेंगे।</li>
+    <li><b class="ui">Clear</b> दबाने से सारे filters हट जाते हैं।</li>
+  </ol>
+  <p>लगे हुए filters products के ऊपर छोटे chips में दिखते हैं। किसी chip के <b>×</b> पर tap करके वो filter हटा सकते हैं, या <b class="ui">Clear all</b> से सब एक साथ हटा सकते हैं।</p>
+  <div class="note">Size filter सिर्फ वही कपड़े दिखाता है जो आपके size में <b>stock में हैं</b>।</div>
+  <h3><b class="ui">SORT</b></h3>
+  <p>क्रम बदलने के विकल्प: Recommended, Newest, Bestselling, Price: Low to High, Price: High to Low। ज़्यादा products देखने के लिए सबसे नीचे <b class="ui">Load more</b> दबाएं।</p>
+</div>
+
+<div class="card" id="c4">
+  <h2>4. Product page समझना</h2>
+  <h3>Product card (list में हर कपड़ा)</h3>
+  <ul>
+    <li><b>दो photos</b>: computer पर mouse ले जाने से दूसरी photo दिखती है।</li>
+    <li><b>कीमत</b>: काले अक्षरों में असली selling price है, कटी हुई कीमत MRP है, और हरे में "Save X%" लिखा है।</li>
+    <li><b>Size के छोटे डिब्बे</b>: कटे हुए या धुंधले size खत्म हो चुके हैं।</li>
+    <li><b>★ 4.6 (12)</b>: औसत rating और reviews की गिनती।</li>
+    <li><b class="ui">♡</b>: Wishlist में डालने के लिए</li>
+    <li><b class="ui">QUICK ADD</b>: product page खोले बिना सीधे size चुनकर Bag में डालने के लिए</li>
+  </ul>
+  <h3>Product page पर ऊपर से नीचे</h3>
+  <ol>
+    <li><b>Photos</b>: उंगली से खिसकाएं। Photo पर tap करने से बड़ी (zoom) photo खुलती है। <b class="ui">▶ Watch video</b> हो तो video भी देखें।</li>
+    <li>दाईं तरफ <b class="ui">♡</b> (wishlist) और <b class="ui">Share</b> बटन हैं। Share से link WhatsApp पर भेज सकते हैं।</li>
+    <li><b>नाम, rating</b> ("82% say True to size" बताता है कि size सही आता है), <b>कीमत</b> और "Inclusive of all taxes" (GST शामिल है)।</li>
+    <li><b>Free Size Exchange</b> का निशान, या innerwear पर <b>Non-exchangeable</b>।</li>
+    <li><b>Colour</b>: छोटी photos पर tap करके रंग बदलें। रंग बदलने पर photos भी बदल जाती हैं।</li>
+    <li><b>Size</b> और <b class="ui">📏 Size Chart</b>। अगले हिस्से में विस्तार से समझाया है।</li>
+    <li><b>Offers</b> वाला पीला डिब्बा: coupon codes और online payment पर मिलने वाली extra बचत।</li>
+    <li><b>Check delivery</b>: अपना 6 अंक का pincode डालकर <b class="ui">CHECK</b> दबाएं। पता चलेगा कि delivery किस तारीख तक होगी (जैसे "Get it by Thu, 1 Oct"), COD मिलेगा या नहीं, और delivery free है या नहीं।</li>
+    <li>तीन छोटे डिब्बे: COD with OTP, Free shipping ₹999+, 7-day size exchange।</li>
+    <li><b>Product details</b> वाली table: Fabric, Sleeve, Length, Lining, Sheerness (कपड़ा पारदर्शी है या नहीं), Care (कैसे धोएं), In the set (set में क्या-क्या मिलेगा)।</li>
+    <li><b>Ratings &amp; Reviews</b>: stars, "How it fits" bar और ग्राहकों की photos।</li>
+    <li><b>You may also like</b> और <b>Recently viewed</b>।</li>
+  </ol>
+  <p>Mobile पर screen के सबसे नीचे <b class="ui">ADD TO BAG</b> और <b class="ui">BUY NOW</b> हमेशा दिखते रहते हैं। Buy Now दबाने से item Bag में जुड़ता है और आप सीधे Checkout पर पहुंच जाते हैं।</p>
+</div>
+
+<div class="card" id="c5">
+  <h2>5. सही Size कैसे चुनें</h2>
+  <ol>
+    <li><b class="ui">📏 Size Chart</b> खोलें। उसमें हर size के inch में नाप दिए हैं: महिलाओं के लिए Bust/Waist/Hip, पुरुषों के लिए Chest, बच्चों के लिए Height।</li>
+    <li>Chart के नीचे <b>"How to pick"</b> का नियम लिखा होता है। जैसे: "Bust 35 inch हो तो ढीले fit के लिए M, वरना S"।</li>
+    <li>Page पर "Model is 5'4" and wearing M" भी लिखा होता है। इससे अंदाज़ा लगाएं।</li>
+    <li>Reviews में "Runs small / True to size / Runs large" देखें।</li>
+    <li>Size पर tap करें। चुना हुआ size काला हो जाता है।</li>
+  </ol>
+  <div class="tip">Size गलत आ जाए तो घबराएं नहीं। 7 दिन के अंदर पहली बार size बदलना <b>free</b> है, online भी और दुकान पर भी (Innerwear छोड़कर)।</div>
+  <div class="note">"Only 2 left in M" का मतलब है उस size के सिर्फ 2 पीस बचे हैं।</div>
+</div>
+
+<div class="card" id="c6">
+  <h2>6. Bag (Cart)</h2>
+  <p><b class="ui">Add to Bag</b> या <b class="ui">👜</b> दबाने पर दाईं तरफ से Bag खुलता है।</p>
+  <ul>
+    <li><b>Free shipping की हरी पट्टी</b>: बताती है कि free delivery के लिए कितने रुपये का सामान और जोड़ना है।</li>
+    <li><b>Size बदलना</b>: हर item के नीचे "Size M" वाले dropdown से size बदलें।</li>
+    <li><b class="ui">−</b> / <b class="ui">+</b>: गिनती घटाएं या बढ़ाएं। <b class="ui">Remove</b>: item हटाएं।</li>
+    <li><b class="ui">Have a coupon code?</b>: code लिखकर <b class="ui">Apply</b> करें। Code सही हो तो "applied −₹100" दिखेगा। कोई शर्त पूरी न हो तो कारण भी दिखेगा, जैसे "Add ₹200 more to use WELCOME10"।</li>
+    <li><b class="ui">CHECKOUT</b>: आगे बढ़ें।</li>
+  </ul>
+  <p>Bag आपके browser में सेव रहता है। बाद में लौटने पर भी सामान उसमें मिलेगा।</p>
+</div>
+
+<div class="card" id="c7">
+  <h2>7. Checkout और Login (बिना password के)</h2>
+  <p>Checkout एक ही page पर तीन हिस्सों में होता है।</p>
+  <h3>हिस्सा 1: Mobile number</h3>
+  <ol>
+    <li>अपना 10 अंक का mobile number डालें और <b class="ui">SEND OTP</b> दबाएं।</li>
+    <li>SMS में आया 6 अंक का OTP डालें और <b class="ui">VERIFY &amp; CONTINUE</b> दबाएं।</li>
+    <li>OTP न आए तो थोड़ा रुककर <b class="ui">Resend OTP</b> दबाएं। 15 मिनट में 5 बार से ज़्यादा OTP नहीं मांग सकते।</li>
+  </ol>
+  <div class="note">कोई password याद रखने की ज़रूरत नहीं। आपका mobile number ही आपका account है। पहली बार login करते ही account अपने-आप बन जाता है।</div>
+  <div class="warn">Demo website पर SMS नहीं जाता। OTP पीले डिब्बे में screen पर ही लिखा आता है ("Test mode… your OTP is 123456")।</div>
+  <h3>हिस्सा 2: Delivery address</h3>
+  <ol>
+    <li>पहले <b>Pincode</b> डालें। इसी से पता चलता है कि delivery कब तक होगी।</li>
+    <li>पूरा नाम, House/flat और street, Area (वैकल्पिक), Landmark (वैकल्पिक), City, State (list से चुनें), Delivery phone और Email (वैकल्पिक, invoice के लिए) भरें।</li>
+    <li>नीचे "🚚 Delivery by Thursday, 1 Oct" जैसी तारीख दिखेगी। दुकान के आसपास के pincodes पर "by our store team" भी लिखा आता है, यानी दुकान के लोग खुद पहुंचाएंगे।</li>
+  </ol>
+  <p>अगली बार आपका पता सेव मिलेगा। बस उसे चुनें, या <b>Add a new address</b> से नया पता डालें।</p>
+</div>
+
+<div class="card" id="c8">
+  <h2>8. Payment: UPI/Card या Cash on Delivery</h2>
+  <h3>विकल्प A: UPI / Card / Netbanking (online)</h3>
+  <ol>
+    <li>इसे चुनने पर "Save ₹X" का निशान दिखता है। Online payment पर extra छूट मिलती है (5%, ज़्यादा से ज़्यादा ₹150)।</li>
+    <li>दाईं तरफ (mobile पर नीचे) Order summary में कुल रकम देखें, फिर <b class="ui">PAY ₹1,900</b> दबाएं।</li>
+    <li>Razorpay की window खुलेगी। वहां GPay, PhonePe, Paytm, कोई भी UPI app, Card या Netbanking से payment करें।</li>
+    <li>Payment होते ही "🎉 Thank you! Your order is placed." दिखेगा।</li>
+  </ol>
+  <div class="note">Payment बीच में फेल हो जाए या window बंद कर दें, तो भी आपका Bag सुरक्षित रहता है। दोबारा <b class="ui">PAY</b> दबाएं या COD चुनें। अगर पैसे कट गए और order नहीं बना, तो दुकान को फोन करें।</div>
+  <div class="warn">Demo website पर Razorpay की जगह "Test payment" window आती है। उसमें <b class="ui">Pay successfully</b> या <b class="ui">Fail</b> चुनकर देख सकते हैं।</div>
+  <h3>विकल्प B: Cash on Delivery (COD)</h3>
+  <ol>
+    <li><b>Cash on Delivery</b> चुनें। सामान मिलने पर नकद या UPI से पैसे दें।</li>
+    <li>अगर delivery phone आपके login number से अलग है, तो उस नंबर पर एक OTP जाएगा (<b class="ui">Send OTP to …</b>)। उसे डालें।</li>
+    <li><b class="ui">PLACE ORDER · ₹X</b> दबाएं।</li>
+  </ol>
+  <div class="note">COD ₹3,000 तक के orders पर मिलता है, और सिर्फ उन pincodes पर जहां यह सुविधा है। अगर COD बंद है तो उसके नीचे कारण लिखा होगा।</div>
+  <p>बटन पर कुछ पल के लिए "Updating total…" आए तो रुकें। Payment method बदलने पर कीमत दोबारा जोड़ी जा रही होती है।</p>
+</div>
+
+<div class="card" id="c9">
+  <h2>9. Order track करना</h2>
+  <ul>
+    <li>Order होते ही SMS और email में order number (जैसे PG2609309603) और link आता है।</li>
+    <li><b class="ui">Account</b> → <b>Orders</b> में आपके सारे orders दिखते हैं। किसी भी order पर tap करें।</li>
+    <li>Order page पर एक progress line है:</li>
+  </ul>
+  <div class="flow"><span>Order placed</span><i>→</i><span>Confirmed</span><i>→</i><span>Packed</span><i>→</i><span>Shipped</span><i>→</i><span>Delivered</span></div>
+  <ul>
+    <li>Courier से भेजे गए order पर courier का नाम, AWB (tracking number) और <b>Track</b> link दिखता है।</li>
+    <li>हर बदलाव पर (Shipped, Delivered) SMS और email आता है।</li>
+    <li>सबसे नीचे <b>Order history</b> में हर कदम का समय लिखा है।</li>
+  </ul>
+</div>
+
+<div class="card" id="c10">
+  <h2>10. Size बदलना (Exchange)</h2>
+  <ol>
+    <li>सामान मिलने (Delivered) के बाद 7 दिन तक order page पर हर item के नीचे <b class="ui">EXCHANGE SIZE</b> बटन दिखता है।</li>
+    <li>विकल्प चुनें:
+      <ul>
+        <li><b class="ui">Wrong size</b>: नया size चुनें (सिर्फ stock वाले sizes दिखते हैं)।</li>
+        <li><b class="ui">Defective / wrong item</b>: कपड़े में खराबी हो या गलत सामान आया हो, तो लिखें क्या दिक्कत है।</li>
+      </ul>
+    </li>
+    <li><b class="ui">Request exchange</b> दबाएं। दुकान की टीम pickup के लिए आपको फोन करेगी। या आप order number लेकर सामान दुकान पर ले आएं, वहीं बदल दिया जाएगा।</li>
+    <li>Item के नीचे status दिखता रहेगा, जैसे "Exchange to M: requested / approved / completed"।</li>
+  </ol>
+  <div class="note">पहला exchange free है। उसी item पर दूसरी बार बदलवाने पर shipping का खर्च लगेगा। खराब या गलत item पर हमेशा free है।</div>
+  <div class="warn">Innerwear (बनियान, ब्रा, briefs वगैरह) साफ-सफाई की वजह से न बदला जाता है न लौटाया जाता है, इसलिए उस पर Exchange का बटन नहीं आता। अगर innerwear खराब या गलत आया हो, तो 48 घंटे के अंदर दुकान को फोन करें।</div>
+</div>
+
+<div class="card" id="c11">
+  <h2>11. Review लिखना</h2>
+  <ol>
+    <li>Delivered order पर <b class="ui">WRITE A REVIEW</b> दबाएं।</li>
+    <li>1 से 5 stars दें और बताएं कि fit कैसा रहा: Small / True to size / Large।</li>
+    <li>Title (वैकल्पिक) और review लिखें। चाहें तो 3 तक photos जोड़ें।</li>
+    <li><b class="ui">Submit review</b> दबाएं। दुकान की एक छोटी जांच के बाद review website पर दिखने लगेगा, और उस पर "✓ Verified buyer" लिखा होगा।</li>
+  </ol>
+</div>
+
+<div class="card" id="c12">
+  <h2>12. Wishlist, Account और Invoice</h2>
+  <ul>
+    <li><b>Wishlist</b>: किसी भी कपड़े पर <b class="ui">♡</b> दबाएं। वो Wishlist page पर सेव हो जाता है। Login करने पर यह list हर device पर मिलती है।</li>
+    <li><b>Account</b> page पर: Orders, Wishlist और Addresses की गिनती, Recent orders, <b>Profile</b> (नाम और email बदलकर <b class="ui">Save</b>), और <b class="ui">Log out</b>।</li>
+    <li><b>Addresses</b>: सेव किए पते। पुराना पता <b class="ui">Delete</b> से हटाएं।</li>
+    <li><b>GST invoice</b>: order page पर <b class="ui">Download GST invoice (PDF)</b>।</li>
+  </ul>
+</div>
+
+<div class="card" id="c13">
+  <h2>13. Policies आसान भाषा में</h2>
+  <div class="tbl"><table>
+    <tr><th>विषय</th><th>नियम</th></tr>
+    <tr><td>Size exchange</td><td>Delivery के 7 दिन के अंदर। पहली बार free। कपड़ा बिना धुला हो और tag लगा हो।</td></tr>
+    <tr><td>Refund (पैसे वापस)</td><td>सिर्फ खराब या गलत item पर। Delivery के 48 घंटे के अंदर photo के साथ बताएं। पैसा 7 working days में लौटता है।</td></tr>
+    <tr><td>Innerwear</td><td>न exchange, न return (खराब या गलत item को छोड़कर)</td></tr>
+    <tr><td>Shipping</td><td>₹999 या उससे ज़्यादा पर free। उससे कम पर courier का ₹79 लगता है। दुकान के आसपास के pincodes पर दुकान की टीम खुद पहुंचाती है।</td></tr>
+    <tr><td>Dispatch</td><td>1 से 2 दिन में पैक होकर निकल जाता है</td></tr>
+    <tr><td>COD</td><td>₹3,000 तक, OTP से पक्का होता है</td></tr>
+    <tr><td>Online payment छूट</td><td>5% (ज़्यादा से ज़्यादा ₹150)</td></tr>
+    <tr><td>कीमत</td><td>Website और दुकान पर एक ही कीमत। सारी कीमतों में GST शामिल है।</td></tr>
+  </table></div>
+  <p class="sub" style="margin-top:8px">पूरी policy footer में है: Exchange policy, Shipping &amp; delivery, Privacy policy, Terms। ये नियम दुकान की settings से बदल सकते हैं, और website हमेशा वही दिखाती है जो अभी लागू है।</p>
+</div>
+
+<div class="card" id="c14">
+  <h2>14. दुकान पर आना</h2>
+  <p><b class="ui">Store</b> page पर दुकान का पता, खुलने का समय, <b class="ui">Get directions</b> (Google Maps) और <b class="ui">Call</b> बटन हैं। दुकान पर आप online देखे कपड़े try कर सकते हैं, alteration करवा सकते हैं, और online order का size बदलवा सकते हैं।</p>
+</div>
+
+</section>
+
+<!-- ===================== OWNER ===================== -->
+<section class="role" id="owner">
+
+<div class="card">
+  <h2>मालिक (Owner) गाइड: पूरा admin panel</h2>
+  <p>Admin panel: <a href="https://web-production-7536a.up.railway.app/admin">…/admin</a>। Login के लिए email और password डालकर <b class="ui">Sign in</b> दबाएं। Owner के पास सब कुछ है। कर्मचारी (Staff) को <b>Settings, Reports और Users</b> नहीं दिखते।</p>
+  <div class="note">Owner गाइड में admin के सारे हिस्से हैं। कर्मचारी (Staff) वाले tab में वही हिस्से हैं जो रोज़ के काम के लिए ज़रूरी हैं, छोटे रूप में।</div>
+  <div class="toc" style="margin-top:10px">
+    <a href="#o1">1. Login और menu</a><br><a href="#o2">2. Dashboard</a><br><a href="#o3">3. Orders: पूरा तरीका</a><br><a href="#o4">4. Products जोड़ना</a><br>
+    <a href="#o5">5. Size, रंग और stock</a><br><a href="#o6">6. Photos और video</a><br><a href="#o7">7. Excel/CSV से कई products</a><br><a href="#o8">8. Exchanges</a><br>
+    <a href="#o9">9. Reviews</a><br><a href="#o10">10. Coupons</a><br><a href="#o11">11. Pincodes और local delivery</a><br><a href="#o12">12. Homepage और Search शब्द</a><br>
+    <a href="#o13">13. Settings (सिर्फ Owner)</a><br><a href="#o14">14. Reports (सिर्फ Owner)</a><br><a href="#o15">15. Users और कर्मचारी (सिर्फ Owner)</a><br><a href="#o16">16. रोज़, हफ्ते और त्योहार की checklist</a><br>
+    <a href="#o17">17. Live होने से पहले</a>
+  </div>
+</div>
+
+<div class="card" id="o1">
+  <h2>1. Login और menu</h2>
+  <ul>
+    <li>Login के बाद बाईं तरफ (mobile पर ऊपर) menu है: <b>Dashboard, Orders, Products, Exchanges, Reviews, Coupons, Pincodes, Homepage &amp; Search, Settings, Reports, Users</b>।</li>
+    <li>नीचे <b class="ui">View store ↗</b> से website खुलती है, और <b class="ui">Log out</b> से बाहर निकलते हैं।</li>
+    <li>सुरक्षा के लिए login 1 दिन बाद अपने-आप खत्म हो जाता है। बार-बार गलत password डालने पर 15 मिनट के लिए login रुक जाता है।</li>
+    <li>Admin में किया हर बदलाव किसने और कब किया, यह <b>Users → Recent admin activity</b> में दर्ज रहता है।</li>
+  </ul>
+</div>
+
+<div class="card" id="o2">
+  <h2>2. Dashboard: रोज़ सुबह सबसे पहले यहीं</h2>
+  <table>
+    <tr><th>डिब्बा</th><th>मतलब</th><th>क्या करें</th></tr>
+    <tr><td>Orders today / Sales today</td><td>आज के orders और आज की बिक्री</td><td>सिर्फ देखने के लिए</td></tr>
+    <tr><td><b>To confirm</b></td><td>नए orders जिन्हें अभी देखा नहीं गया</td><td>Tap करें और confirm करें (Orders वाला हिस्सा देखें)</td></tr>
+    <tr><td><b>To pack / ship</b></td><td>Confirm हो चुके, भेजने बाकी</td><td>पैक करें और भेजें</td></tr>
+    <tr><td><b>Exchange requests</b></td><td>ग्राहकों ने size बदलने को कहा है</td><td>Approve करें</td></tr>
+  </table>
+  <ul style="margin-top:8px">
+    <li><b>Recent orders</b>: आखिरी 8 orders</li>
+    <li><b>Low stock</b>: जिन sizes के 3 या कम पीस बचे हैं, या जो खत्म (Sold out) हो चुके हैं। Product पर tap करके stock बढ़ाएं।</li>
+    <li>"N reviews to approve": नए reviews जांचने बाकी हैं।</li>
+  </ul>
+  <div class="warn">ऊपर पीली पट्टी "Test mode: … not connected yet" बताती है कि कौनसी services (SMS, Razorpay, Shiprocket, Cloudinary, Email) अभी नकली (test) mode में हैं। असली keys डालने पर यह पट्टी हट जाएगी।</div>
+</div>
+
+<div class="card" id="o3">
+  <h2>3. Orders: शुरू से delivery तक</h2>
+  <h3>Orders की list</h3>
+  <ul>
+    <li>ऊपर tabs: All, To confirm, Confirmed, Packed, Shipped, Out for delivery, Delivered, Cancelled, RTO।</li>
+    <li>Search box में order number, फोन या नाम डालकर <b class="ui">Search</b> दबाएं।</li>
+    <li>हर लाइन में: Order number, ग्राहक, शहर, रकम, Payment (COD/PREPAID) और status। लाल "Refund needed" का मतलब है पैसे लौटाने हैं।</li>
+  </ul>
+  <h3>Order खोलने पर</h3>
+  <ul>
+    <li>Items की list: photo, रंग, <b>size (मोटे अक्षर में)</b>, SKU, गिनती और कीमत</li>
+    <li>हिसाब: Subtotal, coupon, prepaid छूट, shipping, कुल रकम और payment की स्थिति</li>
+    <li>दाईं तरफ ग्राहक (फोन पर tap करते ही call लग जाती है), पिछले orders, RTO की गिनती, और पता</li>
+    <li><b class="ui">Invoice PDF</b>: GST bill, पैकेट में डालने के लिए print करें</li>
+    <li><b>Timeline</b>: किसने कब क्या किया</li>
+  </ul>
+  <h3>Order को आगे बढ़ाने का सही क्रम</h3>
+  <div class="flow"><span>Order placed</span><i>→ Mark Confirmed →</i><span>Confirmed</span><i>→ Mark Packed →</i><span>Packed</span><i>→ Ship →</i><span>Shipped / Out for delivery</span><i>→ Mark Delivered →</i><span>Delivered</span></div>
+  <ol>
+    <li><b class="ui">Mark Confirmed</b>: stock देखकर पक्का करें। COD order पर ज़रूरत हो तो ग्राहक को फोन करके पुष्टि कर लें।</li>
+    <li><b class="ui">Mark Packed</b>: पैक होने के बाद। Invoice print करके पैकेट में रखें।</li>
+    <li>भेजने के दो तरीके:
+      <ul>
+        <li><b>Courier order</b> पर <b class="ui">Book courier &amp; ship</b>। Shiprocket में booking अपने-आप होती है, AWB बनता है, और ग्राहक को SMS/email जाता है। Status "Shipped" हो जाता है।</li>
+        <li><b>Local order</b> (दुकान के आसपास) पर <b class="ui">Send out for local delivery</b>। Status "Out for delivery" हो जाता है। दुकान का लड़का सामान पहुंचाएगा।</li>
+        <li>अगर courier आपने खुद (Shiprocket के बाहर) बुक किया है, तो <b>"Shipped outside the system? Enter courier &amp; AWB"</b> खोलें, courier का नाम और AWB डालें, और <b class="ui">Save &amp; mark shipped</b> दबाएं।</li>
+      </ul>
+    </li>
+    <li>सामान पहुंचने पर <b class="ui">Mark Delivered</b> दबाएं। COD order पर इसका मतलब होता है कि पैसा भी मिल गया। इसी के बाद ग्राहक को exchange और review के बटन मिलते हैं।</li>
+  </ol>
+  <h3>कुछ गलत हो जाए तो</h3>
+  <ul>
+    <li><b class="ui">Cancel order</b>: सिर्फ Shipped होने से पहले। Stock अपने-आप वापस जुड़ जाता है। अगर ग्राहक ने online पैसे दिए थे, तो order पर "Refund needed" लिखा आएगा।</li>
+    <li><b class="ui">Mark Returned to store</b> (RTO): जब ग्राहक ने COD पार्सल लेने से मना कर दिया और पार्सल लौट आया। Stock वापस जुड़ता है। एक ही नंबर से 2 बार ऐसा होने पर उस नंबर पर COD अपने-आप बंद हो जाता है।</li>
+    <li><b class="ui">Mark refunded</b>: Razorpay dashboard से पैसे लौटाने के बाद यहां दर्ज करें।</li>
+    <li><b class="ui">Re-enable COD for this customer</b> (सिर्फ Owner): भरोसेमंद ग्राहक पर COD फिर से चालू करने के लिए।</li>
+    <li><b>Internal note</b>: नीचे लिखकर <b class="ui">Add</b> दबाएं, जैसे "ग्राहक ने शाम 6 बजे के बाद बुलाया है"। यह ग्राहक को नहीं दिखता।</li>
+  </ul>
+  <div class="note">Online payment वाले जो orders 30 मिनट तक pay नहीं हुए, वे अपने-आप Cancelled हो जाते हैं और उनका stock वापस जुड़ जाता है। ये orders list में नहीं आते।</div>
+</div>
+
+<div class="card" id="o4">
+  <h2>4. नया Product जोड़ना</h2>
+  <ol>
+    <li><b>Products</b> → <b class="ui">+ Add product</b>।</li>
+    <li>भरें:
+      <ul>
+        <li><b>Name</b>: जैसे "Cotton Printed Kurta Set with Dupatta"</li>
+        <li><b>Category</b> (जैसे Women › Kurta Sets) और <b>For</b> (Women / Men / Kids / Everyone)</li>
+        <li><b>Selling price</b> (GST शामिल) और <b>MRP</b>। <u>असली MRP ही लिखें</u>, बढ़ा-चढ़ाकर नहीं। MRP selling price से कम हो ही नहीं सकता।</li>
+        <li><b>Description</b>: 2–3 लाइन में कपड़ा, fit और मौका</li>
+        <li><b>Model info</b>: "Model is 5'4" wearing M"। इससे ग्राहक को size चुनने में बहुत मदद मिलती है।</li>
+        <li><b>Badges</b>: New, Bestseller, Festive (ज़्यादा से ज़्यादा 3)</li>
+        <li><b>Status</b>: <b>Draft</b> यानी छिपा हुआ (तैयारी के दौरान), <b>Active</b> यानी website पर दिख रहा, <b>Archived</b> यानी हटाया गया</li>
+        <li><b>HSN</b> और <b>GST %</b>: खाली छोड़ें तो अपने-आप भर जाते हैं (₹2,500 तक 5%, उससे ऊपर 18%)</li>
+      </ul>
+    </li>
+    <li>Checkboxes:
+      <ul>
+        <li><b>Featured</b>: category वाली list में ऊपर दिखेगा</li>
+        <li><b>Store bestseller</b>: Home page की "Bestsellers in Our Store" पट्टी में आएगा</li>
+        <li><b>Size exchange allowed</b>: आम कपड़ों पर ✓ रखें</li>
+        <li><b>Innerwear / hygiene item</b>: innerwear पर ✓ लगाएं। तब website पर "Non-exchangeable" दिखेगा।</li>
+      </ul>
+    </li>
+    <li><b>Details shown on the product page</b>: Occasion (Daily, Office, Festive, Wedding Guest), Fabric, Sleeve, Length, Neck, Pattern, Lining, Sheerness, Care, In the set, Gift for (Mother, Kids)। Occasion और Fabric से ही filters और search चलते हैं, इन्हें ज़रूर भरें। एक से ज़्यादा हों तो comma लगाएं।</li>
+    <li>SEO (वैकल्पिक): page का link, title और description</li>
+    <li><b class="ui">Create product</b> दबाएं। उसके बाद उसी page पर नीचे sizes, stock और photos जोड़ें।</li>
+  </ol>
+  <div class="tip">पहले <b>Draft</b> में बनाएं। Sizes और photos पूरे होने के बाद Status को <b>Active</b> करके <b class="ui">Save changes</b> दबाएं।</div>
+  <p><b class="ui">Archive</b>: product को website से हटा देता है। पुराने orders का रिकॉर्ड बना रहता है।</p>
+</div>
+
+<div class="card" id="o5">
+  <h2>5. Size, रंग और Stock (grid)</h2>
+  <ol>
+    <li><b>Add size</b> में size लिखकर (जैसे M) <b class="ui">+ Size</b> दबाएं। या "Quick add" में दिए sizes पर सीधे tap करें।</li>
+    <li><b>Add colour</b> में रंग का नाम लिखें (जैसे Maroon), पास के रंग वाले डिब्बे से रंग चुनें, और <b class="ui">+ Colour</b> दबाएं।</li>
+    <li>अब एक table बनेगी: हर लाइन एक रंग है, हर column एक size। हर खाने में उस रंग और size के पीस की गिनती लिखें।</li>
+    <li><b class="ui">Save stock</b> दबाएं।</li>
+  </ol>
+  <ul>
+    <li>Stock 0 होते ही website पर वो size कटा हुआ दिखता है और खरीदा नहीं जा सकता।</li>
+    <li>किसी size या रंग के आगे का <b>×</b> उसे हटा देता है। अगर उसका पहले कभी order हुआ है, तो वो सिर्फ 0 stock पर चला जाता है (ताकि पुराना रिकॉर्ड बचा रहे)।</li>
+    <li>Online order होते ही stock अपने-आप घटता है। Cancel या RTO होने पर अपने-आप बढ़ जाता है।</li>
+  </ul>
+  <div class="warn">दुकान पर कोई कपड़ा बिकने पर यहां stock खुद घटाना होगा, जब तक Phase 2 में दुकान की billing इस system से नहीं जुड़ती। वरना website पर वो माल दिखता रहेगा जो दुकान में खत्म हो चुका है।</div>
+</div>
+
+<div class="card" id="o6">
+  <h2>6. Photos और Video</h2>
+  <ol>
+    <li><b>For colour</b> में चुनें कि ये photos किस रंग की हैं, या "All colours"।</li>
+    <li><b>Choose files</b> दबाएं। Mobile पर सीधे camera खुल जाता है, या gallery से एक साथ 12 तक photos चुनें। MP4 video भी डाल सकते हैं।</li>
+    <li><b class="ui">Upload</b> दबाएं।</li>
+    <li><b class="ui">←</b> / <b class="ui">→</b> से क्रम बदलें। हर रंग की पहली photo ही मुख्य photo बनती है। <b class="ui">Delete</b> से photo हटाएं।</li>
+  </ol>
+  <div class="tip"><b>अच्छी photos के लिए:</b> सादी दीवार के सामने, दिन की रोशनी में, phone सीधा (portrait) पकड़कर। हर रंग की 4 photos लें: सामने से, पीछे से, कपड़े का close-up, और पहनकर। 10–15 सेकंड का video (पहनकर घूमते हुए) सबसे ज़्यादा बिक्री लाता है।</div>
+  <div class="warn">जब तक Cloudinary नहीं जुड़ता, डाली गई photos हर नए update (deploy) पर मिट जाएंगी। असली photos डालने से पहले Cloudinary जोड़ना ज़रूरी है।</div>
+</div>
+
+<div class="card" id="o7">
+  <h2>7. Excel/CSV से एक साथ कई products</h2>
+  <ol>
+    <li>Products page पर <b class="ui">Bulk import from CSV / Excel</b> → <b class="ui">Download template</b>।</li>
+    <li>Template को Excel में खोलें। <b>हर size और रंग की एक लाइन</b> भरें। एक ही product की सारी लाइनों में <b>handle</b> (जैसे cotton-kurta-set-1) एक जैसा रखें।</li>
+    <li>Columns: name, category_slug (जैसे kurta-sets, sarees, men-shirts, girls), gender, price, mrp, description, badges, model_info, status (ACTIVE/DRAFT), innerwear (yes/no), attr_occasion, attr_fabric वगैरह, colour, colour_hex (जैसे #7A1F2B), size, stock, image_urls।</li>
+    <li>एक खाने में कई values हों तो उन्हें <b>|</b> से अलग करें। जैसे occasion में: <code>Daily|Office</code>।</li>
+    <li>Excel में <b>Save As → CSV UTF-8</b> चुनें। फिर file चुनकर <b class="ui">Import</b> दबाएं।</li>
+    <li>नतीजा दिखेगा: "Created X, updated Y products · Z variants", और किस लाइन में क्या गलती है।</li>
+  </ol>
+  <p>अगर handle पहले से मौजूद है, तो वो product update हो जाता है। इस तरह stock या कीमत एक साथ बदलने के लिए भी यही तरीका इस्तेमाल कर सकते हैं। <b class="ui">Export CSV</b> पूरी मौजूदा list उसी format में download कर देता है।</p>
+</div>
+
+<div class="card" id="o8">
+  <h2>8. Exchanges (size बदलना)</h2>
+  <p>Menu में <b>Exchanges</b>। हर request में दिखता है: order, ग्राहक का फोन, item (रंग और पुराना size), और क्या चाहिए ("Size → M" या "Defect / wrong item"), free है या नहीं, और ग्राहक का लिखा कारण।</p>
+  <div class="flow"><span>REQUESTED</span><i>→ Approved →</i><span>APPROVED</span><i>→ Picked up →</i><span>PICKED UP</span><i>→ Completed →</i><span>COMPLETED</span></div>
+  <ol>
+    <li>ग्राहक को फोन करके तय करें कि pickup होगा या ग्राहक दुकान पर आएगा। फिर <b class="ui">Approved</b> दबाएं।</li>
+    <li>पुराना पीस मिलते ही <b class="ui">Picked up</b> दबाएं। दुकान पर तुरंत बदला हो तो सीधे <b class="ui">Completed</b> दबाएं।</li>
+    <li>नया size भेजकर या दुकान पर देकर <b class="ui">Completed</b> दबाएं। <b>Stock अपने-आप ठीक हो जाता है</b>: लौटाया गया size +1 और दिया गया size −1।</li>
+    <li>नियम के खिलाफ request हो (जैसे धुला हुआ कपड़ा) तो <b class="ui">Rejected</b> दबाएं।</li>
+  </ol>
+  <p>हर बदलाव पर ग्राहक को SMS जाता है। <b class="ui">Show all</b> से पुरानी requests भी देख सकते हैं।</p>
+</div>
+
+<div class="card" id="o9">
+  <h2>9. Reviews</h2>
+  <ul>
+    <li>Tabs: <b>Pending</b> (नए), Approved, Rejected।</li>
+    <li><b class="ui">Approve</b> करने पर review website पर दिखने लगता है और product की rating अपने-आप update हो जाती है।</li>
+    <li><b class="ui">Reject</b> सिर्फ spam, गाली या किसी की निजी जानकारी (फोन, पता) वाले review पर करें।</li>
+  </ul>
+  <div class="warn">नकारात्मक लेकिन सच्चे reviews भी approve करें। इससे भरोसा बढ़ता है, और ग्राहक को सही size चुनने में मदद मिलती है।</div>
+</div>
+
+<div class="card" id="o10">
+  <h2>10. Coupons</h2>
+  <ol>
+    <li><b>Coupons</b> page के नीचे फ़ॉर्म भरें:
+      <ul>
+        <li><b>Code</b>: जैसे DIWALI200 (3–20 अक्षर या अंक)</li>
+        <li><b>Type</b>: ₹ off या % off। <b>Value</b>: कितनी छूट।</li>
+        <li><b>Shown to customers</b>: ग्राहक को दिखने वाला संदेश, जैसे "₹200 off on orders above ₹2,499"</li>
+        <li><b>Minimum cart ₹</b>, <b>Max discount ₹</b> (% वाले coupon के लिए), <b>Total uses allowed</b>, <b>Valid till</b></li>
+        <li><b>Prepaid only</b> (सिर्फ online payment पर) और <b>First order only</b> (सिर्फ नए ग्राहक के लिए)</li>
+      </ul>
+    </li>
+    <li><b class="ui">Save coupon</b>। उसी code को दोबारा save करने पर वो coupon update हो जाता है।</li>
+    <li>List में <b class="ui">Turn off</b> या <b class="ui">Turn on</b> से coupon बंद या चालू करें। "Used" बताता है कि coupon कितनी बार इस्तेमाल हुआ।</li>
+  </ol>
+  <p>सबसे अच्छे 3 चालू coupons हर product page के Offers डिब्बे में अपने-आप दिखते हैं।</p>
+</div>
+
+<div class="card" id="o11">
+  <h2>11. Pincodes और Local delivery</h2>
+  <ul>
+    <li><b>Local</b> pincodes (दुकान के आसपास) पर delivery दुकान की अपनी टीम करती है। यहां आप fee (0 = free) और कितने दिन में पहुंचेगा, यह तय करते हैं।</li>
+    <li>बाकी पूरे भारत के लिए courier (Shiprocket) है। Delivery की तारीख अपने-आप आती है।</li>
+  </ul>
+  <ol>
+    <li><b>Pincodes</b> box में एक या कई pincode लिखें (comma या space से अलग), जैसे <code>302001, 302002</code>।</li>
+    <li>Area/city, Local delivery fee, Delivery days भरें। <b>Local (own delivery)</b> और <b>COD allowed</b> पर ✓ लगाएं।</li>
+    <li><b class="ui">Save pincodes</b> दबाएं।</li>
+  </ol>
+  <div class="tip">जिस इलाके से COD पार्सल बार-बार लौटते हैं, वहां के pincode पर <b>COD allowed</b> का ✓ हटाकर दोबारा save कर दें।</div>
+</div>
+
+<div class="card" id="o12">
+  <h2>12. Homepage और Search शब्द</h2>
+  <h3>Top announcement bar</h3>
+  <p>Text (जैसे "Diwali Sale: Extra 10% on prepaid") और Link (जैसे <code>/c/sale</code>) डालकर <b class="ui">Save</b> दबाएं। Link हमेशा <code>/</code> से शुरू होना चाहिए।</p>
+  <h3>Main banner</h3>
+  <p>Headline, Sub-line, Button text और Button link डालें (जैसे <code>/c/occasion-festive</code>)। दो रंग चुनें या चौड़ी (landscape) photo डालें। Website पर एक समय में एक ही banner दिखता है, ताकि संदेश साफ रहे।</p>
+  <h3>Useful links</h3>
+  <table>
+    <tr><th>Link</th><th>क्या खुलता है</th></tr>
+    <tr><td><code>/c/new-arrivals</code></td><td>नया माल</td></tr>
+    <tr><td><code>/c/sale</code></td><td>Sale (15% से ज़्यादा छूट वाले)</td></tr>
+    <tr><td><code>/c/occasion-festive</code>, <code>/c/occasion-wedding</code>, <code>/c/occasion-office</code>, <code>/c/occasion-daily</code></td><td>मौके के हिसाब से</td></tr>
+    <tr><td><code>/c/under-999</code> (499/1499/2499)</td><td>Budget</td></tr>
+    <tr><td><code>/c/for-mother</code>, <code>/c/plus-size</code></td><td>मां के लिए gifting, बड़े sizes</td></tr>
+    <tr><td><code>/c/women</code>, <code>/c/men</code>, <code>/c/kids</code>, <code>/c/kurta-sets</code> …</td><td>Categories</td></tr>
+  </table>
+  <h3>Product rails (Home page की पट्टियां)</h3>
+  <p>3 पट्टियों तक का Title, Sub-line और यह तय करें कि उसमें कौनसे products आएं: Store bestsellers (जिन पर ✓ है), Newest, Featured, या Top selling online। जो पट्टी नहीं चाहिए उसका title खाली छोड़ दें।</p>
+  <h3>Search words (Hinglish शब्दकोश)</h3>
+  <p>ग्राहक जो शब्द लिखते हैं उन्हें search को सिखाएं। जैसे "lehnga" लिखने पर "lehenga, lehenga choli" भी खोजे। बाएं box में ग्राहक का शब्द, दाएं box में असली शब्द लिखकर <b class="ui">Add word</b> दबाएं। "shaadi, maa, garmi, office, sasta, laal, bacche" जैसे आम शब्द पहले से सिखाए हुए हैं।</p>
+</div>
+
+<div class="card" id="o13">
+  <h2>13. Settings <span class="badge">सिर्फ Owner</span></h2>
+  <div class="tbl"><table>
+    <tr><th>Setting</th><th>अभी</th><th>असर</th></tr>
+    <tr><td>COD allowed up to (₹)</td><td>3000</td><td>इससे बड़े order पर COD नहीं मिलेगा</td></tr>
+    <tr><td>COD fee (₹)</td><td>0</td><td>COD पर लगने वाला extra charge</td></tr>
+    <tr><td>Prepaid discount (%) / cap (₹)</td><td>5% / 150</td><td>Online payment पर मिलने वाली छूट</td></tr>
+    <tr><td>Free shipping from (₹)</td><td>999</td><td>इससे ऊपर courier free</td></tr>
+    <tr><td>Courier shipping fee (₹)</td><td>79</td><td>Free shipping की सीमा से कम के order पर</td></tr>
+    <tr><td>Exchange window (days)</td><td>7</td><td>Product page, policy page, order page, हर जगह अपने-आप बदल जाता है</td></tr>
+    <tr><td>Block COD after N RTO</td><td>2</td><td>कितनी बार पार्सल लौटाने पर उस नंबर का COD बंद हो</td></tr>
+    <tr><td>Low stock warning at</td><td>3</td><td>Dashboard पर low stock की चेतावनी कब आए</td></tr>
+  </table></div>
+  <p style="margin-top:8px"><b class="ui">Save settings</b> दबाते ही सब तुरंत लागू हो जाता है, policy pages पर भी। इससे website हमेशा वही वादा करती है जो सच में लागू है।</p>
+  <div class="note">दुकान का नाम, पता, फोन और GSTIN server की settings (environment) से आते हैं। इन्हें बदलने के लिए developer से कहें।</div>
+</div>
+
+<div class="card" id="o14">
+  <h2>14. Reports <span class="badge">सिर्फ Owner</span></h2>
+  <p>ऊपर <b>7 / 30 / 90 days</b> चुनें।</p>
+  <ul>
+    <li><b>Sales</b> और orders, <b>Average order</b> (औसतन एक order कितने का)</li>
+    <li><b>COD share</b>: कितने % orders COD पर आए। यह जितना कम, उतना अच्छा, क्योंकि COD पार्सल ज़्यादा लौटते हैं।</li>
+    <li><b>RTO / cancelled</b>: लौटे और रद्द हुए orders</li>
+    <li><b>Coupon discounts</b>, <b>Prepaid discounts</b>, <b>GST collected</b></li>
+    <li><b>Conversion</b>: product देखने वालों में से कितनों ने खरीदा</li>
+    <li><b>Shopping funnel</b>: Product views → Add to bag → Checkout started → Purchases। जिस कदम पर ज़्यादा लोग छूट रहे हैं, वहीं सुधार की ज़रूरत है।</li>
+    <li><b>Top products</b> और <b>Daily sales</b></li>
+  </ul>
+</div>
+
+<div class="card" id="o15">
+  <h2>15. Users और कर्मचारी <span class="badge">सिर्फ Owner</span></h2>
+  <ol>
+    <li><b>Add a user</b> में Name, Email, Role (Staff या Owner) और Password (कम से कम 10 अक्षर) भरकर <b class="ui">Add user</b> दबाएं। कर्मचारी को उसका email और password खुद दें।</li>
+    <li><b class="ui">Reset password</b>: कोई password भूल जाए तो नया password सेट करें।</li>
+    <li><b class="ui">Deactivate</b>: कर्मचारी काम छोड़ दे तो उसका login तुरंत बंद करें। <b class="ui">Activate</b> से फिर चालू कर सकते हैं।</li>
+    <li><b>Recent admin activity</b>: किसने कब क्या बदला (order का status, कीमत, coupon, settings)।</li>
+  </ol>
+  <table>
+    <tr><th>काम</th><th>Owner</th><th>Staff</th></tr>
+    <tr><td>Orders, Products, Stock, Photos, CSV</td><td>✓</td><td>✓</td></tr>
+    <tr><td>Exchanges, Reviews, Coupons, Pincodes, Homepage</td><td>✓</td><td>✓</td></tr>
+    <tr><td>Settings, Reports, Users</td><td>✓</td><td>✗</td></tr>
+    <tr><td>किसी ग्राहक का COD फिर से चालू करना</td><td>✓</td><td>✗</td></tr>
+  </table>
+</div>
+
+<div class="card" id="o16">
+  <h2>16. Checklist</h2>
+  <h3>रोज़</h3>
+  <ul>
+    <li>सुबह: Dashboard देखें → "To confirm" वाले orders confirm करें → पैक करें → ship करें</li>
+    <li>दोपहर: Exchanges और Reviews निपटाएं; Low stock देखें</li>
+    <li>शाम: पहुंच चुके orders को <b>Mark Delivered</b> करें; दुकान में बिके माल का stock घटाएं</li>
+  </ul>
+  <h3>हर हफ्ते</h3>
+  <ul>
+    <li>Reports (7 days) देखें: COD share, RTO और top products</li>
+    <li>नए माल की photos डालकर उसे <b>Active</b> करें; homepage की पट्टियां बदलें</li>
+    <li>पुराने या खत्म हो चुके coupons बंद करें</li>
+  </ul>
+  <h3>त्योहार या शादी का सीज़न (6 हफ्ते पहले से)</h3>
+  <ul>
+    <li>Festive products पर Occasion = Festive / Wedding Guest ज़रूर भरें</li>
+    <li>Main banner पर Festive Edit लगाएं और link <code>/c/occasion-festive</code> दें</li>
+    <li>Coupon बनाएं (जैसे FESTIVE200) और announcement bar में उसका ज़िक्र करें</li>
+    <li>Stock पहले से भरें। दुकान और website पर कीमत एक ही रखें।</li>
+  </ul>
+</div>
+
+<div class="card" id="o17">
+  <h2>17. असली दुकान के लिए Live होने से पहले</h2>
+  <ol>
+    <li>Razorpay (live), MSG91 (SMS, DLT approval), Shiprocket, Cloudinary (photos) और Resend (email) की keys डलवाएं। Demo mode बंद करवाएं।</li>
+    <li>दुकान का असली नाम, पता, फोन, GSTIN और domain डलवाएं। Policy pages पर "[Placeholder]" वाली लाइनें पढ़कर पक्की करवाएं।</li>
+    <li>Demo (नकली) products और orders हटवाएं और असली products डालें।</li>
+    <li>Owner और Staff के password बदलें (Users → Reset password), या नए users बनाकर demo users को Deactivate करें।</li>
+    <li>Local delivery वाले pincodes और उनकी fee भरें।</li>
+  </ol>
+</div>
+
+</section>
+
+<!-- ===================== STAFF ===================== -->
+<section class="role" id="staff">
+
+<div class="card">
+  <h2>कर्मचारी (Staff) गाइड: रोज़ का काम</h2>
+  <p>आपको Owner ने email और password दिया होगा। <a href="https://web-production-7536a.up.railway.app/admin">Admin panel</a> खोलें, दोनों डालें और <b class="ui">Sign in</b> दबाएं। Password भूल जाएं तो Owner से reset करवाएं।</p>
+  <p>आपके menu में हैं: <b>Dashboard, Orders, Products, Exchanges, Reviews, Coupons, Pincodes, Homepage &amp; Search</b>। Settings, Reports और Users सिर्फ Owner के लिए हैं। उन्हें खोलने पर "That page is for the owner only" दिखेगा।</p>
+  <div class="note">आपका हर बदलाव आपके नाम से दर्ज होता है। कुछ गलत हो जाए तो छिपाएं नहीं, तुरंत Owner को बताएं। लगभग हर गलती ठीक हो सकती है।</div>
+</div>
+
+<div class="card">
+  <h2>1. दिन की शुरुआत: Dashboard</h2>
+  <ul>
+    <li><b>To confirm</b>: नए orders। इन्हें सबसे पहले निपटाएं।</li>
+    <li><b>To pack / ship</b>: confirm हो चुके orders, जिन्हें पैक करके भेजना है</li>
+    <li><b>Exchange requests</b>: ग्राहकों ने size बदलने को कहा है</li>
+    <li><b>Low stock</b>: जो sizes खत्म हो रहे हैं। Owner को बताएं या stock भरें।</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>2. Order पैक करके भेजना: कदम-दर-कदम</h2>
+  <ol>
+    <li><b>Orders</b> → <b>To confirm</b> tab → order number पर tap करें।</li>
+    <li>Items देखें: <b>रंग और size (मोटे अक्षर)</b> और गिनती। रैक से वही पीस निकालें।</li>
+    <li>पीस सही है और साफ है, तो <b class="ui">Mark Confirmed</b> दबाएं। COD order हो तो ज़रूरत पड़ने पर ग्राहक को फोन करके पुष्टि कर लें (फोन नंबर पर tap करते ही call लग जाती है)।</li>
+    <li><b class="ui">Invoice PDF</b> print करके पैकेट में रखें। पैकेट पर order number लिखें।</li>
+    <li><b class="ui">Mark Packed</b> दबाएं।</li>
+    <li>भेजें:
+      <ul>
+        <li><b class="ui">Book courier &amp; ship</b> (बाहर के शहर)। Courier वाला पार्सल ले जाएगा। AWB order में दर्ज हो जाता है।</li>
+        <li><b class="ui">Send out for local delivery</b> (आसपास)। दुकान का लड़का पार्सल लेकर निकल जाए।</li>
+      </ul>
+    </li>
+    <li>पार्सल पहुंचने पर <b class="ui">Mark Delivered</b> दबाएं। COD में जितने पैसे order में लिखे हैं उतने ही लें, नकद या UPI से।</li>
+  </ol>
+  <div class="warn">
+    <b>ध्यान रखें:</b>
+    <ul>
+      <li>गलत size या रंग पैक करना सबसे आम गलती है। पैकेट बंद करने से पहले order से मिलान दोबारा करें।</li>
+      <li>अगर पीस खराब निकले या stock में न हो, तो confirm न करें। Owner को बताएं, वो ग्राहक से बात करके <b>Cancel order</b> या कोई दूसरा हल निकालेंगे।</li>
+      <li>ग्राहक ने COD पार्सल लेने से मना कर दिया और पार्सल लौट आया, तो <b class="ui">Mark Returned to store</b> दबाएं।</li>
+    </ul>
+  </div>
+  <p>ग्राहक से फोन पर हुई ज़रूरी बात order के नीचे <b>Internal note</b> में लिखें (<b class="ui">Add</b>)। यह ग्राहक को नहीं दिखता।</p>
+</div>
+
+<div class="card">
+  <h2>3. Size exchange संभालना</h2>
+  <ol>
+    <li><b>Exchanges</b> में नई request देखें: पुराना size, नया size, और ग्राहक का फोन।</li>
+    <li>ग्राहक को फोन करें: "पीस हम उठवा लें, या आप दुकान पर ले आएंगे?" फिर <b class="ui">Approved</b> दबाएं।</li>
+    <li>पुराना पीस हाथ में आने पर जांचें कि वो बिना धुला हो और उस पर tag लगा हो। फिर <b class="ui">Picked up</b> दबाएं।</li>
+    <li>नया size देने या भेजने पर <b class="ui">Completed</b> दबाएं। Stock अपने-आप ठीक हो जाएगा।</li>
+    <li>पीस धुला या इस्तेमाल किया हुआ हो, तो Owner से पूछकर <b class="ui">Rejected</b> करें।</li>
+  </ol>
+  <div class="note">Innerwear पर website exchange का बटन दिखाती ही नहीं। अगर innerwear खराब या गलत आया हो, तो ग्राहक दुकान पर फोन करेगा। तब Owner से पूछकर मामला निपटाएं।</div>
+</div>
+
+<div class="card">
+  <h2>4. नया माल डालना और stock अपडेट</h2>
+  <h3>नया product</h3>
+  <ol>
+    <li><b>Products</b> → <b class="ui">+ Add product</b>। Name, Category, Price, <b>असली MRP</b>, Description, Occasion और Fabric भरें। Status <b>Draft</b> रखें और <b class="ui">Create product</b> दबाएं।</li>
+    <li>नीचे sizes और रंग जोड़ें, हर खाने में पीस की गिनती लिखें, और <b class="ui">Save stock</b> दबाएं।</li>
+    <li>Photos: रंग चुनें → Choose files (camera) → <b class="ui">Upload</b>। हर रंग की 4 photos: सामने, पीछे, close-up और पहनकर।</li>
+    <li>सब पूरा होने पर Status को <b>Active</b> करें और <b class="ui">Save changes</b> दबाएं। अब product website पर दिखेगा।</li>
+  </ol>
+  <h3>Stock अपडेट</h3>
+  <ul>
+    <li>Products list में ऊपर का filter "Low / sold out" चुनें, product खोलें, गिनती बदलें और <b class="ui">Save stock</b> दबाएं।</li>
+    <li><b>दुकान में कोई पीस बिके तो यहां भी घटाएं।</b> वरना website पर ऐसा माल बिक जाएगा जो दुकान में है ही नहीं।</li>
+    <li>ज़्यादा products एक साथ बदलने हों तो Owner से CSV वाला तरीका पूछें।</li>
+  </ul>
+  <div class="tip"><b>Photo खींचने के नियम:</b> सादी सफेद या हल्की दीवार, खिड़की की रोशनी (flash नहीं), phone सीधा (portrait), पूरा कपड़ा frame में, सिलवटें न हों।</div>
+</div>
+
+<div class="card">
+  <h2>5. Reviews, Coupons, Pincodes</h2>
+  <ul>
+    <li><b>Reviews</b> → Pending: सच्चे reviews <b class="ui">Approve</b> करें, बुरे reviews भी। सिर्फ गाली, spam या किसी का फोन नंबर/पता हो तो <b class="ui">Reject</b> करें।</li>
+    <li><b>Coupons</b>: Owner के कहने पर ही नया coupon बनाएं या बंद करें।</li>
+    <li><b>Pincodes</b>: नया local इलाका जोड़ना हो तो pincode, fee और दिन डालकर <b class="ui">Save pincodes</b> दबाएं।</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>6. जब ग्राहक दुकान पर पूछे</h2>
+  <table>
+    <tr><th>ग्राहक का सवाल</th><th>क्या करें</th></tr>
+    <tr><td>"मेरा order कहां है?"</td><td>Orders में उसका फोन नंबर search करें, status और तारीख बताएं</td></tr>
+    <tr><td>"Online वाला size बदलना है"</td><td>Order number लें। अगर 7 दिन के अंदर है, तो Exchanges में request हो तो Approved फिर Completed दबाएं। Request न हो तो ग्राहक से order page पर "Exchange size" दबवाएं, फिर process करें।</td></tr>
+    <tr><td>"OTP नहीं आ रहा"</td><td>नंबर सही है? 30 सेकंड रुककर Resend दबाएं। 15 मिनट में 5 से ज़्यादा बार मांगने पर OTP कुछ देर के लिए रुक जाता है।</td></tr>
+    <tr><td>"पैसे कट गए, order नहीं बना"</td><td>Owner को बताएं। वो Razorpay में जांचकर refund करेंगे।</td></tr>
+    <tr><td>"COD क्यों नहीं दिख रहा?"</td><td>₹3,000 से बड़ा order हो, या pincode पर COD बंद हो, या नंबर से पहले पार्सल लौटाए गए हों। कारण checkout पर लिखा होता है।</td></tr>
+  </table>
+</div>
+
+</section>
+
+<!-- ===================== COMMON ===================== -->
+<section class="role" id="common">
+
+<div class="card">
+  <h2>शब्दकोश</h2>
+  <div class="tbl"><table>
+    <tr><th>शब्द</th><th>मतलब</th></tr>
+    <tr><td>COD</td><td>Cash on Delivery: सामान मिलने पर पैसे देना</td></tr>
+    <tr><td>Prepaid</td><td>पहले online (UPI/Card) पैसे देना</td></tr>
+    <tr><td>OTP</td><td>SMS पर आने वाला 6 अंक का एक बार का code</td></tr>
+    <tr><td>RTO</td><td>Return to Origin: ग्राहक ने पार्सल नहीं लिया और वो दुकान लौट आया</td></tr>
+    <tr><td>AWB</td><td>Courier का tracking number</td></tr>
+    <tr><td>MRP</td><td>Maximum Retail Price: tag पर छपी असली कीमत</td></tr>
+    <tr><td>SKU</td><td>हर product, रंग और size का अलग पहचान code</td></tr>
+    <tr><td>HSN / GST</td><td>Tax code और tax की दर (कपड़ों पर ₹2,500 तक 5%, उससे ऊपर 18%)</td></tr>
+    <tr><td>Draft / Active / Archived</td><td>छिपा हुआ / website पर दिख रहा / हटाया गया</td></tr>
+    <tr><td>Variant</td><td>एक product का एक रंग और एक size</td></tr>
+    <tr><td>Pincode (Local)</td><td>दुकान के आसपास का इलाका जहां दुकान खुद delivery करती है</td></tr>
+    <tr><td>Demo / Test mode</td><td>नकली data और नकली SMS/payment वाला अभ्यास का version</td></tr>
+  </table></div>
+</div>
+
+<div class="card">
+  <h2>अक्सर पूछे जाने वाले सवाल</h2>
+  <h3>ग्राहक</h3>
+  <ul>
+    <li><b>क्या account बनाना ज़रूरी है?</b> अलग से नहीं। Checkout पर mobile OTP डालते ही account बन जाता है।</li>
+    <li><b>मेरी जानकारी सुरक्षित है?</b> Card या UPI की जानकारी दुकान तक आती ही नहीं, वो Razorpay के पास रहती है। नाम, पता और फोन सिर्फ delivery के लिए इस्तेमाल होते हैं।</li>
+    <li><b>रंग photo से अलग लगे तो?</b> हर screen पर रंग थोड़ा अलग दिखता है। 7 दिन में size exchange हो सकता है। रंग की बड़ी गड़बड़ी हो तो दुकान को फोन करें।</li>
+    <li><b>Invoice कहां मिलेगा?</b> Order page पर "Download GST invoice (PDF)"।</li>
+  </ul>
+  <h3>Owner / Staff</h3>
+  <ul>
+    <li><b>Order confirm कर दिया, अब cancel करना है?</b> Ship होने से पहले "Cancel order" दबाएं। Stock अपने-आप लौट आएगा।</li>
+    <li><b>गलती से "Delivered" दबा दिया?</b> Status पीछे नहीं जाता। Owner को बताएं और order में note लिख दें।</li>
+    <li><b>Website पर नया product नहीं दिख रहा?</b> Status "Active" है? कम से कम एक size में stock है? Photos डली हैं?</li>
+    <li><b>Search में product नहीं आ रहा?</b> Occasion और Fabric भरें। ग्राहक कोई खास शब्द इस्तेमाल करते हों तो उसे Homepage &amp; Search में जोड़ें।</li>
+    <li><b>Login नहीं हो रहा?</b> Email और password जांचें। 5 बार गलत डालने पर 15 मिनट रुकें। Password भूल गए हों तो Owner से reset करवाएं।</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Demo website के बारे में</h2>
+  <ul>
+    <li>अभी की website <b>demo</b> है। सारे products, कीमतें, reviews और orders नकली हैं। सबसे ऊपर पीली पट्टी में "Demo store" लिखा है।</li>
+    <li>SMS नहीं जाता, OTP screen पर दिखता है। Payment "Test payment" window से होता है, असली पैसे नहीं कटते।</li>
+    <li>Google पर यह site नहीं आएगी (जानबूझकर index होने से रोकी गई है)।</li>
+    <li>Phase 2 में आएंगे: WhatsApp, दुकान की billing (POS), mobile number से loyalty points, store pickup, और "reserve करके try करो"।</li>
+  </ul>
+</div>
+
+</section>
+
+</main>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const show = (id) => {
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+    document.querySelectorAll('section.role').forEach(s => s.classList.toggle('active', s.id === id));
+    try { localStorage.setItem('pg-guide-tab', id); } catch (e) {}
+  };
+  tabs.forEach(t => t.addEventListener('click', () => { show(t.dataset.tab); window.scrollTo({ top: 0 }); }));
+  // Deep links like #o3 open the right tab
+  const fromHash = () => {
+    const el = location.hash && document.querySelector(location.hash);
+    const sec = el && el.closest('section.role');
+    if (sec) { show(sec.id); el.scrollIntoView(); return true; }
+    return false;
+  };
+  if (!fromHash()) { try { const s = localStorage.getItem('pg-guide-tab'); if (s && document.getElementById(s)) show(s); } catch (e) {} }
+  window.addEventListener('hashchange', fromHash);
+</script>
+</body>
+</html>

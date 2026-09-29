@@ -48,3 +48,4 @@ tmp/
 .npmrc
 /test-results/
 /playwright-report/
+ADMIN-LOGIN-DEMO.txt
