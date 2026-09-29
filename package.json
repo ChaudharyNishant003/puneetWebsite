@@ -1,0 +1,60 @@
+{
+  "name": "puneet-garments",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "prisma generate && next build",
+    "start": "prisma migrate deploy && next start -p ${PORT:-3000}",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "db:local": "node scripts/dev-db.mjs",
+    "db:migrate": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts",
+    "demo:purge": "tsx prisma/purge-demo.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.2.1",
+    "@prisma/client": "^6.19.3",
+    "@react-pdf/renderer": "^4.9.0",
+    "clsx": "^2.1.1",
+    "jose": "^6.2.12",
+    "next": "15.5.26",
+    "papaparse": "^5.7.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^24.19.0",
+    "@types/papaparse": "^5.5.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "embedded-postgres": "^17.10.0-beta.17",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.26",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.2"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "prisma@6.19.3": true,
+    "unrs-resolver@1.12.2": true,
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "@embedded-postgres/windows-x64@17.10.0-beta.17": true
+  }
+}
