@@ -6,6 +6,6 @@ test-results
 playwright-report
 mockups
 docs
-.env
+.env*
 .npmrc
 *.log
