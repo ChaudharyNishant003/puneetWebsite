@@ -1,0 +1,353 @@
+<title>Launch Questions Round Two</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600&family=Mukta:wght@400;600;700&display=swap">
+<style>
+/* Layout: a short "what we changed" panel, then one reading column of question cards. Each card
+   carries its reason ("क्यों चाहिए") and what stays blocked ("इसके बिना"). Store brand colours. */
+:root {
+  --bg: #fbf9f8;
+  --card: #ffffff;
+  --fg: #1d1a1b;
+  --muted: #6b6366;
+  --line: #ece6e7;
+  --line-strong: #d6cdd0;
+  --brand: #8e1b3a;
+  --brand-soft: #f8edf0;
+  --gold: #a87422;
+  --gold-soft: #fdf6ea;
+  --ok: #1e7e3a;
+  --ok-soft: #e9f5ec;
+  --font-body: "Mukta", "Jost", "Nirmala UI", "Mangal", system-ui, sans-serif;
+  --font-latin: "Jost", "Mukta", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161314; --card: #201c1d; --fg: #f1ecec; --muted: #a99fa2; --line: #332d2f; --line-strong: #4a4245;
+    --brand: #e3708f; --brand-soft: #3a2029; --gold: #e0b062; --gold-soft: #33291a; --ok: #6cc98a; --ok-soft: #1d2f23;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161314; --card: #201c1d; --fg: #f1ecec; --muted: #a99fa2; --line: #332d2f; --line-strong: #4a4245;
+  --brand: #e3708f; --brand-soft: #3a2029; --gold: #e0b062; --gold-soft: #33291a; --ok: #6cc98a; --ok-soft: #1d2f23;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 140px; }
+
+header.top { display: grid; gap: 10px; padding-bottom: 18px; }
+.eyebrow { font-family: var(--font-latin); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); font-weight: 600; }
+h1 { margin: 0; font-size: clamp(26px, 5vw, 34px); line-height: 1.2; font-weight: 700; text-wrap: balance; }
+h1 .brand { color: var(--brand); }
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+.done-panel { margin-top: 8px; background: var(--ok-soft); border: 1px solid color-mix(in srgb, var(--ok) 30%, transparent); border-radius: 12px; padding: 14px 16px; display: grid; gap: 6px; }
+.done-panel h2 { margin: 0; font-size: 16px; color: var(--ok); }
+.done-panel ul { margin: 0; padding-left: 20px; display: grid; gap: 3px; font-size: 15px; }
+.note { margin: 6px 0 0; padding: 10px 14px; border-radius: 8px; background: var(--gold-soft); font-size: 14.5px; border: 1px solid color-mix(in srgb, var(--gold) 30%, transparent); }
+.demo { font-family: var(--font-latin); font-size: 14px; color: var(--muted); margin: 4px 0 0; overflow-wrap: anywhere; }
+.demo code { font-family: var(--font-latin); color: var(--fg); background: var(--card); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; user-select: all; }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 12px; border-bottom: 1px solid var(--line); border-top: 1px solid var(--line); display: grid; gap: 5px; margin-top: 18px; }
+.progress-text { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.progress-text b { color: var(--fg); }
+.track { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.fill { height: 100%; width: 0; background: var(--brand); transition: width .25s ease; }
+
+section.topic { margin-top: 30px; display: grid; gap: 12px; }
+section.topic > h2 { margin: 0; font-size: 21px; font-weight: 700; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+section.topic > h2 .count { font-family: var(--font-latin); font-size: 13px; font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.q { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; min-width: 0; }
+.q.done { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); }
+.qhead { display: flex; align-items: center; gap: 8px; }
+.qno { font-family: var(--font-latin); font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tick { margin-left: auto; font-size: 12.5px; font-weight: 600; color: var(--ok); visibility: hidden; }
+.q.done .tick { visibility: visible; }
+.qtext { font-size: 17px; font-weight: 600; line-height: 1.45; margin: 0; }
+.hint { margin: -4px 0 0; color: var(--muted); font-size: 14.5px; }
+.why { display: grid; gap: 4px; padding: 10px 12px; border-left: 3px solid var(--gold); background: var(--gold-soft); border-radius: 0 8px 8px 0; font-size: 15px; }
+.why span, .block span { font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+.why span { color: var(--gold); }
+.block { display: grid; gap: 2px; padding: 8px 12px; border-left: 3px solid var(--brand); background: var(--brand-soft); border-radius: 0 8px 8px 0; font-size: 15px; }
+.block span { color: var(--brand); }
+
+.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt { position: relative; }
+.opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.opt label { display: inline-block; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line-strong); background: var(--card); font-size: 15px; cursor: pointer; line-height: 1.35; }
+.opt input:checked + label { border-color: var(--brand); background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+.opt input:focus-visible + label { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+input[type="text"], textarea { width: 100%; font: inherit; font-size: 15.5px; color: var(--fg); background: var(--bg); border: 1px solid var(--line-strong); border-radius: 8px; padding: 9px 12px; }
+textarea { min-height: 84px; resize: vertical; line-height: 1.5; }
+input[type="text"]:focus, textarea:focus { outline: 2px solid color-mix(in srgb, var(--brand) 55%, transparent); outline-offset: 1px; border-color: var(--brand); }
+::placeholder { color: var(--muted); opacity: .8; }
+
+.actions { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--card); border-top: 1px solid var(--line); padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); }
+.actions-in { max-width: 760px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.actions-in p { margin: 0; flex: 1 1 240px; font-size: 14px; color: var(--muted); min-width: 0; }
+.btn { font: inherit; font-size: 15.5px; font-weight: 600; border: 0; border-radius: 10px; padding: 10px 20px; background: var(--brand); color: var(--card); cursor: pointer; }
+.btn:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.fallback { margin-top: 26px; display: grid; gap: 8px; }
+.fallback textarea { min-height: 240px; font-size: 14px; }
+.toast { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 9px 16px; border-radius: 8px; font-size: 14.5px; z-index: 7; max-width: calc(100% - 32px); text-align: center; }
+
+@media (max-width: 560px) { .wrap { padding-block: 20px 170px; } }
+@media (prefers-reduced-motion: reduce) { .fill { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Website launch · दूसरा round</div>
+    <h1>अब बस <span class="brand">ये सवाल</span> बचे हैं</h1>
+    <p class="lede">आपके पिछले जवाब मिल गए, धन्यवाद। नीचे सिर्फ वही सवाल हैं जिनके बिना website live नहीं हो सकती। हर सवाल के साथ लिखा है कि जवाब क्यों चाहिए और उसके बिना कौन सा काम रुका रहेगा।</p>
+
+    <div class="done-panel">
+      <h2>आपके जवाबों के हिसाब से website में ये बदलाव कर दिए हैं</h2>
+      <ul>
+        <li>नाम Katten Hilifiger (छोटा नाम KH), phone 63956 63265 और आपका email</li>
+        <li>Online store: “दुकान पर आएं”, दुकान का पता और directions वाले हिस्से हटा दिए</li>
+        <li>GST नहीं है, इसलिए website पर GST नहीं दिखता और bill सादा invoice बनता है</li>
+        <li>हर order पर free shipping</li>
+        <li>COD ₹3,000 तक, online payment पर 5% छूट (₹150 तक), 7 दिन में size exchange, 1–2 दिन में dispatch, जैसा आपने confirm किया</li>
+      </ul>
+    </div>
+    <p class="note">जवाब इसी phone/computer पर अपने-आप save होते रहते हैं। आख़िर में नीचे “जवाब copy करें” दबा कर WhatsApp पर भेज दें। Password, OTP, PAN, Aadhaar या bank account number यहाँ न लिखें।</p>
+    <p class="demo">Demo website: <code>web-production-7536a.up.railway.app</code></p>
+  </header>
+
+  <div class="bar">
+    <div class="progress-text" id="progress-text">0 जवाब भरे</div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <form id="form" autocomplete="off"></form>
+
+  <div class="fallback" id="fallback" hidden>
+    <label for="fallback-text"><b>Copy नहीं हो पाया।</b> नीचे का पूरा text select करके copy करें:</label>
+    <textarea id="fallback-text" readonly></textarea>
+  </div>
+</div>
+
+<div class="actions">
+  <div class="actions-in">
+    <p id="actions-text">सारे जवाब एक message में copy होंगे, फिर WhatsApp पर भेज दें।</p>
+    <button type="button" class="btn" id="copy">जवाब copy करें</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const SECTIONS = [
+  { title: "नाम और delivery", qs: [
+    { id: "name", type: "choice", t: "दुकान का नाम “Katten Hilifiger” ही पक्का है?",
+      opts: ["हाँ, यही नाम, spelling सही है", "नाम बदलेंगे", "पहले trademark check करवाएंगे"], extra: "नया नाम या सही spelling यहाँ लिखें",
+      why: "यह नाम मशहूर brand “Tommy Hilfiger” से बहुत मिलता है, जो India में कपड़ों के लिए registered trademark है। ऐसे नाम पर legal notice आ सकता है, domain छिन सकता है, और Razorpay जैसे payment gateway account approve करने से मना कर सकते हैं।",
+      block: "नाम पक्का हुए बिना domain, logo, Razorpay और SMS registration शुरू नहीं हो सकते, क्योंकि इन सब पर business का नाम जाता है।" },
+    { id: "area", type: "choice", t: "Launch पर किन जगहों में delivery करेंगे?",
+      opts: ["सिर्फ अपने शहर में", "Launch से ही पूरे India में courier", "दोनों"], extra: "शहर का नाम और pincodes लिखें (comma लगा कर)",
+      why: "पिछली बार courier “कुछ समय बाद” चुना था और local pincodes तय नहीं थे। Website सिर्फ उन्हीं pincodes से order लेती है जहाँ delivery हो सकती है।",
+      block: "एक भी pincode तय न होने पर website पर कोई भी customer order नहीं कर पाएगा।" },
+    { id: "local_who", type: "choice", t: "शहर के अंदर order कौन पहुँचाएगा?",
+      opts: ["अपना आदमी", "Rapido / Porter जैसी service", "शहर में भी courier से"], extra: "कुछ और बताना हो तो लिखें (optional)",
+      why: "Website पर लिखा है कि local orders “हमारी अपनी team” पहुँचाती है, और इसी हिसाब से customer को अगले दिन की delivery date दिखती है।",
+      block: "पहुँचाने वाला तय न हो तो customer को गलत date दिखेगी और order देर से पहुँचेगा।" },
+    { id: "address", type: "long", t: "Business का पता, जहाँ से order pack होकर निकलेगा (pincode के साथ)",
+      h: "दुकान नहीं है तो घर या godown का पता भी चलेगा।",
+      why: "Online store में भी एक पता ज़रूरी है: Razorpay KYC के लिए, courier pickup के लिए, और exchange में लौटा सामान कहाँ आएगा उसके लिए। E-commerce के नियमों में भी website पर seller का पता लिखना होता है।",
+      block: "Razorpay और courier account नहीं बनेंगे, और policy pages अधूरे रहेंगे।" },
+    { id: "exchange_return", type: "choice", t: "Size exchange में पुराना piece वापस कैसे आएगा?",
+      opts: ["हम खुद customer से ले आएंगे", "Courier company से pickup करवाएंगे", "Customer खुद courier से भेजेगा"], extra: "कुछ और बताना हो तो लिखें (optional)",
+      why: "दुकान नहीं है, इसलिए “दुकान पर आकर exchange” वाली line हटा दी है। अब exchange policy में लिखना है कि पुराना size कैसे वापस आएगा। पहला exchange free है, तो उसका वापसी खर्च आपकी तरफ़ से होगा।",
+      block: "Exchange policy अधूरी रहेगी, और पहला exchange request आते ही उलझन होगी।" },
+  ]},
+  { title: "GST, payment और SMS", qs: [
+    { id: "gst", type: "choice", t: "GST registration का क्या plan है?",
+      opts: ["Registration करवा रहे हैं", "अभी बिना GST के शुरू करेंगे", "CA से पूछ कर बताएंगे"], extra: "Registration कब तक हो जाएगा? (optional)",
+      why: "अभी GSTIN नहीं है, इसलिए website GST नहीं दिखाती और bill सादा invoice बनता है। दूसरे राज्यों में courier से माल बेचने के लिए आम तौर पर GST registration ज़रूरी होता है (अपने CA से confirm करें)।",
+      block: "बिना GST के दूसरे राज्यों में courier से बेचना शुरू नहीं कर पाएंगे।" },
+    { id: "razorpay", type: "choice", t: "Online payment (Razorpay) के KYC documents तैयार हैं?",
+      h: "आम तौर पर PAN card, Aadhaar, bank account (cancelled cheque या passbook) और business का पता लगता है। Numbers यहाँ न लिखें।",
+      opts: ["तैयार हैं, साथ बैठ कर account बना लेंगे", "कुछ documents नहीं हैं", "अभी सिर्फ COD से शुरू करें"], extra: "कौन से documents नहीं हैं? (optional)",
+      why: "Razorpay account owner या business के नाम पर बनता है और KYC उन्हीं के documents से होती है। Account बनाने में हम मदद करेंगे, पर documents आपके लगेंगे।",
+      block: "Online payment (UPI / Card) बंद रहेगा, सिर्फ Cash on Delivery चलेगा।" },
+    { id: "dlt", type: "choice", t: "SMS (OTP) के DLT registration के लिए documents दे देंगे?",
+      h: "आम तौर पर PAN, business proof (GST न हो तो Udyam / MSME certificate या shop registration) और authorised व्यक्ति का ID लगता है। 3–7 दिन लगते हैं।",
+      opts: ["हाँ, documents दे देंगे", "पहले call पर बात करनी है"], extra: "कुछ और बताना हो तो लिखें (optional)",
+      why: "Customer का login और checkout phone पर आए OTP से होता है। भारत में business SMS के लिए DLT registration ज़रूरी है, और यह business के अपने documents पर ही होता है, हम अपने नाम पर नहीं करवा सकते।",
+      block: "Live website पर OTP नहीं जाएगा, तो कोई customer login या order नहीं कर पाएगा।" },
+    { id: "domain", type: "choice", t: "Domain (website का नाम) कौन खरीदेगा?",
+      opts: ["आप अपने card से GoDaddy पर खरीद लेंगे, हम बता देंगे क्या लेना है", "हमें पैसे दे देंगे, हम खरीद देंगे"], extra: "पसंद के 2-3 domain नाम लिखें, जैसे kattenhilifiger.in",
+      why: "अभी website demo address पर है। Razorpay KYC, SMS templates और Google पर दिखने के लिए अपना domain चाहिए। Domain नाम पक्का होने के बाद ही लेना ठीक है।",
+      block: "Website अपने नाम के address पर नहीं आएगी, और Razorpay व SMS के forms अधूरे रहेंगे।" },
+    { id: "photo_store", type: "choice", t: "Product photos कहाँ रखें?",
+      opts: ["Cloudinary का free account बना दें", "Railway storage लें (हर महीने थोड़ा खर्च)", "पहले call पर समझा दें"],
+      why: "Live server हर update पर नए सिरे से चलता है, और उस पर upload की गई photos मिट जाती हैं। इसलिए photos अलग जगह रखनी पड़ती हैं: Cloudinary (free) या Railway की storage।",
+      block: "Admin panel से डाली गई product photos कुछ समय बाद गायब हो जाएंगी।" },
+  ]},
+  { title: "Products, admin और launch", qs: [
+    { id: "photos", type: "choice", t: "5 products की photos कौन खींचेगा?",
+      opts: ["Photographer हम ढूंढ लेंगे", "आप कोई photographer suggest करें", "Phone से खुद खींच लेंगे"], extra: "Photos कब तक तैयार होंगी?",
+      why: "बिना photo के product website पर नहीं डाला जा सकता, और customer photo देख कर ही खरीदता है।",
+      block: "Launch के दिन website पर बेचने के लिए कुछ नहीं होगा।" },
+    { id: "owner_email", type: "text", t: "Owner (Puneet) के admin login के लिए email",
+      why: "Owner का admin login इसी email से बनेगा। सिर्फ owner ही settings, staff और reports देख सकता है, और password भूलने पर reset भी इसी से होगा।",
+      block: "अभी demo वाले test login चल रहे हैं, जिन्हें launch से पहले बंद करना ज़रूरी है।" },
+    { id: "legal", type: "long", t: "Privacy Policy और Terms कौन check करेगा? किसी विवाद में court किस शहर का लिखें?",
+      why: "Terms में लिखना होता है कि विवाद होने पर किस शहर का court देखेगा। Privacy Policy और Terms कानूनी पन्ने हैं, इन्हें एक बार CA या वकील को दिखा लेना चाहिए।",
+      block: "Policy pages पर “[Placeholder]” लिखा रहेगा, जो live website पर ठीक नहीं।" },
+    { id: "launch", type: "text", t: "Website लगभग कब तक live करनी है?",
+      h: "पक्की तारीख न हो तो महीना या कोई त्योहार लिख दें।",
+      why: "SMS registration में 3–7 दिन, Razorpay KYC और domain में भी कुछ दिन लगते हैं। Target तारीख से उल्टा गिन कर हम काम की order तय करेंगे।",
+      block: "तारीख न हो तो ज़रूरी काम (जैसे DLT) देर से शुरू होंगे और launch खिसकेगा।" },
+  ]},
+];
+
+const KEY = "kh-client-questions-round2-v1";
+const ALL = SECTIONS.flatMap((s) => s.qs);
+let answers = {};
+try { answers = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch { answers = {}; }
+
+const el = (tag, attrs = {}, kids = []) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "text") n.textContent = v;
+    else if (k === "class") n.className = v;
+    else n.setAttribute(k, v);
+  }
+  for (const c of [].concat(kids)) if (c) n.append(c);
+  return n;
+};
+
+function isDone(q) {
+  const a = answers[q.id] || {};
+  return q.type === "choice" ? !!a.choice : !!(a.text || "").trim();
+}
+function answerText(q) {
+  const a = answers[q.id] || {};
+  const txt = (a.text || "").trim();
+  if (q.type === "choice") return a.choice ? a.choice + (txt ? " — " + txt : "") : "";
+  return txt;
+}
+
+let saveTimer = null;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(answers)); } catch {} }, 300);
+}
+function setAnswer(q, patch) {
+  answers[q.id] = { ...(answers[q.id] || {}), ...patch };
+  save();
+  refresh();
+}
+
+let n = 0;
+function renderQuestion(q) {
+  n += 1;
+  q.no = n;
+  const a = answers[q.id] || {};
+  const inputId = "q-" + q.id;
+  const card = el("article", { class: "q", id: "card-" + q.id });
+  card.append(el("div", { class: "qhead" }, [el("span", { class: "qno", text: "Q" + n }), el("span", { class: "tick", text: "✓ भर दिया" })]));
+  card.append(el(q.type === "choice" ? "p" : "label", { class: "qtext", text: q.t, ...(q.type === "choice" ? {} : { for: inputId }) }));
+  if (q.h) card.append(el("p", { class: "hint", text: q.h }));
+  card.append(el("div", { class: "why" }, [el("span", { text: "क्यों चाहिए" }), document.createTextNode(q.why)]));
+  card.append(el("div", { class: "block" }, [el("span", { text: "इसके बिना" }), document.createTextNode(q.block)]));
+
+  if (q.type === "choice") {
+    const group = el("div", { class: "opts", role: "radiogroup", "aria-label": q.t });
+    q.opts.forEach((label, i) => {
+      const id = inputId + "-" + i;
+      const r = el("input", { type: "radio", name: inputId, id, value: label });
+      if (a.choice === label) r.checked = true;
+      r.addEventListener("change", () => setAnswer(q, { choice: label }));
+      group.append(el("div", { class: "opt" }, [r, el("label", { for: id, text: label })]));
+    });
+    card.append(group);
+    const extra = el("input", { type: "text", id: inputId + "-text", "aria-label": q.extra || "और जानकारी", placeholder: q.extra || "कुछ और बताना हो तो यहाँ लिखें (optional)" });
+    extra.value = a.text || "";
+    extra.addEventListener("input", () => setAnswer(q, { text: extra.value }));
+    card.append(extra);
+  } else {
+    const f = q.type === "long" ? el("textarea", { id: inputId, rows: "3" }) : el("input", { type: "text", id: inputId });
+    f.placeholder = "यहाँ लिखें";
+    f.value = a.text || "";
+    f.addEventListener("input", () => setAnswer(q, { text: f.value }));
+    card.append(f);
+  }
+  return card;
+}
+
+const form = document.getElementById("form");
+form.addEventListener("submit", (e) => e.preventDefault());
+for (const s of SECTIONS) {
+  const sec = el("section", { class: "topic" });
+  const count = el("span", { class: "count" });
+  s.countEl = count;
+  sec.append(el("h2", {}, [document.createTextNode(s.title), count]));
+  for (const q of s.qs) sec.append(renderQuestion(q));
+  form.append(sec);
+}
+
+function refresh() {
+  const done = ALL.filter(isDone).length;
+  document.getElementById("progress-text").innerHTML = "<b>" + done + "</b> / " + ALL.length + " सवालों के जवाब भरे";
+  document.getElementById("fill").style.width = (done / ALL.length) * 100 + "%";
+  for (const q of ALL) document.getElementById("card-" + q.id).classList.toggle("done", isDone(q));
+  for (const s of SECTIONS) s.countEl.textContent = s.qs.filter(isDone).length + "/" + s.qs.length;
+  const left = ALL.length - done;
+  document.getElementById("actions-text").textContent = left
+    ? left + " सवाल बाकी हैं। जितने भरे हैं, उतने भी भेज सकते हैं।"
+    : "सारे सवाल भर गए। अब copy करके WhatsApp पर भेज दें।";
+}
+
+function buildMessage() {
+  const date = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  const lines = ["Website launch — दूसरे round के जवाब (" + date + ")", ""];
+  for (const s of SECTIONS) {
+    const filled = s.qs.filter(isDone);
+    if (!filled.length) continue;
+    lines.push("*" + s.title + "*");
+    for (const q of filled) lines.push("Q" + q.no + ". " + q.t + "\n→ " + answerText(q));
+    lines.push("");
+  }
+  const left = ALL.filter((q) => !isDone(q));
+  if (left.length) lines.push("अभी बाकी: " + left.map((q) => "Q" + q.no).join(", "));
+  return lines.join("\n").trim();
+}
+
+let toastTimer = null;
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.hidden = true; }, 3200);
+}
+
+document.getElementById("copy").addEventListener("click", () => {
+  if (!ALL.some(isDone)) { toast("पहले कम से कम एक सवाल का जवाब भरें।"); return; }
+  const text = buildMessage();
+  const fb = document.getElementById("fallback");
+  const fbText = document.getElementById("fallback-text");
+  const showFallback = () => {
+    fbText.value = text;
+    fb.hidden = false;
+    fbText.focus();
+    fbText.select();
+    fb.scrollIntoView({ block: "center" });
+  };
+  try {
+    navigator.clipboard.writeText(text).then(() => {
+      fb.hidden = true;
+      toast("Copy हो गया। अब WhatsApp खोल कर paste करें और भेज दें।");
+    }, showFallback);
+  } catch { showFallback(); }
+});
+
+refresh();
+</script>
