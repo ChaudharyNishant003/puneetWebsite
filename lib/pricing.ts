@@ -116,7 +116,7 @@ export function priceCart(input: PricingInput): PricingResult {
     codFee,
     total,
     taxTotal,
-    amountToFreeShipping: Math.max(0, settings.freeShippingThreshold - subtotal),
+    amountToFreeShipping: settings.courierShippingFee > 0 ? Math.max(0, settings.freeShippingThreshold - subtotal) : 0,
   };
 }
 

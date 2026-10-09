@@ -7,6 +7,7 @@ import { IconCash, IconClose, IconPlay, IconRuler, IconShare, IconStar, IconStor
 import { openCart } from "./cart-events";
 import { WishlistButton } from "./WishlistButton";
 import { useSite } from "./SiteFlags";
+import { shop } from "@/lib/config";
 
 type Img = { id: string; url: string; alt: string; colour: string | null };
 type V = { id: string; size: string; colour: string; colourHex: string; stock: number };
@@ -28,7 +29,7 @@ export type ProductViewProps = {
   images: Img[];
   variants: V[];
   chart: Chart;
-  settings: { freeShippingThreshold: number; prepaidDiscountPercent: number; prepaidDiscountMax: number; codMaxAmount: number; exchangeWindowDays: number };
+  settings: { freeShippingThreshold: number; courierShippingFee: number; prepaidDiscountPercent: number; prepaidDiscountMax: number; codMaxAmount: number; exchangeWindowDays: number };
   offers: { code: string; description: string }[];
   storeAddress: string;
 };
@@ -193,15 +194,15 @@ export function ProductView(p: ProductViewProps) {
 
         <div className="mt-4 grid auto-cols-fr grid-flow-col gap-2 text-center text-[10.5px] leading-tight">
           {f.cod ? <div className="border border-line px-1 py-2.5"><IconCash className="mx-auto mb-1" />COD with OTP</div> : null}
-          <div className="border border-line px-1 py-2.5"><IconTruck className="mx-auto mb-1" />Free shipping {inr(p.settings.freeShippingThreshold)}+</div>
+          <div className="border border-line px-1 py-2.5"><IconTruck className="mx-auto mb-1" />{p.settings.courierShippingFee > 0 ? `Free shipping ${inr(p.settings.freeShippingThreshold)}+` : "Free shipping"}</div>
           {f.exchanges ? <div className="border border-line px-1 py-2.5"><IconSwap className="mx-auto mb-1" />{p.isExchangeable ? `${p.settings.exchangeWindowDays}-day size exchange*` : "No exchange (hygiene)"}</div> : null}
         </div>
         {f.exchanges ? <p className="mt-2 text-[11px] leading-relaxed text-muted">
           {p.isExchangeable
-            ? `*First size exchange is free, online or at our store, within ${p.settings.exchangeWindowDays} days of delivery. Refunds only for a defective or wrong item.`
+            ? `*First size exchange is free${shop.hasStore ? ", online or at our store," : ""} within ${p.settings.exchangeWindowDays} days of delivery. Refunds only for a defective or wrong item.`
             : "Innerwear cannot be exchanged or returned for hygiene reasons, unless the item is defective or wrong."}
         </p> : null}
-        <p className="mt-3 flex items-center gap-2 text-xs"><IconStore size={16} /> Same piece available at our store, {p.storeAddress}</p>
+        {p.storeAddress ? <p className="mt-3 flex items-center gap-2 text-xs"><IconStore size={16} /> Same piece available at our store, {p.storeAddress}</p> : null}
       </div>
 
       {/* Mobile sticky buy bar */}
@@ -290,10 +291,10 @@ function PincodeCheck({ price, settings, cod }: { price: number; settings: Produ
       {res ? (
         res.serviceable ? (
           <div className="mt-2 text-[12.5px] leading-relaxed">
-            <p>Get it by <b className="text-save">{date}</b>{res.mode === "LOCAL" ? " · delivered by our store" : ""}</p>
+            <p>Get it by <b className="text-save">{date}</b>{res.mode === "LOCAL" ? " · delivered by our own team" : ""}</p>
             <p className="text-muted">
               {!cod ? "Pay online (UPI / card)" : res.codAllowed && price <= settings.codMaxAmount ? "Cash on Delivery available" : "Cash on Delivery not available, pay online"}
-              {res.mode === "LOCAL" ? (res.localFee ? ` · Delivery ₹${res.localFee}` : " · Free local delivery") : price >= settings.freeShippingThreshold ? " · Free shipping" : ""}
+              {res.mode === "LOCAL" ? (res.localFee ? ` · Delivery ₹${res.localFee}` : " · Free local delivery") : price >= settings.freeShippingThreshold || settings.courierShippingFee === 0 ? " · Free shipping" : ""}
             </p>
           </div>
         ) : (

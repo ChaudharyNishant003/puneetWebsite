@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { getControls, getFlags } from "@/lib/flags";
 import { CONTENT_PARTS } from "@/lib/features";
 import { exitViewAction } from "@/app/actions/ops";
+import { shop } from "@/lib/config";
 import { adminLogoutAction } from "@/app/actions/admin-auth";
 import { AdminNav, type NavLink } from "@/components/admin/AdminNav";
 
@@ -52,7 +53,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       ) : null}
       <aside className={`border-b border-line bg-white md:sticky md:top-0 md:h-screen md:w-56 md:shrink-0 md:border-b-0 md:border-r ${user.viewing ? "mt-6 md:mt-0 md:pt-6" : ""}`}>
         <div className="flex items-center justify-between px-4 py-3 md:block">
-          <Link href="/admin" className="block text-base font-bold uppercase tracking-[0.14em] text-brand">Puneet <span className="text-[10px] font-medium tracking-widest text-muted">admin</span></Link>
+          <Link href="/admin" className="block text-base font-bold uppercase tracking-[0.14em] text-brand">{shop.shortName} <span className="text-[10px] font-medium tracking-widest text-muted">admin</span></Link>
           <p className="text-[11px] text-muted md:mt-1">{user.name} · {user.role === "OWNER" ? "Owner" : "Staff"}</p>
         </div>
         <AdminNav links={links} />

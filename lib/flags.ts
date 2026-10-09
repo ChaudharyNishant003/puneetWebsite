@@ -3,6 +3,7 @@ import { cache } from "react";
 import { notFound } from "next/navigation";
 import { db } from "./db";
 import { FEATURES, type Side } from "./features";
+import { shop } from "./config";
 
 // Missing row = ON (today's behaviour). Cached in process memory; ops console writes call
 // invalidateFlags() so changes apply on the next request.
@@ -17,6 +18,8 @@ async function load(): Promise<FlagMap> {
   const map: FlagMap = {};
   for (const f of FEATURES) map[f.key] = { admin: true, site: true };
   for (const r of rows) if (map[r.key]) map[r.key] = { admin: r.adminOn, site: r.siteOn };
+  // An online-only shop has nothing to visit, whatever the switch says.
+  if (!shop.hasStore) map.storePage = { ...map.storePage, site: false };
   memo = { at: Date.now(), map };
   return map;
 }

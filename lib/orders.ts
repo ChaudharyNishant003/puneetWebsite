@@ -119,7 +119,7 @@ export async function notify(order: Order, status: OrderStatus, extra: { trackin
       .join("")}
       <tr><td style="padding:8px 0"><b>Total ${order.paymentMethod === "COD" ? "(pay on delivery)" : "(paid)"}</b></td><td style="text-align:right"><b>${inr(order.total)}</b></td></tr></table>
     <p><a href="${link}" style="display:inline-block;background:#8e1b3a;color:#fff;padding:10px 16px;text-decoration:none">View order</a></p>
-    <p style="color:#6e6e73;font-size:12px">${shop.name} · ${shop.address} · ${shop.phone}</p></div>`;
+    <p style="color:#6e6e73;font-size:12px">${[shop.name, shop.hasStore ? shop.address : "", shop.phone].filter(Boolean).join(" · ")}</p></div>`;
   await sendEmail(order.email, subject, html).catch(() => {});
 }
 

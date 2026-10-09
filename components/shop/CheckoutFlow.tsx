@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { confirmPaymentAction, mockPayAction, paymentFailedAction, placeOrderAction, quoteAction, sendCodOtpAction } from "@/app/actions/checkout";
 import { inr } from "@/lib/format";
+import { shop } from "@/lib/config";
 import { INDIAN_STATES } from "@/lib/constants";
 import { IconCash, IconLock } from "../icons";
 import { LoginForm } from "./LoginForm";
@@ -95,7 +96,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
       amount: p.amount,
       currency: "INR",
       order_id: p.orderId,
-      name: "Puneet Garments",
+      name: shop.name,
       description: `Order ${orderNumber}`,
       prefill: { name: p.name, contact: `+91${p.phone}`, email: p.email },
       config: { display: { preferences: { show_default_blocks: true } } },
@@ -194,7 +195,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
           {quoteErr ? <p className="mt-2 text-sm text-danger">{quoteErr}</p> : null}
           {quote ? (
             quote.serviceable ? (
-              <p className="mt-3 text-sm">🚚 Delivery by <b className="text-save">{eta}</b>{quote.mode === "LOCAL" ? " · by our store team" : ""}</p>
+              <p className="mt-3 text-sm">🚚 Delivery by <b className="text-save">{eta}</b>{quote.mode === "LOCAL" ? " · by our own team" : ""}</p>
             ) : (
               <p className="mt-3 text-sm text-danger">{quote.deliveryMessage ?? "We don't deliver to this pincode yet"}</p>
             )

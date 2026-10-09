@@ -16,7 +16,7 @@ export const FILTER_KEYS = ["occasion", "fabric", "sleeve", "length", "pattern",
 
 // Virtual collections shown in navigation alongside real categories.
 export const virtualCollections: Record<string, { title: string; subtitle?: string; where: Prisma.ProductWhereInput }> = {
-  "new-arrivals": { title: "New Arrivals", subtitle: "Is hafte dukaan mein aaya", where: {} },
+  "new-arrivals": { title: "New Arrivals", subtitle: "Is hafte naya aaya", where: {} },
   sale: { title: "Sale", subtitle: "Genuine MRP, genuine discounts", where: {} },
   "plus-size": { title: "Plus Size", where: { variants: { some: { size: { in: ["XXL", "3XL", "4XL"] } } } } },
   "occasion-daily": { title: "Daily Wear", where: { attributes: { some: { key: "occasion", value: "Daily" } } } },

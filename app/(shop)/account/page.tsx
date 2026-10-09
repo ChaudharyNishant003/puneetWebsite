@@ -7,6 +7,7 @@ import { LoginGate } from "@/components/shop/LoginGate";
 import { getFlags } from "@/lib/flags";
 import { ProfileForm } from "@/components/shop/ProfileForm";
 import { fmtDate, inr, statusLabel } from "@/lib/format";
+import { shop } from "@/lib/config";
 
 export const metadata: Metadata = { title: "My Account", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ export default async function AccountPage() {
 
       <section className="mt-6 bg-surface p-4 text-sm">
         <p className="font-semibold">Loyalty points are coming soon</p>
-        <p className="mt-1 text-xs text-muted">Your phone number will be your membership ID, online and at our store.</p>
+        <p className="mt-1 text-xs text-muted">Your phone number will be your membership ID{shop.hasStore ? ", online and at our store" : ""}.</p>
       </section>
 
       <form action={logoutAction} className="mt-6"><button className="btn btn-outline w-full">Log out</button></form>

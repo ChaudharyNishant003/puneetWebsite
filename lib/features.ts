@@ -22,7 +22,7 @@ export const FEATURES: FeatureDef[] = [
   { key: "localDelivery", group: "Orders & Delivery", label: "Local delivery (own team)", admin: "\"Send out for local delivery\" button", site: "Own delivery with local fee/ETA (OFF = local pincodes treated as courier)" },
   { key: "orderCancel", group: "Orders & Delivery", label: "Cancel / refund marking", admin: "\"Cancel order\" and \"Mark refunded\" buttons" },
   { key: "orderNotes", group: "Orders & Delivery", label: "Internal order notes", admin: "Note box on the order page" },
-  { key: "invoice", group: "Orders & Delivery", label: "GST invoice PDF", admin: "\"Invoice PDF\" button", site: "Customer \"Download GST invoice\" link" },
+  { key: "invoice", group: "Orders & Delivery", label: "Invoice PDF", admin: "\"Invoice PDF\" button", site: "Customer \"Download invoice\" link" },
   { key: "codRto", group: "Orders & Delivery", label: "COD block after returns (RTO)", admin: "\"Re-enable COD\" for a customer", site: "Automatic COD block after repeated RTO" },
 
   // Products & Catalogue

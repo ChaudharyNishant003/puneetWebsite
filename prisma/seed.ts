@@ -237,11 +237,11 @@ async function main() {
 
   // CMS
   const cms: Record<string, unknown> = {
-    announcement: { text: "Free first size exchange · COD available · Free shipping above ₹999", link: "/pages/exchange-policy" },
+    announcement: { text: "Free first size exchange · COD available · Free shipping on every order", link: "/pages/exchange-policy" },
     hero: { title: "The Festive Edit", subtitle: "Diwali aur shaadi ke liye, poore parivaar ke liye", cta: "Shop Now", href: "/c/occasion-festive", from: "#C9727A", to: "#8E1B3A" },
     rails: [
-      { title: "Bestsellers in Our Store", subtitle: "Jo dukaan mein sabse zyada bik raha hai", source: "storeBestseller" },
-      { title: "New Arrivals", subtitle: "Is hafte dukaan mein aaya", source: "new" },
+      { title: "Bestsellers", subtitle: "Jo sabse zyada bik raha hai", source: "storeBestseller" },
+      { title: "New Arrivals", subtitle: "Is hafte naya aaya", source: "new" },
     ],
   };
   for (const [key, content] of Object.entries(cms)) await db.cmsBlock.upsert({ where: { key }, create: { key, content: content as object }, update: {} });

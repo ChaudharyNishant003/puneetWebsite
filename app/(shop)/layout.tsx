@@ -14,7 +14,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
   const [menu, count, ann, flags, controls] = await Promise.all([
     getMenu(),
     cartCount(),
-    getCms<{ text: string; link?: string }>("announcement", { text: `Visit our store in ${shop.address}` }),
+    getCms<{ text: string; link?: string }>("announcement", { text: shop.hasStore ? `Visit our store in ${shop.address}` : "Free size exchange · Cash on Delivery available" }),
     siteFlags(),
     getControls(),
   ]);
@@ -27,7 +27,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           <p className="text-2xl font-bold uppercase tracking-[0.14em] text-brand">{shop.shortName}</p>
           <p className="mt-6 text-lg font-semibold">We&apos;ll be back soon</p>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">{controls.maintenance.message}</p>
-          <p className="mt-6 text-xs text-muted">{shop.address} · {shop.phone}</p>
+          <p className="mt-6 text-xs text-muted">{[shop.hasStore ? shop.address : "", shop.phone].filter(Boolean).join(" · ")}</p>
         </div>
       </main>
     );
@@ -52,7 +52,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           </div>
           <Link href="/" className="text-center leading-none" aria-label={`${shop.name} home`}>
             <span className="block text-[19px] font-bold uppercase tracking-[0.14em] text-brand">{shop.shortName}</span>
-            <span className="mt-0.5 block text-[8px] font-medium uppercase tracking-[0.3em] text-muted">Garments</span>
+            <span className="mt-0.5 block text-[8px] font-medium uppercase tracking-[0.3em] text-muted">{shop.name}</span>
           </Link>
           <div className="flex w-24 items-center justify-end gap-1">
             <Link href="/account" aria-label="Account" className={`p-1.5 ${on("wishlist") ? "hidden md:block" : ""}`}><IconUser /></Link>

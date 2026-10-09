@@ -2,6 +2,7 @@
 import { useState, useTransition } from "react";
 import { requestExchangeAction, submitReviewAction } from "@/app/actions/orders";
 import { IconClose, IconStar } from "../icons";
+import { shop } from "@/lib/config";
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
@@ -38,7 +39,7 @@ export function ExchangeButton({ orderItemId, sizes, daysLeft, free }: { orderIt
           {done ? (
             <div className="py-4 text-center text-sm">
               <p className="font-semibold">Request received ✓</p>
-              <p className="mt-1 text-muted">We&apos;ll call you to arrange pickup, or bring the item to our store with your order number.</p>
+              <p className="mt-1 text-muted">We&apos;ll call you to arrange pickup{shop.hasStore ? ", or bring the item to our store with your order number" : ""}.</p>
               <button onClick={() => location.reload()} className="btn btn-dark mt-4">Done</button>
             </div>
           ) : (

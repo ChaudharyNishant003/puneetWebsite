@@ -14,7 +14,7 @@ export default async function Pincodes() {
   return (
     <div className="max-w-4xl">
       <h1 className="mb-1 text-xl font-semibold">Pincodes</h1>
-      <p className="mb-4 text-xs text-muted">Local pincodes are delivered by the store team (your fee and days). All others go by courier with Shiprocket dates. Turn COD off for pincodes with many refusals.</p>
+      <p className="mb-4 text-xs text-muted">Local pincodes are delivered by your own team (your fee and days). All others go by courier with Shiprocket dates. Turn COD off for pincodes with many refusals.</p>
       <section className="mb-6 border border-line bg-white p-4">
         <ActionForm action={savePincodesAction} submit="Save pincodes" reset>
           <div className="grid gap-3 md:grid-cols-4">

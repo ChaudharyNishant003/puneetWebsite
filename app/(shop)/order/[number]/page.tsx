@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getCustomerSession } from "@/lib/auth/session";
 import { getSettings } from "@/lib/settings";
 import { getFlags } from "@/lib/flags";
+import { shop } from "@/lib/config";
 import { exchangeEligibility } from "@/lib/exchange";
 import { fmtDate, fmtDateTime, inr, statusLabel } from "@/lib/format";
 import { LoginGate } from "@/components/shop/LoginGate";
@@ -112,7 +113,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
             <div className="flex justify-between border-t border-line pt-1 font-semibold"><dt>Total</dt><dd>{inr(order.total)}</dd></div>
             <p className="text-xs text-muted">{order.paymentMethod === "COD" ? (order.paymentStatus === "COD_COLLECTED" ? "Paid on delivery" : "Pay on delivery (cash or UPI)") : order.paymentStatus === "PAID" ? "Paid online" : "Online payment pending"}</p>
           </dl>
-          {on("invoice") && order.status !== "PENDING_PAYMENT" && !cancelled ? <a href={`/api/invoice/${order.number}`} className="mt-3 inline-block text-xs text-brand underline">Download GST invoice (PDF)</a> : null}
+          {on("invoice") && order.status !== "PENDING_PAYMENT" && !cancelled ? <a href={`/api/invoice/${order.number}`} className="mt-3 inline-block text-xs text-brand underline">{shop.gstin ? "Download GST invoice (PDF)" : "Download invoice (PDF)"}</a> : null}
         </div>
       </div>
 

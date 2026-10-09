@@ -6,7 +6,7 @@ import { shop } from "@/lib/config";
 import { siteFlags } from "@/lib/flags";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Section } from "@/components/shop/Section";
-import { IconCash, IconLock, IconPhone, IconPin, IconStar, IconStore, IconSwap } from "@/components/icons";
+import { IconCash, IconLock, IconPhone, IconPin, IconStar, IconStore, IconSwap, IconTruck } from "@/components/icons";
 
 // Rendered per request: the build machine has no database access.
 export const dynamic = "force-dynamic";
@@ -27,7 +27,7 @@ export default async function Home() {
   const on = (k: string) => flags[k] ?? true;
   const [hero, rails, cats, reviews] = await Promise.all([
     getCms<Hero>("hero", { title: "New Season", subtitle: shop.tagline, cta: "Shop Now", href: "/c/new-arrivals", from: "#C9727A", to: "#8E1B3A" }),
-    getCms<Rail[]>("rails", [{ title: "Bestsellers in Our Store", source: "storeBestseller" }]),
+    getCms<Rail[]>("rails", [{ title: "Bestsellers", source: "storeBestseller" }]),
     db.category.findMany({
       where: { slug: { in: TILE_CATS } },
       select: { slug: true, name: true, image: true, products: { where: { status: "ACTIVE" }, take: 1, orderBy: { soldCount: "desc" }, select: { images: { take: 1, orderBy: { sortOrder: "asc" }, select: { url: true } } } } },
@@ -116,7 +116,7 @@ export default async function Home() {
       ) : null}
 
       <section className="mt-8 grid grid-cols-4 gap-1 border-y border-line bg-surface px-2 py-5 text-center text-[10.5px] leading-tight md:text-sm">
-        <div><IconStore className="mx-auto mb-1.5" size={22} />Real Shop<br />Since {shop.since}</div>
+        {on("storePage") ? <div><IconStore className="mx-auto mb-1.5" size={22} />Real Shop<br />Since {shop.since}</div> : <div><IconTruck className="mx-auto mb-1.5" size={22} />Ships in<br />1–2 Days</div>}
         <div><IconSwap className="mx-auto mb-1.5" size={22} />Free Size<br />Exchange</div>
         <div><IconCash className="mx-auto mb-1.5" size={22} />Cash on<br />Delivery</div>
         <div><IconLock className="mx-auto mb-1.5" size={22} />Secure<br />Payments</div>

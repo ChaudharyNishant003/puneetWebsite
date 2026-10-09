@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { priceCart, codEligibility, couponAmount, includedTax, apparelGstRate, type CouponLike } from "@/lib/pricing";
 import { defaultSettings } from "@/lib/config";
 
-const s = { ...defaultSettings };
+const s = { ...defaultSettings, courierShippingFee: 79 };
 const coupon = (o: Partial<CouponLike>): CouponLike => ({
   code: "X", type: "FLAT", value: 100, minCart: 0, maxDiscount: null, prepaidOnly: false, firstOrderOnly: false,
   active: true, startsAt: null, endsAt: null, usageLimit: null, usedCount: 0, ...o,
@@ -16,6 +16,13 @@ describe("priceCart", () => {
     expect(r.shippingFee).toBe(79);
     expect(r.amountToFreeShipping).toBe(450);
     expect(r.total).toBe(628);
+  });
+
+  it("ships free on every order when the courier fee is 0", () => {
+    const r = priceCart({ lines: [{ unitPrice: 549, mrp: 649, qty: 1, gstRate: 5 }], delivery: { mode: "COURIER" }, settings: { ...s, courierShippingFee: 0 } });
+    expect(r.shippingFee).toBe(0);
+    expect(r.amountToFreeShipping).toBe(0);
+    expect(r.total).toBe(549);
   });
 
   it("gives free courier shipping at or above the threshold", () => {

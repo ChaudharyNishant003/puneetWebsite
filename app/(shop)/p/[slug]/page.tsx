@@ -98,7 +98,7 @@ export default async function ProductPage({ params }: Props) {
         chart={chart ? { name: chart.name, unit: chart.unit, columns: chart.columns, rows: chart.rows as { size: string; values: string[] }[], howToMeasure: chart.howToMeasure, fitRule: chart.fitRule } : null}
         settings={settings}
         offers={offers}
-        storeAddress={shop.address}
+        storeAddress={shop.hasStore ? shop.address : ""}
       />
 
       <div className="mt-6 px-4 md:ml-auto md:mt-10 md:w-[47%] md:px-0">
@@ -118,7 +118,7 @@ export default async function ProductPage({ params }: Props) {
           <div className="mb-4 space-y-2 text-[13px] leading-relaxed text-muted">
             {p.isExchangeable ? (
               <>
-                <p>Size exchange within {settings.exchangeWindowDays} days of delivery. Your first exchange is free, online or at our store.</p>
+                <p>Size exchange within {settings.exchangeWindowDays} days of delivery. Your first exchange is free{shop.hasStore ? ", online or at our store" : ""}.</p>
                 <p>Refunds are given only if the item is defective or you received the wrong item.</p>
               </>
             ) : (
@@ -130,7 +130,7 @@ export default async function ProductPage({ params }: Props) {
         <details className="border-b border-line">
           <summary className="eyebrow cursor-pointer list-none py-3.5 text-[13px]">Shipping</summary>
           <p className="mb-4 text-[13px] leading-relaxed text-muted">
-            Ships in 1–2 days. Free shipping on orders above ₹{settings.freeShippingThreshold}. Local pincodes are delivered by our own store team. Check your delivery date above.
+            Ships in 1–2 days. {settings.courierShippingFee > 0 ? `Free shipping on orders above ₹${settings.freeShippingThreshold}.` : "Free shipping on every order."} Local pincodes are delivered by our own team. Check your delivery date above.
           </p>
         </details>
       </div>

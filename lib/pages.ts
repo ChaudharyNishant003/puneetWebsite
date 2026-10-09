@@ -9,8 +9,12 @@ export const getPages = (s: Settings): Record<string, { title: string; body: str
   about: {
     title: "About Us",
     body: [
-      `${shop.name} has been dressing families in ${shop.city} since ${shop.since}. From everyday kurtis and school-day basics to festive sets and wedding-guest outfits, we keep the whole family covered under one roof.`,
-      "This website brings the same shop online: the same pieces, the same prices, and the same people to help you. If anything online is unclear, call us or drop by the store.",
+      shop.hasStore
+        ? `${shop.name} has been dressing families in ${shop.city} since ${shop.since}. From everyday kurtis and school-day basics to festive sets and wedding-guest outfits, we keep the whole family covered under one roof.`
+        : `${shop.name} is an online clothing store for the whole family, started in ${shop.since}. From everyday kurtis and school-day basics to festive sets and wedding-guest outfits, we keep the whole family covered in one place.`,
+      shop.hasStore
+        ? "This website brings the same shop online: the same pieces, the same prices, and the same people to help you. If anything online is unclear, call us or drop by the store."
+        : `If anything is unclear, call us on ${shop.phone} (${shop.hours}) and we'll help you choose.`,
       "[Placeholder: the owner's story and photos will go here once shared by the client.]",
     ],
   },
@@ -28,7 +32,7 @@ export const getPages = (s: Settings): Record<string, { title: string; body: str
   "exchange-policy": {
     title: "Exchange & Returns Policy",
     body: [
-      `Size exchange: you can exchange an item for a different size within ${s.exchangeWindowDays} days of delivery. Raise it from My Orders or bring the item to our store with the order number.`,
+      `Size exchange: you can exchange an item for a different size within ${s.exchangeWindowDays} days of delivery. Raise it from My Orders${shop.hasStore ? " or bring the item to our store with the order number" : ""}.`,
       "Your first exchange on an item is free. Further exchanges on the same item carry the shipping cost.",
       "Items must be unused, unwashed and have their original tags.",
       "Refunds: we refund only when the item is defective (manufacturing fault) or you received the wrong item. Report it within 48 hours of delivery with photos. Refunds go back to the original payment method (UPI/card) or to your bank account for COD orders, within 7 working days of us receiving the item.",
@@ -41,8 +45,10 @@ export const getPages = (s: Settings): Record<string, { title: string; body: str
     title: "Shipping & Delivery",
     body: [
       "Orders are packed and dispatched within 1–2 working days.",
-      `Local pincodes around our store are delivered by our own team, usually the next day. Everywhere else in India we ship through courier partners; your expected delivery date is shown on the product page and at checkout.`,
-      `Shipping is free on orders of ₹${s.freeShippingThreshold} and above. Below that, courier shipping is ₹${s.courierShippingFee}.`,
+      "Local pincodes are delivered by our own team, usually the next day. Everywhere else in India we ship through courier partners; your expected delivery date is shown on the product page and at checkout.",
+      s.courierShippingFee > 0
+        ? `Shipping is free on orders of ₹${s.freeShippingThreshold} and above. Below that, courier shipping is ₹${s.courierShippingFee}.`
+        : "Shipping is free on every order.",
       `Cash on Delivery is available on orders up to ₹${s.codMaxAmount} on serviceable pincodes. COD orders are confirmed with a one-time password (OTP) on your phone.`,
       "You will get SMS/email updates when your order is confirmed, shipped and delivered.",
     ],
@@ -62,8 +68,8 @@ export const getPages = (s: Settings): Record<string, { title: string; body: str
   terms: {
     title: "Terms of Use",
     body: [
-      `These terms apply to purchases on this website operated by ${shop.name}, ${shop.address}.`,
-      "Prices are in Indian Rupees and include GST. We may correct pricing errors before dispatch; we'll contact you if that happens.",
+      `These terms apply to purchases on this website operated by ${shop.name}${shop.address ? `, ${shop.address}` : ""}.`,
+      `Prices are in Indian Rupees${shop.gstin ? " and include GST" : ""}. We may correct pricing errors before dispatch; we'll contact you if that happens.`,
       "Colours may look slightly different on different screens.",
       "Orders may be cancelled by us if an item goes out of stock or if a COD order cannot be verified; prepaid amounts are refunded in full.",
       "Exchanges and refunds follow our Exchange & Returns Policy.",

@@ -8,7 +8,7 @@ export function Footer({ showStore = true }: { showStore?: boolean }) {
         <div>
           <p className="eyebrow mb-3 text-white">{shop.name}</p>
           <p className="leading-relaxed">{shop.tagline}. Since {shop.since}.</p>
-          <p className="mt-3 leading-relaxed">{shop.address}<br />{shop.hours}</p>
+          <p className="mt-3 leading-relaxed">{showStore && shop.address ? <>{shop.address}<br />{shop.hours}</> : <>Customer care: {shop.hours}</>}</p>
         </div>
         <div>
           <p className="eyebrow mb-3 text-white">Shop</p>
@@ -42,7 +42,7 @@ export function Footer({ showStore = true }: { showStore?: boolean }) {
         </div>
       </div>
       <p className="border-t border-white/10 px-5 pt-5 text-center text-xs text-neutral-400">
-        © {new Date().getFullYear()} {shop.name} · GSTIN {shop.gstin} · Prices include GST
+        © {new Date().getFullYear()} {shop.name}{shop.gstin ? ` · GSTIN ${shop.gstin} · Prices include GST` : ""}
       </p>
     </footer>
   );
