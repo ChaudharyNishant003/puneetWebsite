@@ -1,6 +1,7 @@
 import { cache } from "react";
 import { db } from "./db";
 import { defaultSettings, type Settings } from "./config";
+import { getFlags } from "./flags";
 
 export const getSettings = cache(async (): Promise<Settings> => {
   const rows = await db.setting.findMany();
@@ -10,6 +11,12 @@ export const getSettings = cache(async (): Promise<Settings> => {
   }
   return out;
 });
+
+// Settings as the storefront should apply them: switched-off features contribute nothing.
+export async function getShopSettings(): Promise<Settings> {
+  const [s, f] = await Promise.all([getSettings(), getFlags()]);
+  return { ...s, prepaidDiscountPercent: f.site("prepaidDiscount") ? s.prepaidDiscountPercent : 0, codFee: f.site("cod") ? s.codFee : 0 };
+}
 
 export async function saveSettings(values: Partial<Settings>) {
   await db.$transaction(

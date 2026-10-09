@@ -6,6 +6,7 @@ import { shop } from "./config";
 import { fmtDate, inr, statusLabel } from "./format";
 import { sendSms } from "./integrations/sms";
 import { sendEmail } from "./integrations/email";
+import { getFlags } from "./flags";
 
 export class StockError extends Error {}
 
@@ -93,10 +94,11 @@ const TEMPLATES: Partial<Record<OrderStatus, "ORDER_PLACED" | "ORDER_SHIPPED" | 
 };
 
 export async function notify(order: Order, status: OrderStatus, extra: { trackingUrl?: string | null } = {}) {
-  const tpl = TEMPLATES[status];
+  const flags = await getFlags();
+  const tpl = flags.site("sms") ? TEMPLATES[status] : undefined;
   const link = `${shop.siteUrl}/order/${order.number}`;
   if (tpl) await sendSms(order.shipPhone, tpl, { order: order.number, amount: String(order.total), link }).catch(() => {});
-  if (!order.email) return;
+  if (!order.email || !flags.site("email")) return;
   const subject =
     status === "PLACED" ? `Order ${order.number} confirmed` : status === "SHIPPED" ? `Order ${order.number} is on the way` : status === "DELIVERED" ? `Order ${order.number} delivered` : `Order ${order.number}: ${statusLabel[status]}`;
   const items = await db.orderItem.findMany({ where: { orderId: order.id } });
@@ -143,7 +145,7 @@ export async function changeOrderStatus(orderId: string, to: OrderStatus, actor:
       if (o.paymentMethod === "COD") data.paymentStatus = "COD_COLLECTED";
     }
     if (to === "CANCELLED" || to === "RTO") await restoreStock(tx, o.items);
-    if (to === "RTO" && o.paymentMethod === "COD") {
+    if (to === "RTO" && o.paymentMethod === "COD" && (await getFlags()).site("codRto")) {
       const c = await tx.customer.update({ where: { id: o.customerId }, data: { rtoCount: { increment: 1 } } });
       const settings = await tx.setting.findUnique({ where: { key: "codRtoBlockThreshold" } });
       const threshold = typeof settings?.value === "number" ? settings.value : 2;

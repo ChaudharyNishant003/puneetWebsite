@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { cardInclude, getProduct } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
+import { siteFlags } from "@/lib/flags";
 import { shop } from "@/lib/config";
 import { track } from "@/lib/events";
 import { ProductView } from "@/components/shop/ProductView";
@@ -35,6 +36,8 @@ export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const p = await getProduct(slug);
   if (!p || p.status !== "ACTIVE") notFound();
+  const flags = await siteFlags();
+  const on = (k: string) => flags[k] ?? true;
   const [settings, offers, similar, fitAgg] = await Promise.all([
     getSettings(),
     db.coupon.findMany({ where: { active: true, OR: [{ endsAt: null }, { endsAt: { gt: new Date() } }] }, select: { code: true, description: true }, take: 3, orderBy: { value: "desc" } }),
@@ -65,7 +68,7 @@ export default async function ProductPage({ params }: Props) {
       availability: inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
       url: `${shop.siteUrl}/p/${p.slug}`,
     },
-    ...(p.ratingCount ? { aggregateRating: { "@type": "AggregateRating", ratingValue: p.ratingAvg, reviewCount: p.ratingCount } } : {}),
+    ...(p.ratingCount && on("reviews") ? { aggregateRating: { "@type": "AggregateRating", ratingValue: p.ratingAvg, reviewCount: p.ratingCount } } : {}),
   };
 
   return (
@@ -99,7 +102,7 @@ export default async function ProductPage({ params }: Props) {
       />
 
       <div className="mt-6 px-4 md:ml-auto md:mt-10 md:w-[47%] md:px-0">
-        <details open className="border-b border-line">
+        {on("productDetails") ? <details open className="border-b border-line">
           <summary className="eyebrow cursor-pointer list-none py-3.5 text-[13px]">Product details</summary>
           <table className="mb-3 w-full border-collapse text-[12.5px]">
             <tbody>
@@ -109,8 +112,8 @@ export default async function ProductPage({ params }: Props) {
             </tbody>
           </table>
           <p className="mb-4 text-[13px] leading-relaxed text-muted">{p.description}</p>
-        </details>
-        <details className="border-b border-line">
+        </details> : <p className="border-b border-line py-4 text-[13px] leading-relaxed text-muted">{p.description}</p>}
+        {on("exchanges") ? <details className="border-b border-line">
           <summary className="eyebrow cursor-pointer list-none py-3.5 text-[13px]">Exchange & Returns</summary>
           <div className="mb-4 space-y-2 text-[13px] leading-relaxed text-muted">
             {p.isExchangeable ? (
@@ -123,7 +126,7 @@ export default async function ProductPage({ params }: Props) {
             )}
             <Link href="/pages/exchange-policy" className="text-brand underline">Read the full exchange policy</Link>
           </div>
-        </details>
+        </details> : null}
         <details className="border-b border-line">
           <summary className="eyebrow cursor-pointer list-none py-3.5 text-[13px]">Shipping</summary>
           <p className="mb-4 text-[13px] leading-relaxed text-muted">
@@ -132,9 +135,9 @@ export default async function ProductPage({ params }: Props) {
         </details>
       </div>
 
-      <Reviews productId={p.id} ratingAvg={p.ratingAvg} ratingCount={p.ratingCount} />
+      {on("reviews") ? <Reviews productId={p.id} ratingAvg={p.ratingAvg} ratingCount={p.ratingCount} showPhotos={on("photoReviews")} /> : null}
 
-      {similar.length ? (
+      {on("similar") && similar.length ? (
         <section className="mt-10 px-4 md:px-0">
           <h2 className="eyebrow mb-4 text-center text-[15px]">You may also like</h2>
           <div className="no-scrollbar flex gap-3 overflow-x-auto md:grid md:grid-cols-4 md:gap-5">
@@ -143,7 +146,7 @@ export default async function ProductPage({ params }: Props) {
         </section>
       ) : null}
 
-      <RecentlyViewed exclude={p.slug} />
+      {on("recentlyViewed") ? <RecentlyViewed exclude={p.slug} /> : null}
     </div>
   );
 }

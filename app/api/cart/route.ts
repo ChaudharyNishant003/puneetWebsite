@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCart, cartSummary } from "@/lib/cart";
+import { isOn } from "@/lib/flags";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,7 @@ export async function GET() {
   const { pricing, count, coupon } = await cartSummary(cart, { delivery: { mode: "COURIER" } });
   return NextResponse.json({
     count,
-    couponCode: cart?.couponCode ?? null,
+    couponCode: (await isOn("coupons", "site")) ? (cart?.couponCode ?? null) : null,
     couponDescription: coupon?.description ?? null,
     pricing,
     items: (cart?.items ?? []).map((i) => {

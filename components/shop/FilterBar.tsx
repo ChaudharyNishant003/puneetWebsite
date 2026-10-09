@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { IconClose, IconFilter } from "../icons";
+import { useSite } from "./SiteFlags";
 
 type Facets = { sizes: string[]; colours: { name: string; hex: string }[]; attrs: Record<string, string[]>; minPrice: number; maxPrice: number };
 
@@ -47,6 +48,8 @@ export function FilterBar({ slug, facets, total }: { slug: string; facets: Facet
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
+  const filtersOn = useSite("filters");
+  const sortOn = useSite("sort");
   const [open, setOpen] = useState<null | "filter" | "sort">(null);
   const [sel, setSel] = useState<Sel>(() => fromParams(sp));
   const [count, setCount] = useState<number | null>(total);
@@ -97,15 +100,16 @@ export function FilterBar({ slug, facets, total }: { slug: string; facets: Facet
     );
   };
 
+  if (!filtersOn && !sortOn) return <div className="my-4" />;
   return (
     <>
       <div className="sticky top-[97px] z-30 -mx-4 my-4 flex border-y border-line bg-white md:top-[99px]">
-        <button onClick={() => setOpen("filter")} className="flex flex-1 items-center justify-center gap-2 border-r border-line py-3 text-xs font-semibold uppercase tracking-wider">
+        {filtersOn ? <button onClick={() => setOpen("filter")} className="flex flex-1 items-center justify-center gap-2 border-r border-line py-3 text-xs font-semibold uppercase tracking-wider">
           <IconFilter size={16} /> Filter {appliedCount ? <span className="rounded-full bg-brand px-1.5 text-[10px] text-white">{appliedCount}</span> : null}
-        </button>
-        <button onClick={() => setOpen("sort")} className="flex-1 py-3 text-xs font-semibold uppercase tracking-wider">
+        </button> : null}
+        {sortOn ? <button onClick={() => setOpen("sort")} className="flex-1 py-3 text-xs font-semibold uppercase tracking-wider">
           Sort: <span className="font-normal normal-case">{SORTS.find((s) => s[0] === sort)?.[1]}</span>
-        </button>
+        </button> : null}
       </div>
       {appliedCount ? (
         <div className="-mt-2 mb-4 flex flex-wrap gap-2">

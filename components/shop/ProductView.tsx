@@ -6,6 +6,7 @@ import { inr, savePercent } from "@/lib/format";
 import { IconCash, IconClose, IconPlay, IconRuler, IconShare, IconStar, IconStore, IconSwap, IconTruck } from "../icons";
 import { openCart } from "./cart-events";
 import { WishlistButton } from "./WishlistButton";
+import { useSite } from "./SiteFlags";
 
 type Img = { id: string; url: string; alt: string; colour: string | null };
 type V = { id: string; size: string; colour: string; colourHex: string; stock: number };
@@ -33,6 +34,7 @@ export type ProductViewProps = {
 };
 
 export function ProductView(p: ProductViewProps) {
+  const f = { video: useSite("video"), share: useSite("share"), wishlist: useSite("wishlist"), sizeChart: useSite("sizeChart"), pincode: useSite("pincodeCheck"), reviews: useSite("reviews"), coupons: useSite("coupons"), prepaid: useSite("prepaidDiscount"), cod: useSite("cod"), exchanges: useSite("exchanges") };
   const colours = useMemo(() => [...new Map(p.variants.map((v) => [v.colour, v.colourHex])).entries()], [p.variants]);
   const firstInStock = p.variants.find((v) => v.stock > 0)?.colour ?? colours[0]?.[0];
   const [colour, setColour] = useState(firstInStock);
@@ -112,19 +114,19 @@ export function ProductView(p: ProductViewProps) {
         <div className="pointer-events-none absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 md:hidden" aria-hidden>
           {imgs.map((im, i) => (<span key={im.id} className={`h-1.5 rounded-full bg-white/80 transition-all ${i === slide ? "w-4 bg-white" : "w-1.5"}`} />))}
         </div>
-        {p.videoUrl ? (
+        {p.videoUrl && f.video ? (
           <button type="button" onClick={() => setVideoOpen(true)} className="absolute bottom-8 left-3 flex items-center gap-1 rounded-full bg-black/65 px-3 py-1.5 text-[11px] text-white md:bottom-3"><IconPlay size={12} /> Watch video</button>
         ) : null}
         <div className="absolute right-3 top-3 flex flex-col gap-2">
-          <WishlistButton productId={p.id} large />
-          <button type="button" onClick={share} aria-label="Share" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-sm"><IconShare size={18} /></button>
+          {f.wishlist ? <WishlistButton productId={p.id} large /> : null}
+          {f.share ? <button type="button" onClick={share} aria-label="Share" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-sm"><IconShare size={18} /></button> : null}
         </div>
       </div>
 
       {/* Buy box */}
       <div className="px-4 pt-4 md:px-0 md:pt-0">
         <h1 className="text-[17px] font-medium leading-snug md:text-2xl">{p.name}</h1>
-        {p.ratingCount > 0 ? (
+        {f.reviews && p.ratingCount > 0 ? (
           <a href="#reviews" className="mt-1.5 flex items-center gap-2 text-xs text-muted">
             <span className="flex items-center gap-0.5 rounded-sm bg-save px-1.5 py-0.5 font-semibold text-white">{p.ratingAvg.toFixed(1)} <IconStar size={10} /></span>
             {p.ratingCount} reviews{p.fitSummary ? ` · ${p.fitSummary}` : ""}
@@ -136,7 +138,7 @@ export function ProductView(p: ProductViewProps) {
         </p>
         <p className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-muted">
           Inclusive of all taxes · SKU {p.sku}
-          {p.isExchangeable ? <span className="border border-brand px-1.5 text-brand">Free Size Exchange</span> : <span className="border border-line-strong px-1.5">Non-exchangeable</span>}
+          {!f.exchanges ? null : p.isExchangeable ? <span className="border border-brand px-1.5 text-brand">Free Size Exchange</span> : <span className="border border-line-strong px-1.5">Non-exchangeable</span>}
         </p>
 
         {colours.length > 1 ? (
@@ -158,7 +160,7 @@ export function ProductView(p: ProductViewProps) {
         <div className="mt-5" id="size-picker">
           <div className="mb-2 flex items-center justify-between">
             <p className="eyebrow text-xs">Size</p>
-            {p.chart ? (<button type="button" onClick={() => setChartOpen(true)} className="flex items-center gap-1 text-xs text-brand underline"><IconRuler size={14} /> Size Chart</button>) : null}
+            {p.chart && f.sizeChart ? (<button type="button" onClick={() => setChartOpen(true)} className="flex items-center gap-1 text-xs text-brand underline"><IconRuler size={14} /> Size Chart</button>) : null}
           </div>
           <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Size">
             {sizes.map((v) => (
@@ -168,7 +170,7 @@ export function ProductView(p: ProductViewProps) {
             ))}
           </div>
           {selected && selected.stock <= 3 ? <p className="mt-2 text-xs font-medium text-danger">Only {selected.stock} left in {selected.size}</p> : null}
-          {p.chart?.fitRule ? <p className="mt-2 text-xs leading-relaxed text-muted">{p.chart.fitRule}</p> : null}
+          {f.sizeChart && p.chart?.fitRule ? <p className="mt-2 text-xs leading-relaxed text-muted">{p.chart.fitRule}</p> : null}
           {p.modelInfo ? <p className="mt-1 text-xs text-muted">{p.modelInfo}.</p> : null}
         </div>
 
@@ -179,26 +181,26 @@ export function ProductView(p: ProductViewProps) {
           <button disabled={pending} onClick={() => buy(true)} className="btn btn-primary flex-1">Buy Now</button>
         </div>
 
-        {p.offers.length || p.settings.prepaidDiscountPercent ? (
+        {(f.coupons && p.offers.length) || (f.prepaid && p.settings.prepaidDiscountPercent) ? (
           <div className="mt-5 border border-dashed border-gold bg-gold-soft p-3 text-[12.5px] leading-relaxed">
             <p className="font-semibold text-brand">Offers</p>
-            {p.offers.map((o) => (<p key={o.code}>🏷 <b>{o.code}</b>: {o.description}</p>))}
-            {p.settings.prepaidDiscountPercent ? <p>💳 Pay online (UPI/Card) and save {inr(prepaidOff)} more on this item</p> : null}
+            {f.coupons && p.offers.map((o) => (<p key={o.code}>🏷 <b>{o.code}</b>: {o.description}</p>))}
+            {f.prepaid && p.settings.prepaidDiscountPercent ? <p>💳 Pay online (UPI/Card) and save {inr(prepaidOff)} more on this item</p> : null}
           </div>
         ) : null}
 
-        <PincodeCheck price={p.price} settings={p.settings} />
+        {f.pincode ? <PincodeCheck price={p.price} settings={p.settings} cod={f.cod} /> : null}
 
-        <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[10.5px] leading-tight">
-          <div className="border border-line px-1 py-2.5"><IconCash className="mx-auto mb-1" />COD with OTP</div>
+        <div className="mt-4 grid auto-cols-fr grid-flow-col gap-2 text-center text-[10.5px] leading-tight">
+          {f.cod ? <div className="border border-line px-1 py-2.5"><IconCash className="mx-auto mb-1" />COD with OTP</div> : null}
           <div className="border border-line px-1 py-2.5"><IconTruck className="mx-auto mb-1" />Free shipping {inr(p.settings.freeShippingThreshold)}+</div>
-          <div className="border border-line px-1 py-2.5"><IconSwap className="mx-auto mb-1" />{p.isExchangeable ? `${p.settings.exchangeWindowDays}-day size exchange*` : "No exchange (hygiene)"}</div>
+          {f.exchanges ? <div className="border border-line px-1 py-2.5"><IconSwap className="mx-auto mb-1" />{p.isExchangeable ? `${p.settings.exchangeWindowDays}-day size exchange*` : "No exchange (hygiene)"}</div> : null}
         </div>
-        <p className="mt-2 text-[11px] leading-relaxed text-muted">
+        {f.exchanges ? <p className="mt-2 text-[11px] leading-relaxed text-muted">
           {p.isExchangeable
             ? `*First size exchange is free, online or at our store, within ${p.settings.exchangeWindowDays} days of delivery. Refunds only for a defective or wrong item.`
             : "Innerwear cannot be exchanged or returned for hygiene reasons, unless the item is defective or wrong."}
-        </p>
+        </p> : null}
         <p className="mt-3 flex items-center gap-2 text-xs"><IconStore size={16} /> Same piece available at our store, {p.storeAddress}</p>
       </div>
 
@@ -225,7 +227,7 @@ export function ProductView(p: ProductViewProps) {
         </div>
       ) : null}
 
-      {chartOpen && p.chart ? (
+      {chartOpen && p.chart && f.sizeChart ? (
         <div className="fixed inset-0 z-50 flex items-end bg-black/40 md:items-center md:justify-center" onClick={() => setChartOpen(false)} role="dialog" aria-modal="true" aria-label="Size chart">
           <div className="max-h-[85vh] w-full overflow-y-auto bg-white p-4 md:max-w-lg md:rounded" onClick={(e) => e.stopPropagation()}>
             <div className="mb-3 flex items-center justify-between">
@@ -249,7 +251,7 @@ export function ProductView(p: ProductViewProps) {
   );
 }
 
-function PincodeCheck({ price, settings }: { price: number; settings: ProductViewProps["settings"] }) {
+function PincodeCheck({ price, settings, cod }: { price: number; settings: ProductViewProps["settings"]; cod: boolean }) {
   const [pin, setPin] = useState("");
   const [res, setRes] = useState<null | { serviceable: boolean; mode: string; etaDate: string; codAllowed: boolean; localFee?: number; city?: string; message?: string }>(null);
   const [loading, setLoading] = useState(false);
@@ -290,7 +292,7 @@ function PincodeCheck({ price, settings }: { price: number; settings: ProductVie
           <div className="mt-2 text-[12.5px] leading-relaxed">
             <p>Get it by <b className="text-save">{date}</b>{res.mode === "LOCAL" ? " · delivered by our store" : ""}</p>
             <p className="text-muted">
-              {res.codAllowed && price <= settings.codMaxAmount ? "Cash on Delivery available" : "Cash on Delivery not available, pay online"}
+              {!cod ? "Pay online (UPI / card)" : res.codAllowed && price <= settings.codMaxAmount ? "Cash on Delivery available" : "Cash on Delivery not available, pay online"}
               {res.mode === "LOCAL" ? (res.localFee ? ` · Delivery ₹${res.localFee}` : " · Free local delivery") : price >= settings.freeShippingThreshold ? " · Free shipping" : ""}
             </p>
           </div>

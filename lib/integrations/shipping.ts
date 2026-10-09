@@ -1,5 +1,6 @@
 import "server-only";
 import { db } from "../db";
+import { getFlags } from "../flags";
 
 // Delivery quote: local pincodes (own delivery) first, else Shiprocket serviceability, else a mock.
 
@@ -54,8 +55,9 @@ export async function quoteDelivery(pincode: string, now = new Date()): Promise<
   if (!/^[1-9]\d{5}$/.test(pincode))
     return { serviceable: false, mode: "COURIER", etaDays: 0, etaDate: now, codAllowed: false, message: "Enter a valid 6-digit pincode" };
 
+  const flags = await getFlags();
   const local = await db.pincode.findUnique({ where: { code: pincode } });
-  if (local?.isLocal) {
+  if (local?.isLocal && flags.site("localDelivery")) {
     return {
       serviceable: true,
       mode: "LOCAL",
@@ -66,6 +68,10 @@ export async function quoteDelivery(pincode: string, now = new Date()): Promise<
       city: local.city,
       state: local.state,
     };
+  }
+
+  if (!flags.site("courier") && !local?.isLocal) {
+    return { serviceable: false, mode: "COURIER", etaDays: 0, etaDate: now, codAllowed: false, message: "Sorry, we deliver only in our city right now" };
   }
 
   if (shippingIsMock()) {

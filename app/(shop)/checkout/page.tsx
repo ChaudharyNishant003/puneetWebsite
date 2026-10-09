@@ -6,6 +6,7 @@ import { getCustomerSession } from "@/lib/auth/session";
 import { CheckoutFlow } from "@/components/shop/CheckoutFlow";
 import { paymentsAreMock } from "@/lib/integrations/payments";
 import { isDemoMode } from "@/lib/config";
+import { getFlags } from "@/lib/flags";
 
 export const metadata: Metadata = { title: "Checkout", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ export default async function CheckoutPage() {
     );
   }
   const { pricing } = await cartSummary(cart);
+  const flags = await getFlags();
   const customer = session ? await db.customer.findUnique({ where: { id: session.sub }, include: { addresses: { orderBy: { createdAt: "desc" } } } }) : null;
   const items = cart.items.map((i) => {
     const p = i.variant.product;
@@ -35,7 +37,7 @@ export default async function CheckoutPage() {
         phone={session?.phone ?? null}
         name={customer?.name ?? ""}
         email={customer?.email ?? ""}
-        addresses={(customer?.addresses ?? []).map((a) => ({ id: a.id, name: a.name, phone: a.phone, line1: a.line1, line2: a.line2 ?? "", landmark: a.landmark ?? "", city: a.city, state: a.state, pincode: a.pincode }))}
+        addresses={(flags.site("savedAddresses") ? (customer?.addresses ?? []) : []).map((a) => ({ id: a.id, name: a.name, phone: a.phone, line1: a.line1, line2: a.line2 ?? "", landmark: a.landmark ?? "", city: a.city, state: a.state, pincode: a.pincode }))}
         items={items}
         initialSubtotal={pricing.subtotal}
         mockPayments={paymentsAreMock() && isDemoMode()}

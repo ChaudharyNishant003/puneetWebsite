@@ -155,11 +155,11 @@ function Accounts({ admins, userLimit }: { admins: Admin[]; userLimit: number | 
             </tbody>
           </table>
         </div>
-        <p className="mt-3 text-xs text-[#8b98a5]">"View as" opens the admin panel as that user in this browser (support view). The owner sees "Developer opened the admin panel" in their activity list, and anything you change there is recorded as Developer.</p>
+        <p className="mt-3 text-xs text-[#8b98a5]">&ldquo;View as&rdquo; opens the admin panel as that user in this browser (support view). The owner sees &ldquo;Developer opened the admin panel&rdquo; in their activity list, and anything you change there is recorded as Developer.</p>
       </section>
       <section className={card}>
         <h2 className="mb-2 text-sm font-semibold text-[#8fb6ee]">Extra admin users allowed</h2>
-        <p className="mb-2 text-xs text-[#8b98a5]">How many users the owner may have besides the first owner account (staff or extra owners). Empty = no limit. Currently {others} extra. At the limit, the owner sees "Contact the developer to add more".</p>
+        <p className="mb-2 text-xs text-[#8b98a5]">How many users the owner may have besides the first owner account (staff or extra owners). Empty = no limit. Currently {others} extra. At the limit, the owner sees &ldquo;Contact the developer to add more&rdquo;.</p>
         <div className="flex gap-2">
           <input value={limit} onChange={(e) => setLimit(e.target.value.replace(/\D/g, ""))} inputMode="numeric" placeholder="No limit" aria-label="Extra users allowed" className="w-28 rounded border border-[#2d3b4a] bg-[#0b1118] px-3 py-1.5 text-sm" />
           <button className={btn} disabled={pending} onClick={() => run(() => setUserLimitAction(limit === "" ? null : Number(limit)))}>Save</button>

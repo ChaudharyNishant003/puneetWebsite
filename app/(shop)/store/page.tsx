@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { shop } from "@/lib/config";
+import { requirePage } from "@/lib/flags";
 import { IconPhone, IconPin, IconStore, IconSwap } from "@/components/icons";
 
 export const metadata: Metadata = { title: "Visit Our Store", description: `${shop.name} store at ${shop.address}. ${shop.hours}. Try, alter and exchange in person.` };
 
-export default function StorePage() {
+export default async function StorePage() {
+  await requirePage("storePage", "site");
   const ld = {
     "@context": "https://schema.org",
     "@type": "ClothingStore",

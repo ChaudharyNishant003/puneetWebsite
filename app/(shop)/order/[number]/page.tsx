@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { getCustomerSession } from "@/lib/auth/session";
 import { getSettings } from "@/lib/settings";
+import { getFlags } from "@/lib/flags";
 import { exchangeEligibility } from "@/lib/exchange";
 import { fmtDate, fmtDateTime, inr, statusLabel } from "@/lib/format";
 import { LoginGate } from "@/components/shop/LoginGate";
@@ -26,7 +27,8 @@ export default async function OrderPage({ params, searchParams }: Props) {
     include: { items: { include: { exchanges: true, review: true, variant: { select: { product: { select: { isInnerwear: true, variants: { select: { size: true, colour: true, stock: true } } } } } } } }, events: { orderBy: { createdAt: "asc" } }, shipment: true },
   });
   if (!order || order.customerId !== s.sub) notFound();
-  const settings = await getSettings();
+  const [settings, flags] = await Promise.all([getSettings(), getFlags()]);
+  const on = (k: string) => flags.site(k);
   const stepIdx = order.status === "OUT_FOR_DELIVERY" ? 3.5 : STEPS.indexOf(order.status as (typeof STEPS)[number]);
   const cancelled = order.status === "CANCELLED" || order.status === "RTO";
 
@@ -48,7 +50,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
           <p>Placed {fmtDateTime(order.placedAt ?? order.createdAt)}</p>
           <span className={`px-2 py-0.5 text-xs font-semibold ${cancelled ? "bg-danger-soft text-danger" : order.status === "DELIVERED" ? "bg-green-50 text-save" : "bg-brand-soft text-brand"}`}>{statusLabel[order.status]}</span>
         </div>
-        {!cancelled && order.status !== "PENDING_PAYMENT" ? (
+        {on("tracking") && !cancelled && order.status !== "PENDING_PAYMENT" ? (
           <ol className="mt-4 flex justify-between text-center text-[10.5px]" aria-label="Order progress">
             {STEPS.map((st, i) => (
               <li key={st} className="flex-1">
@@ -58,7 +60,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
             ))}
           </ol>
         ) : null}
-        {order.shipment?.awb ? (
+        {on("tracking") && order.shipment?.awb ? (
           <p className="mt-4 text-sm">Courier: {order.shipment.courier} · AWB {order.shipment.awb} {order.shipment.trackingUrl ? <a href={order.shipment.trackingUrl} target="_blank" rel="noopener" className="text-brand underline">Track</a> : null}</p>
         ) : null}
         {order.status === "PENDING_PAYMENT" ? <p className="mt-3 text-sm text-danger">Payment not completed yet. <Link href="/checkout" className="underline">Try again</Link></p> : null}
@@ -84,9 +86,9 @@ export default async function OrderPage({ params, searchParams }: Props) {
                 <p className="mt-0.5 font-medium">{inr(i.unitPrice * i.qty)}</p>
                 {i.exchanges.map((e) => (<p key={e.id} className="mt-1 text-xs text-brand">Exchange {e.newSize ? `to ${e.newSize}` : ""}: {e.status.toLowerCase().replace("_", " ")}{e.isFree ? " · free" : ""}</p>))}
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {check.eligible ? <ExchangeButton orderItemId={i.id} sizes={sizes} daysLeft={check.daysLeft!} free={i.exchanges.length === 0} /> : order.status === "DELIVERED" && check.reason ? <p className="text-[11px] text-muted">{check.reason}</p> : null}
-                  {order.status === "DELIVERED" && !i.review ? <ReviewButton orderItemId={i.id} size={i.size} /> : null}
-                  {i.review ? <p className="text-[11px] text-save">✓ You reviewed this ({i.review.status.toLowerCase()})</p> : null}
+                  {!on("exchanges") ? null : check.eligible ? <ExchangeButton orderItemId={i.id} sizes={sizes} daysLeft={check.daysLeft!} free={i.exchanges.length === 0} /> : order.status === "DELIVERED" && check.reason ? <p className="text-[11px] text-muted">{check.reason}</p> : null}
+                  {on("reviews") && order.status === "DELIVERED" && !i.review ? <ReviewButton orderItemId={i.id} size={i.size} allowPhotos={on("photoReviews")} /> : null}
+                  {on("reviews") && i.review ? <p className="text-[11px] text-save">✓ You reviewed this ({i.review.status.toLowerCase()})</p> : null}
                 </div>
               </div>
             </li>
@@ -110,7 +112,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
             <div className="flex justify-between border-t border-line pt-1 font-semibold"><dt>Total</dt><dd>{inr(order.total)}</dd></div>
             <p className="text-xs text-muted">{order.paymentMethod === "COD" ? (order.paymentStatus === "COD_COLLECTED" ? "Paid on delivery" : "Pay on delivery (cash or UPI)") : order.paymentStatus === "PAID" ? "Paid online" : "Online payment pending"}</p>
           </dl>
-          {order.status !== "PENDING_PAYMENT" && !cancelled ? <a href={`/api/invoice/${order.number}`} className="mt-3 inline-block text-xs text-brand underline">Download GST invoice (PDF)</a> : null}
+          {on("invoice") && order.status !== "PENDING_PAYMENT" && !cancelled ? <a href={`/api/invoice/${order.number}`} className="mt-3 inline-block text-xs text-brand underline">Download GST invoice (PDF)</a> : null}
         </div>
       </div>
 

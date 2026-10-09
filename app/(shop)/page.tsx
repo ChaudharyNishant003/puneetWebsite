@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { rail } from "@/lib/catalog";
 import { getCms } from "@/lib/settings";
 import { shop } from "@/lib/config";
+import { siteFlags } from "@/lib/flags";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { Section } from "@/components/shop/Section";
 import { IconCash, IconLock, IconPhone, IconPin, IconStar, IconStore, IconSwap } from "@/components/icons";
@@ -22,6 +23,8 @@ const OCCASIONS = [
 ];
 
 export default async function Home() {
+  const flags = await siteFlags();
+  const on = (k: string) => flags[k] ?? true;
   const [hero, rails, cats, reviews] = await Promise.all([
     getCms<Hero>("hero", { title: "New Season", subtitle: shop.tagline, cta: "Shop Now", href: "/c/new-arrivals", from: "#C9727A", to: "#8E1B3A" }),
     getCms<Rail[]>("rails", [{ title: "Bestsellers in Our Store", source: "storeBestseller" }]),
@@ -66,6 +69,7 @@ export default async function Home() {
         </div>
       </Section>
 
+      {on("occasionBudget") ? <>
       <Section title="Shop by Occasion" subtitle="Daily se shaadi tak">
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-4">
           {OCCASIONS.map((o) => (
@@ -83,6 +87,7 @@ export default async function Home() {
           ))}
         </div>
       </Section>
+      </> : null}
 
       {rails.map((r, i) => (
         <Section key={r.title} title={r.title} subtitle={r.subtitle} href={r.source === "new" ? "/c/new-arrivals" : "/c/women"}>
@@ -92,7 +97,7 @@ export default async function Home() {
         </Section>
       ))}
 
-      {reviews.length ? (
+      {reviews.length && on("reviews") && on("photoReviews") ? (
         <Section title="Customers Love Us" subtitle="Photo reviews · Verified buyers">
           <div className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4">
             {reviews.map((r) => (
@@ -117,14 +122,14 @@ export default async function Home() {
         <div><IconLock className="mx-auto mb-1.5" size={22} />Secure<br />Payments</div>
       </section>
 
-      <section className="mx-4 mt-8 rounded bg-brand-soft p-5 md:mx-auto md:max-w-3xl">
+      {on("storePage") ? <section className="mx-4 mt-8 rounded bg-brand-soft p-5 md:mx-auto md:max-w-3xl">
         <h2 className="eyebrow text-base text-brand">Visit Our Store</h2>
         <p className="mt-2 text-sm leading-relaxed">{shop.address} · {shop.hours}<br />Try karein, alteration karwayein, exchange karein.</p>
         <div className="mt-3 flex gap-2">
           <a href={shop.mapsUrl} target="_blank" rel="noopener" className="flex items-center gap-1 border border-brand bg-white px-3 py-2 text-xs font-semibold text-brand"><IconPin size={15} /> Directions</a>
           <a href={`tel:${shop.phone.replace(/\s/g, "")}`} className="flex items-center gap-1 border border-brand bg-white px-3 py-2 text-xs font-semibold text-brand"><IconPhone size={15} /> Call Store</a>
         </div>
-      </section>
+      </section> : null}
     </>
   );
 }

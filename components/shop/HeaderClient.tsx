@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { IconBag, IconChevron, IconClose, IconGrid, IconHeart, IconHome, IconMenu, IconSearch, IconStore, IconUser } from "../icons";
 import { openCart } from "./cart-events";
+import { useSite } from "./SiteFlags";
 
 type MenuCat = { id: string; slug: string; name: string; children: { id: string; slug: string; name: string }[] };
 
@@ -22,6 +23,8 @@ const BUDGET = [
 ] as const;
 
 export function MenuButton({ menu }: { menu: MenuCat[] }) {
+  const occasionBudget = useSite("occasionBudget");
+  const storePage = useSite("storePage");
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(menu[0]?.id ?? null);
   const pathname = usePathname();
@@ -55,17 +58,17 @@ export function MenuButton({ menu }: { menu: MenuCat[] }) {
                 ) : null}
               </div>
             ))}
-            <div className="border-b border-line px-4 py-3">
+            {occasionBudget ? <><div className="border-b border-line px-4 py-3">
               <p className="eyebrow mb-2 text-xs text-muted">Shop by Occasion</p>
               <div className="flex flex-wrap gap-2">{OCCASIONS.map(([s, n]) => (<Link key={s} href={`/c/${s}`} className="border border-line-strong px-3 py-1.5 text-xs">{n}</Link>))}</div>
             </div>
             <div className="border-b border-line px-4 py-3">
               <p className="eyebrow mb-2 text-xs text-muted">Shop by Budget</p>
               <div className="flex flex-wrap gap-2">{BUDGET.map(([s, n]) => (<Link key={s} href={`/c/${s}`} className="border border-line-strong px-3 py-1.5 text-xs">{n}</Link>))}</div>
-            </div>
+            </div></> : null}
             <Link href="/c/plus-size" className="border-b border-line px-4 py-3 text-sm font-medium uppercase tracking-wide">Plus Size</Link>
             <Link href="/c/sale" className="border-b border-line px-4 py-3 text-sm font-medium uppercase tracking-wide text-brand">Sale</Link>
-            <Link href="/store" className="flex items-center gap-2 border-b border-line px-4 py-3 text-sm"><IconStore size={18} /> Visit our store</Link>
+            {storePage ? <Link href="/store" className="flex items-center gap-2 border-b border-line px-4 py-3 text-sm"><IconStore size={18} /> Visit our store</Link> : null}
             <Link href="/account" className="flex items-center gap-2 px-4 py-3 text-sm"><IconUser size={18} /> My account & orders</Link>
           </nav>
         </div>
@@ -78,6 +81,7 @@ const POPULAR = ["kurta set", "office kurti", "shaadi suit", "saree", "men kurta
 const RECENT_KEY = "pg_recent_searches";
 
 export function SearchButton() {
+  const suggestOn = useSite("searchSuggest");
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [recent, setRecent] = useState<string[]>([]);
@@ -96,7 +100,7 @@ export function SearchButton() {
   }, [open]);
 
   useEffect(() => {
-    if (q.trim().length < 2) {
+    if (!suggestOn || q.trim().length < 2) {
       setSugs([]);
       return;
     }
@@ -111,7 +115,7 @@ export function SearchButton() {
       clearTimeout(t);
       ctl.abort();
     };
-  }, [q]);
+  }, [q, suggestOn]);
 
   const go = (term: string) => {
     const t = term.trim();
@@ -174,6 +178,8 @@ export function CartButton({ count }: { count: number }) {
 
 export function BottomNav() {
   const pathname = usePathname();
+  const wishlist = useSite("wishlist");
+  const storePage = useSite("storePage");
   if (pathname.startsWith("/checkout") || pathname.startsWith("/p/")) return null;
   const item = (href: string, label: string, Icon: typeof IconHome, active: boolean) => (
     <Link href={href} className={`flex flex-1 flex-col items-center gap-0.5 py-1 text-[10.5px] ${active ? "font-semibold text-brand" : "text-muted"}`} aria-current={active ? "page" : undefined}>
@@ -185,8 +191,8 @@ export function BottomNav() {
     <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-line bg-white pb-[env(safe-area-inset-bottom)] pt-1.5 md:hidden" aria-label="Quick navigation">
       {item("/", "Home", IconHome, pathname === "/")}
       {item("/categories", "Shop", IconGrid, pathname.startsWith("/categories") || pathname.startsWith("/c/"))}
-      {item("/wishlist", "Wishlist", IconHeart, pathname === "/wishlist")}
-      {item("/store", "Store", IconStore, pathname === "/store")}
+      {wishlist ? item("/wishlist", "Wishlist", IconHeart, pathname === "/wishlist") : null}
+      {storePage ? item("/store", "Store", IconStore, pathname === "/store") : null}
       {item("/account", "Account", IconUser, pathname.startsWith("/account"))}
     </nav>
   );

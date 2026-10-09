@@ -4,7 +4,8 @@ import { cookies } from "next/headers";
 import { db } from "./db";
 import { CART_COOKIE, getCustomerSession } from "./auth/session";
 import { priceCart } from "./pricing";
-import { getSettings } from "./settings";
+import { getShopSettings } from "./settings";
+import { isOn } from "./flags";
 
 const cartInclude = {
   items: {
@@ -88,9 +89,9 @@ export async function changeCartVariant(itemId: string, variantId: string) {
 }
 
 export async function cartSummary(cart: CartWithItems | null, opts: { paymentMethod?: "PREPAID" | "COD"; delivery?: { mode: "LOCAL" | "COURIER"; localFee?: number } | null; isFirstOrder?: boolean } = {}) {
-  const settings = await getSettings();
+  const settings = await getShopSettings();
   const items = cart?.items ?? [];
-  const coupon = cart?.couponCode ? await db.coupon.findUnique({ where: { code: cart.couponCode } }) : null;
+  const coupon = cart?.couponCode && (await isOn("coupons", "site")) ? await db.coupon.findUnique({ where: { code: cart.couponCode } }) : null;
   const pricing = priceCart({
     lines: items.map((i) => ({ unitPrice: i.variant.product.price, mrp: i.variant.product.mrp, qty: i.qty, gstRate: i.variant.product.gstRate })),
     coupon,

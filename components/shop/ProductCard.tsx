@@ -1,9 +1,11 @@
+"use client";
 import Link from "next/link";
 import { inr, savePercent } from "@/lib/format";
 import type { CardProduct } from "@/lib/catalog";
 import { IconStar } from "../icons";
 import { WishlistButton } from "./WishlistButton";
 import { QuickAdd } from "./QuickAdd";
+import { useSite } from "./SiteFlags";
 
 export function ProductCard({ p, className = "", priority = false }: { p: CardProduct; className?: string; priority?: boolean }) {
   const off = savePercent(p.price, p.mrp);
@@ -12,6 +14,10 @@ export function ProductCard({ p, className = "", priority = false }: { p: CardPr
   const colours = [...new Set(p.variants.map((v) => v.colour))];
   const [img1, img2] = p.images;
   const soldOut = inStockSizes.size === 0;
+  const showBadges = useSite("badges");
+  const showRating = useSite("reviews");
+  const showWishlist = useSite("wishlist");
+  const showQuickAdd = useSite("quickAdd");
 
   return (
     <div className={`group relative ${className}`}>
@@ -23,8 +29,8 @@ export function ProductCard({ p, className = "", priority = false }: { p: CardPr
           {img2 ? (
             <img src={img2.url} alt="" aria-hidden loading="lazy" width={600} height={800} className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           ) : null}
-          {p.badges[0] ? <span className="absolute left-0 top-2 bg-dark px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider text-white">{p.badges[0]}</span> : null}
-          {p.ratingCount > 0 ? (
+          {showBadges && p.badges[0] ? <span className="absolute left-0 top-2 bg-dark px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-wider text-white">{p.badges[0]}</span> : null}
+          {showRating && p.ratingCount > 0 ? (
             <span className="absolute bottom-1.5 left-1.5 flex items-center gap-0.5 rounded-sm bg-white/95 px-1.5 py-0.5 text-[10.5px] font-semibold">
               <IconStar size={10} className="text-save" /> {p.ratingAvg.toFixed(1)}
               <span className="font-normal text-muted">({p.ratingCount})</span>
@@ -51,10 +57,12 @@ export function ProductCard({ p, className = "", priority = false }: { p: CardPr
           </span>
         ))}
       </div>
-      <div className="absolute right-1.5 top-1.5">
-        <WishlistButton productId={p.id} />
-      </div>
-      {!soldOut ? <QuickAdd product={{ name: p.name, slug: p.slug, price: p.price, variants: p.variants, image: img1?.url }} /> : null}
+      {showWishlist ? (
+        <div className="absolute right-1.5 top-1.5">
+          <WishlistButton productId={p.id} />
+        </div>
+      ) : null}
+      {!soldOut && showQuickAdd ? <QuickAdd product={{ name: p.name, slug: p.slug, price: p.price, variants: p.variants, image: img1?.url }} /> : null}
     </div>
   );
 }

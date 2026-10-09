@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { IconStar } from "../icons";
 
-export async function Reviews({ productId, ratingAvg, ratingCount }: { productId: string; ratingAvg: number; ratingCount: number }) {
+export async function Reviews({ productId, ratingAvg, ratingCount, showPhotos = true }: { productId: string; ratingAvg: number; ratingCount: number; showPhotos?: boolean }) {
   const [reviews, dist, fit] = await Promise.all([
     db.review.findMany({ where: { productId, status: "APPROVED" }, orderBy: { createdAt: "desc" }, take: 20 }),
     db.review.groupBy({ by: ["rating"], where: { productId, status: "APPROVED" }, _count: true }),
@@ -10,7 +10,7 @@ export async function Reviews({ productId, ratingAvg, ratingCount }: { productId
   ]);
   const fitTotal = fit.reduce((s, f) => s + f._count, 0);
   const fitPct = (k: string) => (fitTotal ? Math.round(((fit.find((f) => f.fit === k)?._count ?? 0) / fitTotal) * 100) : 0);
-  const photos = reviews.flatMap((r) => r.photos).slice(0, 8);
+  const photos = showPhotos ? reviews.flatMap((r) => r.photos).slice(0, 8) : [];
 
   return (
     <section id="reviews" className="mt-10 scroll-mt-28 px-4 md:ml-auto md:w-[47%] md:px-0">
@@ -64,7 +64,7 @@ export async function Reviews({ productId, ratingAvg, ratingCount }: { productId
                   {r.title ? <span className="font-semibold">{r.title}</span> : null}
                 </div>
                 <p className="mt-1.5 leading-relaxed">{r.body}</p>
-                {r.photos.length ? (<div className="mt-2 flex gap-2">{r.photos.map((ph, i) => (<img key={i} src={ph} alt="" loading="lazy" className="h-16 w-12 rounded object-cover" />))}</div>) : null}
+                {showPhotos && r.photos.length ? (<div className="mt-2 flex gap-2">{r.photos.map((ph, i) => (<img key={i} src={ph} alt="" loading="lazy" className="h-16 w-12 rounded object-cover" />))}</div>) : null}
                 <p className="mt-1.5 text-[11px] text-muted">
                   {r.authorName}
                   {r.sizeBought ? ` · Bought ${r.sizeBought}` : ""}

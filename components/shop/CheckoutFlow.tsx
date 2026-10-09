@@ -7,6 +7,7 @@ import { inr } from "@/lib/format";
 import { INDIAN_STATES } from "@/lib/constants";
 import { IconCash, IconLock } from "../icons";
 import { LoginForm } from "./LoginForm";
+import { useSite } from "./SiteFlags";
 
 type Addr = { id?: string; name: string; phone: string; line1: string; line2: string; landmark: string; city: string; state: string; pincode: string };
 type Item = { id: string; name: string; size: string; colour: string; qty: number; price: number; image: string | null; isExchangeable: boolean };
@@ -25,7 +26,10 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
   const [selectedId, setSelectedId] = useState<string | "new">(props.addresses[0]?.id ?? "new");
   const [form, setForm] = useState<Addr>({ ...empty, name: props.name, phone: props.phone ?? "" });
   const [email, setEmail] = useState(props.email);
-  const [method, setMethod] = useState<"PREPAID" | "COD">("PREPAID");
+  const onlineOn = useSite("onlinePayment");
+  const codOn = useSite("cod");
+  const codOtpOn = useSite("codOtp");
+  const [method, setMethod] = useState<"PREPAID" | "COD">(onlineOn ? "PREPAID" : "COD");
   const [quote, setQuote] = useState<(Quote & { forKey: string }) | null>(null);
   const [quoteErr, setQuoteErr] = useState<string | null>(null);
   const [codOtp, setCodOtp] = useState("");
@@ -47,8 +51,8 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
     if (!q.ok) return setQuoteErr(q.error ?? "Could not get delivery details");
     setQuoteErr(null);
     setQuote({ ...q, forKey: key });
-    if (method === "COD" && !q.cod.allowed) setMethod("PREPAID");
-  }, [pin, method, props.loggedIn]);
+    if (method === "COD" && !q.cod.allowed && onlineOn) setMethod("PREPAID");
+  }, [pin, method, props.loggedIn, onlineOn]);
 
   useEffect(() => {
     refreshQuote();
@@ -60,7 +64,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
   }, [props.phone, props.name]);
 
   const set = (k: keyof Addr) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
-  const needsCodOtp = method === "COD" && addr.phone !== props.phone;
+  const needsCodOtp = codOtpOn && method === "COD" && addr.phone !== props.phone;
 
   const place = () =>
     start(async () => {
@@ -200,7 +204,7 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
         {/* 3. Payment */}
         <section className={`border border-line p-4 ${props.loggedIn && quote?.serviceable ? "" : "pointer-events-none opacity-50"}`}>
           <h2 className="eyebrow mb-3 text-sm">3. Payment</h2>
-          <label className={`flex cursor-pointer gap-3 border p-3 text-sm ${method === "PREPAID" ? "border-dark" : "border-line"}`}>
+          {onlineOn ? <label className={`flex cursor-pointer gap-3 border p-3 text-sm ${method === "PREPAID" ? "border-dark" : "border-line"}`}>
             <input type="radio" name="pay" checked={method === "PREPAID"} onChange={() => setMethod("PREPAID")} className="mt-1 accent-[var(--brand)]" />
             <span className="flex-1">
               <b>UPI / Card / Netbanking</b>
@@ -208,15 +212,16 @@ export function CheckoutFlow(props: { loggedIn: boolean; phone: string | null; n
               <br /><span className="text-xs text-muted">GPay, PhonePe, Paytm, any UPI app or card</span>
             </span>
             <IconLock className="text-muted" />
-          </label>
-          <label className={`mt-2 flex gap-3 border p-3 text-sm ${quote && !quote.cod.allowed ? "cursor-not-allowed opacity-60" : "cursor-pointer"} ${method === "COD" ? "border-dark" : "border-line"}`}>
+          </label> : null}
+          {codOn ? <label className={`mt-2 flex gap-3 border p-3 text-sm ${quote && !quote.cod.allowed ? "cursor-not-allowed opacity-60" : "cursor-pointer"} ${method === "COD" ? "border-dark" : "border-line"}`}>
             <input type="radio" name="pay" disabled={!!quote && !quote.cod.allowed} checked={method === "COD"} onChange={() => setMethod("COD")} className="mt-1 accent-[var(--brand)]" />
             <span className="flex-1">
               <b>Cash on Delivery</b>
               <br /><span className="text-xs text-muted">{quote && !quote.cod.allowed ? quote.cod.reason : "Pay in cash or UPI when it arrives"}</span>
             </span>
             <IconCash className="text-muted" />
-          </label>
+          </label> : null}
+          {!onlineOn && quote && !quote.cod.allowed ? <p className="mt-2 text-sm text-danger">{quote.cod.reason}. Please call the store to order.</p> : null}
           {method === "COD" && needsCodOtp ? (
             <div className="mt-3 bg-surface p-3 text-sm">
               <p>The delivery phone is different from your login number, so we&apos;ll confirm it with an OTP.</p>

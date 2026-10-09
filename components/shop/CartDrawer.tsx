@@ -6,6 +6,7 @@ import { applyCouponAction, changeVariantAction, setQtyAction } from "@/app/acti
 import { inr } from "@/lib/format";
 import { IconBag, IconClose } from "../icons";
 import { CART_OPEN } from "./cart-events";
+import { useSite } from "./SiteFlags";
 
 type Item = {
   id: string; qty: number; size: string; colour: string; stock: number; name: string; slug: string; price: number; mrp: number;
@@ -24,6 +25,8 @@ export function CartDrawer() {
   const [coupon, setCoupon] = useState("");
   const [showCoupon, setShowCoupon] = useState(false);
   const pathname = usePathname();
+  const couponsOn = useSite("coupons");
+  const freeShipBar = useSite("freeShipBar");
 
   const load = useCallback(async () => {
     const r = await fetch("/api/cart", { cache: "no-store" });
@@ -74,7 +77,7 @@ export function CartDrawer() {
           </div>
         ) : (
           <>
-            {p ? (
+            {p && freeShipBar ? (
               <div className="border-b border-line bg-surface px-4 py-3 text-xs">
                 {p.amountToFreeShipping > 0 ? (
                   <p>Add <b>{inr(p.amountToFreeShipping)}</b> more for <b>free shipping</b></p>
@@ -116,7 +119,7 @@ export function CartDrawer() {
             </ul>
             <div className="border-t border-line p-4">
               {msg ? <p className="mb-2 text-xs text-danger" role="alert">{msg}</p> : null}
-              {cart.couponCode ? (
+              {!couponsOn ? null : cart.couponCode ? (
                 <div className="mb-3 flex items-center justify-between border border-dashed border-gold bg-gold-soft px-3 py-2 text-xs">
                   <span><b>{cart.couponCode}</b> {p?.couponError ? <span className="text-danger">· {p.couponError}</span> : <span className="text-save">applied · −{inr(p?.couponDiscount ?? 0)}</span>}</span>
                   <button onClick={() => run(() => applyCouponAction(""))} className="underline">Remove</button>

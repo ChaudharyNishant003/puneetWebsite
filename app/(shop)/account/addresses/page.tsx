@@ -3,11 +3,13 @@ import { db } from "@/lib/db";
 import { getCustomerSession } from "@/lib/auth/session";
 import { deleteAddressAction } from "@/app/actions/account";
 import { LoginGate } from "@/components/shop/LoginGate";
+import { requirePage } from "@/lib/flags";
 
 export const metadata: Metadata = { title: "Saved Addresses", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
 export default async function AddressesPage() {
+  await requirePage("savedAddresses", "site");
   const s = await getCustomerSession();
   if (!s) return <LoginGate />;
   const list = await db.address.findMany({ where: { customerId: s.sub }, orderBy: { createdAt: "desc" } });

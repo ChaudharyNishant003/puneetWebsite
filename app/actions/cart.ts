@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { addToCart, setCartQty, changeCartVariant, getCart } from "@/lib/cart";
 import { db } from "@/lib/db";
 import { track } from "@/lib/events";
+import { isOn } from "@/lib/flags";
 
 export async function addToCartAction(variantId: string, qty = 1) {
   const r = await addToCart(variantId, qty);
@@ -24,6 +25,7 @@ export async function changeVariantAction(itemId: string, variantId: string) {
 }
 
 export async function applyCouponAction(code: string) {
+  if (!(await isOn("coupons", "site"))) return { ok: false, error: "This coupon code is not valid" };
   const cart = await getCart();
   if (!cart) return { ok: false, error: "Your bag is empty" };
   const c = code.trim().toUpperCase();

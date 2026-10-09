@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { getCustomerSession } from "@/lib/auth/session";
 import { logoutAction } from "@/app/actions/account";
 import { LoginGate } from "@/components/shop/LoginGate";
+import { getFlags } from "@/lib/flags";
 import { ProfileForm } from "@/components/shop/ProfileForm";
 import { fmtDate, inr, statusLabel } from "@/lib/format";
 
@@ -15,15 +16,15 @@ export default async function AccountPage() {
   if (!s) return <LoginGate title="Log in or sign up" />;
   const c = await db.customer.findUnique({ where: { id: s.sub }, include: { orders: { where: { status: { not: "PENDING_PAYMENT" } }, orderBy: { createdAt: "desc" }, take: 3 }, _count: { select: { orders: true, addresses: true, wishlist: true } } } });
   if (!c) return <LoginGate title="Log in or sign up" />;
+  const flags = await getFlags();
+  const tiles = [["/account/orders", c._count.orders, "Orders", true], ["/wishlist", c._count.wishlist, "Wishlist", flags.site("wishlist")], ["/account/addresses", c._count.addresses, "Addresses", flags.site("savedAddresses")]] as const;
   return (
     <div className="mx-auto max-w-2xl px-4 py-6">
       <h1 className="eyebrow text-lg">Hi{c.name ? `, ${c.name.split(" ")[0]}` : ""}</h1>
       <p className="text-sm text-muted">+91 {c.phone}</p>
 
-      <div className="mt-5 grid grid-cols-3 gap-2 text-center text-sm">
-        <Link href="/account/orders" className="border border-line p-3"><b className="block text-lg">{c._count.orders}</b>Orders</Link>
-        <Link href="/wishlist" className="border border-line p-3"><b className="block text-lg">{c._count.wishlist}</b>Wishlist</Link>
-        <Link href="/account/addresses" className="border border-line p-3"><b className="block text-lg">{c._count.addresses}</b>Addresses</Link>
+      <div className="mt-5 grid auto-cols-fr grid-flow-col gap-2 text-center text-sm">
+        {tiles.filter((t) => t[3]).map(([href, n, label]) => (<Link key={href} href={href} className="border border-line p-3"><b className="block text-lg">{n}</b>{label}</Link>))}
       </div>
 
       {c.orders.length ? (

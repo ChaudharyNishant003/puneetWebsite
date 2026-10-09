@@ -72,7 +72,7 @@ export function ExchangeButton({ orderItemId, sizes, daysLeft, free }: { orderIt
   );
 }
 
-export function ReviewButton({ orderItemId, size }: { orderItemId: string; size: string }) {
+export function ReviewButton({ orderItemId, size, allowPhotos = true }: { orderItemId: string; size: string; allowPhotos?: boolean }) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const [msg, setMsg] = useState<string | null>(null);
@@ -117,7 +117,7 @@ export function ReviewButton({ orderItemId, size }: { orderItemId: string; size:
               </fieldset>
               <div><label className="label" htmlFor="rv-title">Title (optional)</label><input id="rv-title" name="title" maxLength={80} className="input" /></div>
               <div><label className="label" htmlFor="rv-body">Review</label><textarea id="rv-body" name="body" rows={4} required minLength={5} className="input" placeholder="Fabric, colour, fit…" /></div>
-              <div><label className="label" htmlFor="rv-photos">Photos (up to 3)</label><input id="rv-photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-xs" /></div>
+              {allowPhotos ? <div><label className="label" htmlFor="rv-photos">Photos (up to 3)</label><input id="rv-photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple className="text-xs" /></div> : null}
               {msg ? <p className="text-danger">{msg}</p> : null}
               <button disabled={pending || !rating} className="btn btn-primary w-full">{pending ? "Submitting…" : "Submit review"}</button>
             </form>

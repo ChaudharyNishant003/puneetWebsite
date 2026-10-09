@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { shop } from "@/lib/config";
 
-export function Footer() {
+export function Footer({ showStore = true }: { showStore?: boolean }) {
   return (
     <footer className="mt-10 bg-dark pb-24 text-[13px] text-neutral-300 md:pb-8">
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -27,7 +27,7 @@ export function Footer() {
             <li><Link href="/pages/size-guide">Size guide</Link></li>
             <li><Link href="/pages/exchange-policy">Exchange policy</Link></li>
             <li><Link href="/pages/shipping-policy">Shipping & delivery</Link></li>
-            <li><Link href="/store">Visit our store</Link></li>
+            {showStore ? <li><Link href="/store">Visit our store</Link></li> : null}
           </ul>
         </div>
         <div>

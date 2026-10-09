@@ -5,7 +5,8 @@ import { db } from "@/lib/db";
 import { getCustomerSession } from "@/lib/auth/session";
 import { requestOtp, verifyOtp } from "@/lib/auth/otp";
 import { getCart } from "@/lib/cart";
-import { getSettings } from "@/lib/settings";
+import { getShopSettings } from "@/lib/settings";
+import { getFlags } from "@/lib/flags";
 import { priceCart, codEligibility } from "@/lib/pricing";
 import { quoteDelivery } from "@/lib/integrations/shipping";
 import { createPaymentOrder, paymentsAreMock, verifyCheckoutSignature } from "@/lib/integrations/payments";
@@ -31,13 +32,14 @@ export type PlaceResult =
 async function buildQuote(input: { pincode: string; paymentMethod: "PREPAID" | "COD" }, customerId: string) {
   const [cart, settings, delivery, prevOrders, customer] = await Promise.all([
     getCart(),
-    getSettings(),
+    getShopSettings(),
     quoteDelivery(input.pincode),
     db.order.count({ where: { customerId, status: { notIn: ["PENDING_PAYMENT", "CANCELLED"] } } }),
     db.customer.findUniqueOrThrow({ where: { id: customerId } }),
   ]);
   if (!cart || !cart.items.length) return { error: "Your bag is empty" as const };
-  const coupon = cart.couponCode ? await db.coupon.findUnique({ where: { code: cart.couponCode } }) : null;
+  const flags = await getFlags();
+  const coupon = cart.couponCode && flags.site("coupons") ? await db.coupon.findUnique({ where: { code: cart.couponCode } }) : null;
   const pricing = priceCart({
     lines: cart.items.map((i) => ({ unitPrice: i.variant.product.price, mrp: i.variant.product.mrp, qty: i.qty, gstRate: i.variant.product.gstRate })),
     coupon,
@@ -46,8 +48,11 @@ async function buildQuote(input: { pincode: string; paymentMethod: "PREPAID" | "
     isFirstOrder: prevOrders === 0,
     settings,
   });
-  const cod = codEligibility({ total: pricing.total, settings, pincodeCodAllowed: delivery.codAllowed, customerCodBlocked: customer.codBlocked });
-  return { cart, settings, delivery, pricing, cod, coupon, customer };
+  const cod = flags.site("cod")
+    ? codEligibility({ total: pricing.total, settings, pincodeCodAllowed: delivery.codAllowed, customerCodBlocked: customer.codBlocked && flags.site("codRto") })
+    : { allowed: false, reason: "Cash on Delivery is not available" };
+  const online = flags.site("onlinePayment");
+  return { cart, settings, delivery, pricing, cod, coupon, customer, online, codOtp: flags.site("codOtp"), savedAddresses: flags.site("savedAddresses") };
 }
 
 // Live quote for the checkout summary (delivery date, fees, prepaid saving, COD availability).
@@ -65,6 +70,7 @@ export async function quoteAction(pincode: string, paymentMethod: "PREPAID" | "C
     etaDate: q.delivery.etaDate.toISOString(),
     pricing: q.pricing,
     cod: q.cod,
+    online: q.online,
     prepaidSaving: "error" in other ? 0 : paymentMethod === "PREPAID" ? q.pricing.prepaidDiscount : other.pricing.prepaidDiscount,
     couponCode: q.coupon?.code ?? null,
   };
@@ -95,10 +101,11 @@ export async function placeOrderAction(raw: z.input<typeof placeSchema>): Promis
   if (!q.delivery.serviceable) return { ok: false, error: q.delivery.message ?? "We can't deliver to this pincode yet" };
   if (q.pricing.total !== input.quotedTotal) return { ok: false, error: "Prices were updated. Please review your order total and place the order again.", code: "PRICE_CHANGED" };
 
+  if (input.paymentMethod === "PREPAID" && !q.online) return { ok: false, error: "Please choose Cash on Delivery" };
   if (input.paymentMethod === "COD") {
     if (!q.cod.allowed) return { ok: false, error: q.cod.reason ?? "COD is not available" };
     // Login OTP already verified the account phone; a different delivery phone needs its own OTP.
-    if (input.address.phone !== s.phone) {
+    if (q.codOtp && input.address.phone !== s.phone) {
       if (!input.codOtp) return { ok: false, error: `Enter the OTP sent to ${input.address.phone} to confirm Cash on Delivery`, code: "COD_OTP_REQUIRED" };
       const v = await verifyOtp(input.address.phone, "COD", input.codOtp);
       if (!v.ok) return { ok: false, error: v.error, code: "COD_OTP_REQUIRED" };
@@ -152,7 +159,7 @@ export async function placeOrderAction(raw: z.input<typeof placeSchema>): Promis
       });
       await addEvent(o.id, o.status, "customer", input.paymentMethod === "COD" ? "COD order placed" : "Awaiting online payment", tx);
       if (input.paymentMethod === "COD") await afterPlaced(tx, o);
-      if (input.saveAddress) {
+      if (input.saveAddress && q.savedAddresses) {
         const dup = await tx.address.findFirst({ where: { customerId: s.sub, pincode: a.pincode, line1: a.line1 } });
         if (!dup) await tx.address.create({ data: { customerId: s.sub, name: a.name, phone: a.phone, line1: a.line1, line2: a.line2 || null, landmark: a.landmark || null, city: a.city, state: a.state, pincode: a.pincode } });
       }

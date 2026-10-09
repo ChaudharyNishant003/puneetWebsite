@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import type { Prisma } from "@prisma/client";
 import { db } from "./db";
+import { isOn } from "./flags";
 
 export const cardInclude = {
   images: { orderBy: { sortOrder: "asc" }, take: 2 },
@@ -39,7 +40,11 @@ export const getMenu = cache(async () => {
   return top.map((t) => ({ ...t, children: cats.filter((c) => c.parentId === t.id) }));
 });
 
+// Occasion / budget / gifting collections belong to the "occasionBudget" feature.
+export const OCCASION_BUDGET = (slug: string) => slug.startsWith("occasion-") || slug.startsWith("under-") || slug === "for-mother";
+
 export async function resolveCollection(slug: string) {
+  if (OCCASION_BUDGET(slug) && !(await isOn("occasionBudget", "site"))) return null;
   const v = virtualCollections[slug];
   if (v) return { kind: "virtual" as const, slug, title: v.title, subtitle: v.subtitle, where: v.where, category: null };
   const cat = await db.category.findUnique({ where: { slug }, include: { children: { select: { id: true, slug: true, name: true } } } });

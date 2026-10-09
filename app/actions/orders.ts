@@ -7,6 +7,7 @@ import { getSettings } from "@/lib/settings";
 import { exchangeEligibility, exchangeIsFree } from "@/lib/exchange";
 import { uploadMedia } from "@/lib/integrations/images";
 import { rateLimit } from "@/lib/rate-limit";
+import { getFlags } from "@/lib/flags";
 
 async function ownedItem(orderItemId: string) {
   const s = await getCustomerSession();
@@ -26,6 +27,7 @@ const exchangeSchema = z.object({
 });
 
 export async function requestExchangeAction(raw: z.input<typeof exchangeSchema>) {
+  if (!(await getFlags()).site("exchanges")) return { ok: false, error: "Something went wrong. Please try again." };
   const p = exchangeSchema.safeParse(raw);
   if (!p.success) return { ok: false, error: p.error.issues[0]?.message ?? "Invalid request" };
   const owned = await ownedItem(p.data.orderItemId);
@@ -57,6 +59,8 @@ export async function requestExchangeAction(raw: z.input<typeof exchangeSchema>)
 }
 
 export async function submitReviewAction(form: FormData) {
+  const fl = await getFlags();
+  if (!fl.site("reviews")) return { ok: false, error: "Something went wrong. Please try again." };
   const owned = await ownedItem(String(form.get("orderItemId") ?? ""));
   if (!owned) return { ok: false, error: "Item not found" };
   const { item, s } = owned;
@@ -74,7 +78,7 @@ export async function submitReviewAction(form: FormData) {
   const exists = await db.review.findUnique({ where: { orderItemId: item.id } });
   if (exists) return { ok: false, error: "You've already reviewed this item" };
   const photos: string[] = [];
-  for (const f of form.getAll("photos").slice(0, 3)) {
+  for (const f of fl.site("photoReviews") ? form.getAll("photos").slice(0, 3) : []) {
     if (f instanceof File && f.size) {
       const up = await uploadMedia(f, "reviews");
       if ("error" in up) return { ok: false, error: up.error };

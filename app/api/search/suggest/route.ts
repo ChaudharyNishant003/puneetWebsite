@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { searchProducts } from "@/lib/search/search";
+import { isOn } from "@/lib/flags";
 
 export async function GET(req: Request) {
   const q = new URL(req.url).searchParams.get("q")?.trim() ?? "";
-  if (q.length < 2) return NextResponse.json({ items: [] });
+  if (q.length < 2 || !(await isOn("searchSuggest", "site"))) return NextResponse.json({ items: [] });
   const { items } = await searchProducts(q, 6);
   return NextResponse.json(
     { items: items.map((p) => ({ slug: p.slug, name: p.name, price: p.price, image: p.images[0]?.url ?? null })) },

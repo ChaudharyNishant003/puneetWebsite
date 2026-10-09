@@ -3,6 +3,7 @@ import type { Prisma } from "@prisma/client";
 import { db } from "../db";
 import { cardInclude } from "../catalog";
 import { parseQuery, type ParsedQuery } from "./parse";
+import { isOn } from "../flags";
 
 // Small catalogue (hundreds of products): pull candidates from Postgres, then rank in memory.
 // Ranking beats hard AND-filtering for Hinglish queries where customers mix intent words.
@@ -57,7 +58,17 @@ async function synonyms() {
 const variantsOf = (t: string) => [...new Set([t, t.endsWith("i") ? t.slice(0, -1) + "a" : t, t.endsWith("a") ? t.slice(0, -1) + "i" : t])];
 const cap = (s: string) => s[0].toUpperCase() + s.slice(1);
 
+// Plain search (smart search switched off): every typed word must appear in the product name.
+async function plainSearch(raw: string, take: number) {
+  const words = raw.toLowerCase().split(/\s+/).filter((w) => w.length >= 2).slice(0, 6);
+  const items = words.length
+    ? await db.product.findMany({ where: { status: "ACTIVE", AND: words.map((w) => ({ name: { contains: w, mode: "insensitive" as const } })) }, include: cardInclude, orderBy: { soldCount: "desc" }, take })
+    : [];
+  return { items, parsed: { terms: words, attributes: {} } as ParsedQuery, relaxed: false, didYouMean: null as string | null };
+}
+
 export async function searchProducts(raw: string, take = 48) {
+  if (!(await isOn("smartSearch", "site"))) return plainSearch(raw.slice(0, 120), take);
   const parsed: ParsedQuery = parseQuery(raw.slice(0, 120), await synonyms());
   const corrected = await Promise.all(parsed.terms.map(correctTerm));
   const genders = parsed.attributes.gender ?? [];
